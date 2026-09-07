@@ -10,7 +10,14 @@ describe('CreateTripPipe', () => {
   };
 
   it('normalizes a calendar date to UTC and trims the title', () => {
-    expect(pipe.transform(valid)).toEqual({
+    // Arrange
+    const input = valid;
+
+    // Act
+    const result = pipe.transform(input);
+
+    // Assert
+    expect(result).toEqual({
       title: 'Japan 2026',
       startDate: '2026-04-01T00:00:00.000Z',
       endDate: null,
@@ -22,29 +29,35 @@ describe('CreateTripPipe', () => {
   });
 
   it('accepts a leap day, a same-day trip and multiple countries', () => {
-    expect(
-      pipe.transform({
-        ...valid,
-        startDate: '2024-02-29',
-        endDate: '2024-02-29',
-        countryIds: ['japan', 'france'],
-      }).endDate,
-    ).toBe('2024-02-29T00:00:00.000Z');
+    // Arrange
+    const input = {
+      ...valid,
+      startDate: '2024-02-29',
+      endDate: '2024-02-29',
+      countryIds: ['japan', 'france'],
+    };
+
+    // Act
+    const result = pipe.transform(input);
+
+    // Assert
+    expect(result.endDate).toBe('2024-02-29T00:00:00.000Z');
   });
 
   it('rejects client storage paths and external URLs', () => {
-    expect(() =>
-      pipe.transform({
-        ...valid,
-        coverStoragePath: 'users/u/trips/t/cover.webp',
-      }),
-    ).toThrow(BadRequestException);
-    expect(() =>
-      pipe.transform({
-        ...valid,
-        coverStoragePath: 'https://example.com/cover.jpg',
-      }),
-    ).toThrow(BadRequestException);
+    // Arrange
+    const inputs = [
+      { ...valid, coverStoragePath: 'users/u/trips/t/cover.webp' },
+      { ...valid, coverStoragePath: 'https://example.com/cover.jpg' },
+    ];
+
+    // Act
+    const transformations = inputs.map((input) => () => pipe.transform(input));
+
+    // Assert
+    for (const transform of transformations) {
+      expect(transform).toThrow(BadRequestException);
+    }
   });
 
   it.each([
@@ -63,6 +76,13 @@ describe('CreateTripPipe', () => {
     { ...valid, countryIds: [''] },
     { ...valid, userId: 'another-user' },
   ])('rejects invalid or untrusted input %#', (input) => {
-    expect(() => pipe.transform(input)).toThrow(BadRequestException);
+    // Arrange
+    const transform = () => pipe.transform(input);
+
+    // Act
+    const action = transform;
+
+    // Assert
+    expect(action).toThrow(BadRequestException);
   });
 });

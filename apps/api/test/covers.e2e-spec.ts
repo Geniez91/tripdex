@@ -5,11 +5,11 @@ import type { INestApplication } from '@nestjs/common';
 import type { App } from 'supertest/types.js';
 import request from 'supertest';
 import { CurrentUserService } from '../src/current-user/current-user.service.js';
-import { DatabaseService } from '../src/prisma/database.service.js';
 import { TripCoversController } from '../src/trips/trip-covers.controller.js';
 import { TripCoversService } from '../src/trips/trip-covers.service.js';
 import { CoverStorageService } from '../src/trips/cover-storage.service.js';
 import { MAX_COVER_BYTES } from '../src/trips/cover-file.js';
+import { TripCoversRepository } from '../src/trips/repositories/trip-covers.repository.js';
 
 describe('Cover multipart HTTP contract', () => {
   let app: INestApplication<App>;
@@ -33,38 +33,28 @@ describe('Cover multipart HTTP contract', () => {
           },
         },
         {
-          provide: DatabaseService,
+          provide: TripCoversRepository,
           useValue: {
-            client: {
-              orm: {
-                public: {
-                  Trip: {
-                    where: (filter: {
-                      id: string;
-                      userId: string;
-                      coverStoragePath?: string | null;
-                    }) => ({
-                      select: () => ({
-                        first: () =>
-                          Promise.resolve(
-                            filter.id === 'trip' && filter.userId === 'owner'
-                              ? { id: 'trip', coverStoragePath: path }
-                              : null,
-                          ),
-                      }),
-                      update: (input: { coverStoragePath: string | null }) => {
-                        if (
-                          filter.userId !== 'owner' ||
-                          filter.coverStoragePath !== path
-                        )
-                          return Promise.resolve(null);
-                        path = input.coverStoragePath;
-                        return Promise.resolve({ id: 'trip' });
-                      },
-                    }),
-                  },
-                },
-              },
+            findOwned: (userId: string, tripId: string) =>
+              Promise.resolve(
+                userId === 'owner' && tripId === 'trip'
+                  ? { id: 'trip', coverStoragePath: path }
+                  : null,
+              ),
+            updatePath: (
+              userId: string,
+              tripId: string,
+              expectedPath: string | null,
+              coverStoragePath: string | null,
+            ) => {
+              if (
+                userId !== 'owner' ||
+                tripId !== 'trip' ||
+                expectedPath !== path
+              )
+                return Promise.resolve(false);
+              path = coverStoragePath;
+              return Promise.resolve(true);
             },
           },
         },

@@ -1,7 +1,12 @@
 import { BadRequestException, PayloadTooLargeException } from '@nestjs/common';
+import { CoverFormat } from './types/cover-format.js';
 
 export const MAX_COVER_BYTES = 5 * 1024 * 1024;
-export const COVER_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+export const COVER_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+] as const;
 
 export interface CoverFile {
   buffer: Buffer;
@@ -9,7 +14,7 @@ export interface CoverFile {
   size: number;
 }
 
-export function validateCover(file: CoverFile | undefined): string {
+export function validateCover(file: CoverFile | undefined): CoverFormat {
   if (!file || !file.buffer.length) {
     throw new BadRequestException('Sélectionnez une image.');
   }
@@ -17,15 +22,21 @@ export function validateCover(file: CoverFile | undefined): string {
     throw new PayloadTooLargeException('La cover doit faire au maximum 5 Mio.');
   }
   const bytes = file.buffer;
-  const extension = bytes.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff]))
-    ? 'jpg'
+  const extension: CoverFormat | null = bytes
+    .subarray(0, 3)
+    .equals(Buffer.from([0xff, 0xd8, 0xff]))
+    ? CoverFormat.Jpeg
     : bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))
-      ? 'png'
+      ? CoverFormat.Png
       : bytes.toString('ascii', 0, 4) === 'RIFF' &&
           bytes.toString('ascii', 8, 12) === 'WEBP'
-        ? 'webp'
+        ? CoverFormat.Webp
         : null;
-  const mime = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
+  const mime: Record<CoverFormat, (typeof COVER_MIME_TYPES)[number]> = {
+    [CoverFormat.Jpeg]: 'image/jpeg',
+    [CoverFormat.Png]: 'image/png',
+    [CoverFormat.Webp]: 'image/webp',
+  };
   if (!extension || mime[extension] !== file.mimetype) {
     throw new BadRequestException(
       'Utilisez une image JPEG, PNG ou WebP valide.',
@@ -41,7 +52,11 @@ export function coverPrefix(userId: string, tripId: string): string {
   return `users/${userId}/trips/${tripId}/cover/`;
 }
 
-export function ownsCoverPath(userId: string, tripId: string, path: string) {
+export function ownsCoverPath(
+  userId: string,
+  tripId: string,
+  path: string,
+): boolean {
   const prefix = coverPrefix(userId, tripId);
   return (
     path.startsWith(prefix) &&

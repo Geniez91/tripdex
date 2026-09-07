@@ -33,7 +33,12 @@ export class CoverStorageService {
     return { client, bucket, files: client.from(bucket) };
   }
 
-  async checkConfiguration() {
+  async checkConfiguration(): Promise<{
+    bucket: string;
+    private: true;
+    fileSizeLimit: number | null;
+    allowedMimeTypes: readonly string[] | null;
+  }> {
     const { client, bucket } = this.storage();
     const metadata = await client.getBucket(bucket);
     if (metadata.error || !metadata.data || metadata.data.public !== false) {
@@ -44,12 +49,12 @@ export class CoverStorageService {
     return {
       bucket,
       private: true,
-      fileSizeLimit: metadata.data.file_size_limit,
-      allowedMimeTypes: metadata.data.allowed_mime_types,
+      fileSizeLimit: metadata.data.file_size_limit ?? null,
+      allowedMimeTypes: metadata.data.allowed_mime_types ?? null,
     };
   }
 
-  async upload(path: string, file: CoverFile) {
+  async upload(path: string, file: CoverFile): Promise<void> {
     await this.checkConfiguration();
     const { files } = this.storage();
     const { error } = await files.upload(path, file.buffer, {

@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUserService } from '../current-user/current-user.service.js';
+import type { CountryResponseDto } from './dto/trip-response.dto.js';
 import { TripsService } from './trips.service.js';
 
 @Controller('me')
@@ -10,7 +11,8 @@ export class VisitedCountriesController {
   ) {}
 
   @Get('visited-countries')
-  async list() {
+  @HttpCode(HttpStatus.OK)
+  async list(): Promise<CountryResponseDto[]> {
     return this.trips.visitedCountries(await this.currentUser.getUserId());
   }
 }

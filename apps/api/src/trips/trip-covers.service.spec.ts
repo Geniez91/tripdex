@@ -6,10 +6,10 @@ import {
   PayloadTooLargeException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import type { DatabaseService } from '../prisma/database.service.js';
 import type { CoverStorageService } from './cover-storage.service.js';
 import { TripCoversService } from './trip-covers.service.js';
 import { MAX_COVER_BYTES } from './cover-file.js';
+import type { TripCoversRepository } from './repositories/trip-covers.repository.js';
 
 const oldPath =
   'users/owner/trips/trip/cover/00000000-0000-4000-8000-000000000001.png';
@@ -23,37 +23,30 @@ describe('Trip cover ownership and lifecycle', () => {
     jest.fn<
       (input: { coverStoragePath: string | null }) => Promise<object | null>
     >();
-  const where = jest.fn(
-    (filter: {
-      id: string;
-      userId: string;
-      coverStoragePath?: string | null;
-    }) => ({
-      select: () => ({
-        first: () =>
-          Promise.resolve(
-            filter.id === 'trip' && filter.userId === owner
-              ? { id: 'trip', coverStoragePath: path }
-              : null,
-          ),
-      }),
-      update: async (input: { coverStoragePath: string | null }) => {
-        expect(filter).toEqual({
-          id: 'trip',
-          userId: 'owner',
-          coverStoragePath: path,
-        });
-        return update(input);
-      },
-    }),
+  const findOwned = jest.fn((userId: string, tripId: string) =>
+    Promise.resolve(
+      userId === owner && tripId === 'trip'
+        ? { id: 'trip', coverStoragePath: path }
+        : null,
+    ),
+  );
+  const updatePath = jest.fn(
+    async (
+      _userId: string,
+      _tripId: string,
+      _expectedPath: string | null,
+      coverStoragePath: string | null,
+    ) => {
+      const result = await update({ coverStoragePath });
+      if (result) path = coverStoragePath;
+      return Boolean(result);
+    },
   );
   const upload = jest.fn<CoverStorageService['upload']>();
   const signedUrl = jest.fn<CoverStorageService['signedUrl']>();
   const cleanup = jest.fn<CoverStorageService['cleanup']>();
   const service = new TripCoversService(
-    {
-      client: { orm: { public: { Trip: { where } } } },
-    } as unknown as DatabaseService,
+    { findOwned, updatePath } as unknown as TripCoversRepository,
     { upload, signedUrl, cleanup } as unknown as CoverStorageService,
   );
   beforeEach(() => {
@@ -72,11 +65,25 @@ describe('Trip cover ownership and lifecycle', () => {
     });
   });
   it('returns no URL and makes no Storage call without a cover', async () => {
-    expect(await service.readUrl('owner', 'trip', null)).toBeNull();
+    // Arrange
+    const pathToRead = null;
+
+    // Act
+    const result = await service.readUrl('owner', 'trip', pathToRead);
+
+    // Assert
+    expect(result).toBeNull();
     expect(signedUrl).not.toHaveBeenCalled();
   });
   it('uploads to a generated owner-scoped path and persists only that path', async () => {
-    const result = await service.replace('owner', 'trip', file);
+    // Arrange
+    const ownerId = 'owner';
+    const tripId = 'trip';
+
+    // Act
+    const result = await service.replace(ownerId, tripId, file);
+
+    // Assert
     expect(result.coverStoragePath).toMatch(
       /^users\/owner\/trips\/trip\/cover\/[0-9a-f-]{36}\.png$/,
     );
@@ -89,87 +96,125 @@ describe('Trip cover ownership and lifecycle', () => {
   it.each(['image/svg+xml', 'text/plain', 'image/jpeg'])(
     'rejects MIME %s before upload',
     async (mimetype) => {
-      await expect(
-        service.replace('owner', 'trip', { ...file, mimetype }),
-      ).rejects.toThrow(BadRequestException);
+      // Arrange
+      const invalidFile = { ...file, mimetype };
+
+      // Act
+      const replacement = service.replace('owner', 'trip', invalidFile);
+
+      // Assert
+      await expect(replacement).rejects.toThrow(BadRequestException);
       expect(upload).not.toHaveBeenCalled();
     },
   );
   it('rejects fake image bytes', async () => {
-    await expect(
-      service.replace('owner', 'trip', {
-        ...file,
-        buffer: Buffer.from('<script>'),
-      }),
-    ).rejects.toThrow(BadRequestException);
+    // Arrange
+    const invalidFile = { ...file, buffer: Buffer.from('<script>') };
+
+    // Act
+    const replacement = service.replace('owner', 'trip', invalidFile);
+
+    // Assert
+    await expect(replacement).rejects.toThrow(BadRequestException);
   });
   it('rejects a missing file', async () => {
-    await expect(service.replace('owner', 'trip', undefined)).rejects.toThrow(
-      BadRequestException,
-    );
+    // Arrange
+    const missingFile = undefined;
+
+    // Act
+    const replacement = service.replace('owner', 'trip', missingFile);
+
+    // Assert
+    await expect(replacement).rejects.toThrow(BadRequestException);
   });
   it('rejects oversized files', async () => {
-    await expect(
-      service.replace('owner', 'trip', { ...file, size: MAX_COVER_BYTES + 1 }),
-    ).rejects.toThrow(PayloadTooLargeException);
+    // Arrange
+    const oversizedFile = { ...file, size: MAX_COVER_BYTES + 1 };
+
+    // Act
+    const replacement = service.replace('owner', 'trip', oversizedFile);
+
+    // Assert
+    await expect(replacement).rejects.toThrow(PayloadTooLargeException);
     expect(upload).not.toHaveBeenCalled();
   });
   it.each(['replace', 'remove'] as const)(
     'denies non-owner %s',
     async (operation) => {
+      // Arrange
       path = oldPath;
-      await expect(
+
+      // Act
+      const action =
         operation === 'replace'
           ? service.replace('attacker', 'trip', file)
-          : service.remove('attacker', 'trip'),
-      ).rejects.toThrow(NotFoundException);
+          : service.remove('attacker', 'trip');
+
+      // Assert
+      await expect(action).rejects.toThrow(NotFoundException);
       expect(upload).not.toHaveBeenCalled();
       expect(cleanup).not.toHaveBeenCalled();
       expect(update).not.toHaveBeenCalled();
     },
   );
   it('rejects path traversal and never signs another owner’s path', async () => {
-    await expect(service.replace('owner', '../trip', file)).rejects.toThrow(
-      BadRequestException,
+    // Arrange
+    const invalidReplacement = service.replace('owner', '../trip', file);
+
+    // Act
+    const attackerUrl = await service.readUrl('attacker', 'trip', oldPath);
+    const traversalUrl = await service.readUrl(
+      'owner',
+      'trip',
+      'users/owner/trips/trip/cover/../secret.png',
     );
-    expect(await service.readUrl('attacker', 'trip', oldPath)).toBeNull();
-    expect(
-      await service.readUrl(
-        'owner',
-        'trip',
-        'users/owner/trips/trip/cover/../secret.png',
-      ),
-    ).toBeNull();
+
+    // Assert
+    await expect(invalidReplacement).rejects.toThrow(BadRequestException);
+    expect(attackerUrl).toBeNull();
+    expect(traversalUrl).toBeNull();
     expect(signedUrl).not.toHaveBeenCalled();
   });
   it('preserves the old cover on Storage failure and cleans a partial upload', async () => {
+    // Arrange
     path = oldPath;
     upload.mockRejectedValue(new Error('Storage unavailable'));
-    await expect(service.replace('owner', 'trip', file)).rejects.toThrow(
-      ServiceUnavailableException,
-    );
+
+    // Act
+    const replacement = service.replace('owner', 'trip', file);
+
+    // Assert
+    await expect(replacement).rejects.toThrow(ServiceUnavailableException);
     expect(path).toBe(oldPath);
     expect(update).not.toHaveBeenCalled();
     expect(cleanup).not.toHaveBeenCalledWith(oldPath);
     expect(cleanup).toHaveBeenCalledTimes(1);
   });
   it('preserves the old cover if the new object cannot be signed or is missing', async () => {
+    // Arrange
     path = oldPath;
     signedUrl.mockResolvedValue(null);
-    await expect(service.replace('owner', 'trip', file)).rejects.toThrow(
-      ServiceUnavailableException,
-    );
+
+    // Act
+    const replacement = service.replace('owner', 'trip', file);
+
+    // Assert
+    await expect(replacement).rejects.toThrow(ServiceUnavailableException);
     expect(update).not.toHaveBeenCalled();
     expect(cleanup).not.toHaveBeenCalledWith(oldPath);
   });
   it('deletes the previous object only after the new path is persisted', async () => {
+    // Arrange
     path = oldPath;
     cleanup.mockImplementation((removed) => {
       expect(removed).toBe(oldPath);
       expect(path).not.toBe(oldPath);
       return Promise.resolve(true);
     });
+    // Act
     const result = await service.replace('owner', 'trip', file);
+
+    // Assert
     expect(result.cleanupPending).toBe(false);
     expect(upload.mock.invocationCallOrder[0]).toBeLessThan(
       signedUrl.mock.invocationCallOrder[0],
@@ -179,34 +224,53 @@ describe('Trip cover ownership and lifecycle', () => {
     );
   });
   it('cleans the new object after a rejected database write', async () => {
+    // Arrange
     path = oldPath;
     update.mockRejectedValue(new Error('DB failed'));
-    await expect(service.replace('owner', 'trip', file)).rejects.toThrow(
-      'DB failed',
-    );
+
+    // Act
+    const replacement = service.replace('owner', 'trip', file);
+
+    // Assert
+    await expect(replacement).rejects.toThrow('DB failed');
     expect(cleanup).toHaveBeenCalledWith(upload.mock.calls[0][0]);
     expect(path).toBe(oldPath);
   });
   it('does not delete the new object after a lost commit acknowledgement', async () => {
+    // Arrange
     path = oldPath;
     update.mockImplementation((input) => {
       path = input.coverStoragePath;
       return Promise.reject(new Error('Connection lost'));
     });
+    // Act
     const result = await service.replace('owner', 'trip', file);
+
+    // Assert
     expect(result.coverStoragePath).toBe(path);
     expect(cleanup).toHaveBeenCalledWith(oldPath);
     expect(cleanup).not.toHaveBeenCalledWith(path);
   });
   it('rejects a concurrent modification and cleans the losing upload', async () => {
+    // Arrange
     update.mockResolvedValue(null);
-    await expect(service.replace('owner', 'trip', file)).rejects.toThrow(
-      ConflictException,
-    );
+
+    // Act
+    const replacement = service.replace('owner', 'trip', file);
+
+    // Assert
+    await expect(replacement).rejects.toThrow(ConflictException);
     expect(cleanup).toHaveBeenCalledWith(upload.mock.calls[0][0]);
   });
   it('detaches before deleting and makes no Storage call without a cover', async () => {
-    expect(await service.remove('owner', 'trip')).toEqual({
+    // Arrange
+    const removalWithoutCover = service.remove('owner', 'trip');
+
+    // Act
+    const resultWithoutCover = await removalWithoutCover;
+
+    // Assert
+    expect(resultWithoutCover).toEqual({
       coverStoragePath: null,
       coverUrl: null,
       cleanupPending: false,
@@ -217,45 +281,75 @@ describe('Trip cover ownership and lifecycle', () => {
       expect(path).toBeNull();
       return Promise.resolve(true);
     });
-    await service.remove('owner', 'trip');
+    const removal = service.remove('owner', 'trip');
+
+    // Act
+    await removal;
+
+    // Assert
     expect(cleanup).toHaveBeenCalledWith(oldPath);
   });
   it('reports cleanup failure without reverting a successful replacement', async () => {
+    // Arrange
     path = oldPath;
     cleanup.mockResolvedValue(false);
-    expect((await service.replace('owner', 'trip', file)).cleanupPending).toBe(
-      true,
-    );
+
+    // Act
+    const result = await service.replace('owner', 'trip', file);
+
+    // Assert
+    expect(result.cleanupPending).toBe(true);
     expect(path).not.toBe(oldPath);
   });
   it('preserves the object when deletion fails in PostgreSQL', async () => {
+    // Arrange
     path = oldPath;
     update.mockRejectedValue(new Error('DB failed'));
-    await expect(service.remove('owner', 'trip')).rejects.toThrow('DB failed');
+
+    // Act
+    const removal = service.remove('owner', 'trip');
+
+    // Assert
+    await expect(removal).rejects.toThrow('DB failed');
     expect(cleanup).not.toHaveBeenCalled();
     expect(path).toBe(oldPath);
   });
   it('finishes deletion after a lost database acknowledgement', async () => {
+    // Arrange
     path = oldPath;
     update.mockImplementation((input) => {
       path = input.coverStoragePath;
       return Promise.reject(new Error('Connection lost'));
     });
-    expect((await service.remove('owner', 'trip')).coverStoragePath).toBeNull();
+    // Act
+    const result = await service.remove('owner', 'trip');
+
+    // Assert
+    expect(result.coverStoragePath).toBeNull();
     expect(cleanup).toHaveBeenCalledWith(oldPath);
   });
   it('rejects a concurrent deletion conflict without removing the current object', async () => {
+    // Arrange
     path = oldPath;
     update.mockResolvedValue(null);
-    await expect(service.remove('owner', 'trip')).rejects.toThrow(
-      ConflictException,
-    );
+
+    // Act
+    const removal = service.remove('owner', 'trip');
+
+    // Assert
+    await expect(removal).rejects.toThrow(ConflictException);
     expect(cleanup).not.toHaveBeenCalled();
   });
   it('reports deletion cleanup failure after detaching the path', async () => {
+    // Arrange
     path = oldPath;
     cleanup.mockResolvedValue(false);
-    expect((await service.remove('owner', 'trip')).cleanupPending).toBe(true);
+
+    // Act
+    const result = await service.remove('owner', 'trip');
+
+    // Assert
+    expect(result.cleanupPending).toBe(true);
     expect(path).toBeNull();
   });
 });

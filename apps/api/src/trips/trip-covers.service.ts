@@ -6,37 +6,46 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { DatabaseService } from '../prisma/database.service.js';
 import { CoverStorageService } from './cover-storage.service.js';
 import { coverPrefix, ownsCoverPath, validateCover } from './cover-file.js';
 import type { CoverFile } from './cover-file.js';
+import type { TripCoverResponseDto } from './dto/trip-cover-response.dto.js';
+import { TripCoversRepository } from './repositories/trip-covers.repository.js';
+import type { OwnedTripCoverRecord } from './types/trip-cover-record.js';
 
 @Injectable()
 export class TripCoversService {
   private readonly logger = new Logger(TripCoversService.name);
+
   constructor(
-    private readonly database: DatabaseService,
+    private readonly trips: TripCoversRepository,
     private readonly storage: CoverStorageService,
   ) {}
 
-  private async owned(userId: string, tripId: string) {
+  private async owned(
+    userId: string,
+    tripId: string,
+  ): Promise<OwnedTripCoverRecord> {
     coverPrefix(userId, tripId);
-    const trip = await this.database.client.orm.public.Trip.where({
-      id: tripId,
-      userId,
-    })
-      .select('id', 'coverStoragePath')
-      .first();
+    const trip = await this.trips.findOwned(userId, tripId);
     if (!trip) throw new NotFoundException('Voyage introuvable.');
     return trip;
   }
 
-  async readUrl(userId: string, tripId: string, path: string | null) {
+  async readUrl(
+    userId: string,
+    tripId: string,
+    path: string | null,
+  ): Promise<string | null> {
     if (!path || !ownsCoverPath(userId, tripId, path)) return null;
     return this.storage.signedUrl(path);
   }
 
-  async replace(userId: string, tripId: string, file: CoverFile | undefined) {
+  async replace(
+    userId: string,
+    tripId: string,
+    file: CoverFile | undefined,
+  ): Promise<TripCoverResponseDto> {
     const trip = await this.owned(userId, tripId);
     const extension = validateCover(file);
     const path = `${coverPrefix(userId, tripId)}${randomUUID()}.${extension}`;
@@ -55,17 +64,17 @@ export class TripCoversService {
       );
     }
     try {
-      const updated = await this.database.client.orm.public.Trip.where({
-        id: tripId,
+      const updated = await this.trips.updatePath(
         userId,
-        coverStoragePath: trip.coverStoragePath,
-      }).update({ coverStoragePath: path });
+        tripId,
+        trip.coverStoragePath,
+        path,
+      );
       if (!updated)
         throw new ConflictException(
           'La cover a changé. Rechargez le voyage et réessayez.',
         );
-    } catch (error) {
-      // A lost DB acknowledgement can mean the update committed. Never remove a referenced cover.
+    } catch (error: unknown) {
       try {
         const current = await this.owned(userId, tripId);
         if (current.coverStoragePath === path) {
@@ -90,21 +99,22 @@ export class TripCoversService {
     return { coverStoragePath: path, coverUrl, cleanupPending };
   }
 
-  async remove(userId: string, tripId: string) {
+  async remove(userId: string, tripId: string): Promise<TripCoverResponseDto> {
     const trip = await this.owned(userId, tripId);
     if (!trip.coverStoragePath)
       return { coverStoragePath: null, coverUrl: null, cleanupPending: false };
     try {
-      const updated = await this.database.client.orm.public.Trip.where({
-        id: tripId,
+      const updated = await this.trips.updatePath(
         userId,
-        coverStoragePath: trip.coverStoragePath,
-      }).update({ coverStoragePath: null });
+        tripId,
+        trip.coverStoragePath,
+        null,
+      );
       if (!updated)
         throw new ConflictException(
           'La cover a changé. Rechargez le voyage et réessayez.',
         );
-    } catch (error) {
+    } catch (error: unknown) {
       try {
         const current = await this.owned(userId, tripId);
         if (current.coverStoragePath === null) {
@@ -136,7 +146,7 @@ export class TripCoversService {
     userId: string,
     tripId: string,
     path: string | null,
-  ) {
+  ): Promise<boolean> {
     if (!path || !ownsCoverPath(userId, tripId, path)) return false;
     return !(await this.storage.cleanup(path));
   }

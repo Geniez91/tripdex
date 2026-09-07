@@ -7,6 +7,8 @@ import { TripsService } from './trips.service.js';
 import { CoverStorageService } from './cover-storage.service.js';
 import { TripCoversService } from './trip-covers.service.js';
 import { TripCoversController } from './trip-covers.controller.js';
+import { TripRepository } from './repositories/trip.repository.js';
+import { TripCoversRepository } from './repositories/trip-covers.repository.js';
 
 @Module({
   imports: [CurrentUserModule],
@@ -16,6 +18,12 @@ import { TripCoversController } from './trip-covers.controller.js';
     TripsJournalController,
     TripCoversController,
   ],
-  providers: [TripsService, CoverStorageService, TripCoversService],
+  providers: [
+    TripsService,
+    TripRepository,
+    CoverStorageService,
+    TripCoversService,
+    TripCoversRepository,
+  ],
 })
 export class TripsModule {}

@@ -4,6 +4,8 @@ import {
   Controller,
   Delete,
   Header,
+  HttpCode,
+  HttpStatus,
   Param,
   Put,
   UploadedFile,
@@ -13,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CurrentUserService } from '../current-user/current-user.service.js';
 import { MAX_COVER_BYTES } from './cover-file.js';
 import type { CoverFile } from './cover-file.js';
+import type { TripCoverResponseDto } from './dto/trip-cover-response.dto.js';
 import { TripCoversService } from './trip-covers.service.js';
 
 @Controller('me/trips/:id/cover')
@@ -23,6 +26,7 @@ export class TripCoversController {
   ) {}
 
   @Put()
+  @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'private, no-store')
   @UseInterceptors(
     FileInterceptor('cover', {
@@ -33,7 +37,7 @@ export class TripCoversController {
     @Param('id') id: string,
     @UploadedFile() file: CoverFile | undefined,
     @Body() body: Record<string, unknown> | undefined,
-  ) {
+  ): Promise<TripCoverResponseDto> {
     const userId = await this.currentUser.getUserId();
     if (body && Object.keys(body).length)
       throw new BadRequestException('Seul le fichier cover est accepté.');
@@ -41,7 +45,8 @@ export class TripCoversController {
   }
 
   @Delete()
-  async remove(@Param('id') id: string) {
+  @HttpCode(HttpStatus.OK)
+  async remove(@Param('id') id: string): Promise<TripCoverResponseDto> {
     return this.covers.remove(await this.currentUser.getUserId(), id);
   }
 }
