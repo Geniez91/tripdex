@@ -1,0 +1,28 @@
+{
+  "name": "web",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "typecheck": "nuxt typecheck",
+    "format:check": "prettier --check app nuxt.config.ts",
+    "test:e2e": "playwright test",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "d3-geo": "^3.1.1",
+    "nuxt": "^4.5.2",
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/d3-geo": "^3.1.1",
+    "@types/geojson": "^7946.0.16",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.11"
+  }
+}

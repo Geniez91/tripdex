@@ -1,0 +1,11 @@
+node_modules
+dist
+.nuxt
+.output
+artifacts
+**/contract.d.ts
+**/contract.json
+**/prisma/data
+**/public/maps
+data/COUNTRIES-LICENSE.txt
+package-lock.json

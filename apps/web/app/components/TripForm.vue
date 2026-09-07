@@ -1,0 +1,176 @@
+<script setup lang="ts">
+import type { Country, CreatedTrip } from "~/types/tripdex";
+
+const props = defineProps<{ countries: Country[]; loading: boolean }>();
+const emit = defineEmits<{ created: [trip: CreatedTrip] }>();
+const config = useRuntimeConfig();
+const title = ref("");
+const startDate = ref("");
+const endDate = ref("");
+const search = ref("");
+const countryIds = ref<string[]>([]);
+const submitting = ref(false);
+const error = ref("");
+const filteredCountries = computed(() => {
+  const query = search.value.trim().toLocaleLowerCase();
+  return props.countries.filter((country) =>
+    `${country.name} ${country.iso2} ${country.iso3}`
+      .toLocaleLowerCase()
+      .includes(query),
+  );
+});
+const selectedCountries = computed(() =>
+  props.countries.filter((country) => countryIds.value.includes(country.id)),
+);
+
+async function submit() {
+  if (submitting.value) return;
+  error.value = "";
+  if (!countryIds.value.length) {
+    error.value = "Sélectionnez au moins un pays.";
+    return;
+  }
+  submitting.value = true;
+  try {
+    const trip = await $fetch<CreatedTrip>("/trips", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      retry: 0,
+      body: {
+        title: title.value,
+        startDate: startDate.value,
+        endDate: endDate.value || null,
+        countryIds: countryIds.value,
+      },
+    });
+    title.value = "";
+    startDate.value = "";
+    endDate.value = "";
+    search.value = "";
+    countryIds.value = [];
+    emit("created", trip);
+  } catch (cause) {
+    const status = (cause as { statusCode?: number }).statusCode;
+    error.value =
+      status === 400
+        ? "Vérifiez le titre, les dates et les pays sélectionnés."
+        : status === 401
+          ? "Utilisateur de développement indisponible. Vérifiez la configuration de l’API et son seed."
+          : "Enregistrement non confirmé. Vérifiez votre connexion avant de réessayer.";
+  } finally {
+    submitting.value = false;
+  }
+}
+</script>
+
+<template>
+  <section class="trip-panel" aria-labelledby="trip-form-title">
+    <div class="panel-heading">
+      <span class="eyebrow">LE PROCHAIN SOUVENIR</span>
+      <h2 id="trip-form-title">Logger un voyage</h2>
+      <p>Un titre, des dates, et les pays qui ont fait partie de l’aventure.</p>
+    </div>
+    <form @submit.prevent="submit">
+      <fieldset
+        :disabled="submitting || loading || !countries.length"
+        class="form-fields"
+      >
+        <div class="field">
+          <label for="trip-title">Titre du voyage</label>
+          <input
+            id="trip-title"
+            v-model="title"
+            name="title"
+            placeholder="Japan 2026"
+            required
+            maxlength="160"
+          />
+        </div>
+        <div class="date-fields">
+          <div class="field">
+            <label for="start-date">Début</label>
+            <input
+              id="start-date"
+              v-model="startDate"
+              name="startDate"
+              type="date"
+              required
+            />
+          </div>
+          <div class="field">
+            <label for="end-date"
+              >Fin <span class="optional">facultatif</span></label
+            >
+            <input
+              id="end-date"
+              v-model="endDate"
+              name="endDate"
+              type="date"
+              :min="startDate || undefined"
+            />
+          </div>
+        </div>
+        <fieldset class="country-picker">
+          <legend>Pays visités <span class="optional">1 minimum</span></legend>
+          <label class="sr-only" for="country-search"
+            >Rechercher un pays par nom ou code ISO</label
+          >
+          <input
+            id="country-search"
+            v-model="search"
+            type="search"
+            placeholder="Rechercher un pays…"
+            autocomplete="off"
+          />
+          <div class="country-options">
+            <p v-if="loading" class="muted">Chargement des pays…</p>
+            <p v-else-if="!filteredCountries.length" class="muted">
+              Aucun pays trouvé.
+            </p>
+            <label
+              v-for="country in filteredCountries"
+              :key="country.id"
+              class="country-option"
+              :class="{ 'is-selected': countryIds.includes(country.id) }"
+            >
+              <input
+                v-model="countryIds"
+                type="checkbox"
+                :value="country.id"
+                :aria-label="country.name"
+              />
+              <span>{{ country.name }}</span>
+              <span class="iso-label">{{ country.iso3 }}</span>
+            </label>
+          </div>
+          <div
+            v-if="selectedCountries.length"
+            class="selected-countries"
+            aria-live="polite"
+          >
+            <button
+              v-for="country in selectedCountries"
+              :key="country.id"
+              type="button"
+              class="country-chip"
+              :aria-label="`Retirer ${country.name}`"
+              @click="countryIds = countryIds.filter((id) => id !== country.id)"
+            >
+              {{ country.name }} <span aria-hidden="true">×</span>
+            </button>
+          </div>
+        </fieldset>
+        <button
+          class="primary-button"
+          type="submit"
+          :disabled="!countryIds.length"
+          :aria-busy="submitting"
+        >
+          {{ submitting ? "Enregistrement…" : "Enregistrer mon voyage" }}
+          <span aria-hidden="true">↗</span>
+        </button>
+      </fieldset>
+      <p v-if="error" class="feedback error" role="alert">{{ error }}</p>
+    </form>
+  </section>
+</template>

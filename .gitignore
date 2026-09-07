@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.nuxt/
+.output/
+.cache/
+coverage/
+*.tsbuildinfo
+*.log
+.env
+.env.*
+!.env.example
+/artifacts/

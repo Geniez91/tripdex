@@ -1,0 +1,96 @@
+
+model User {
+  id        String @id @default(uuid())
+  email     String @unique
+  username  String @unique
+  avatarUrl String?
+  bio       String?
+
+  trips Trip[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model Country {
+  id            String @id @default(uuid())
+  iso2          String @unique
+  iso3          String @unique
+  name          String
+  slug          String @unique
+  continentCode String
+
+  cities        City[]
+  tripCountries TripCountry[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model City {
+  id        String @id @default(uuid())
+  countryId String
+
+  name      String
+  slug      String
+  latitude  Float
+  longitude Float
+
+  country   Country    @relation(fields: [countryId], references: [id])
+  tripCities TripCity[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@unique([countryId, slug])
+  @@index([countryId])
+}
+
+model Trip {
+  id     String @id @default(uuid())
+  userId String
+
+  title     String
+  startDate TimestamptzString
+  endDate   TimestamptzString?
+
+  rating Float?
+  review String?
+
+  user      User          @relation(fields: [userId], references: [id])
+  countries TripCountry[]
+  cities    TripCity[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@index([userId])
+}
+
+model TripCountry {
+  tripId    String
+  countryId String
+
+  arrivalDate   TimestamptzString?
+  departureDate TimestamptzString?
+
+  trip    Trip    @relation(fields: [tripId], references: [id])
+  country Country @relation(fields: [countryId], references: [id])
+
+  @@id([tripId, countryId])
+  @@index([countryId])
+}
+
+model TripCity {
+  tripId String
+  cityId String
+
+  arrivalDate   TimestamptzString?
+  departureDate TimestamptzString?
+
+  trip Trip @relation(fields: [tripId], references: [id])
+  city City @relation(fields: [cityId], references: [id])
+
+  @@id([tripId, cityId])
+  @@index([cityId])
+}
