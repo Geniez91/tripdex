@@ -18,7 +18,6 @@ describe('CreateTripPipe', () => {
       cityIds: [],
       rating: null,
       review: null,
-      coverStoragePath: null,
     });
   });
 
@@ -33,13 +32,13 @@ describe('CreateTripPipe', () => {
     ).toBe('2024-02-29T00:00:00.000Z');
   });
 
-  it('accepts a future storage path and rejects external URLs', () => {
-    expect(
+  it('rejects client storage paths and external URLs', () => {
+    expect(() =>
       pipe.transform({
         ...valid,
         coverStoragePath: 'users/u/trips/t/cover.webp',
-      }).coverStoragePath,
-    ).toBe('users/u/trips/t/cover.webp');
+      }),
+    ).toThrow(BadRequestException);
     expect(() =>
       pipe.transform({
         ...valid,

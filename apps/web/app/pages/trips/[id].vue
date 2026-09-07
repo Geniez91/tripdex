@@ -12,6 +12,41 @@ const {
   baseURL: config.public.apiBase,
   server: false,
 });
+const cover = ref<File | null>(null);
+const changingCover = ref(false);
+const coverError = ref("");
+const coverMessage = ref("");
+async function changeCover(remove = false) {
+  if (!trip.value || changingCover.value) return;
+  changingCover.value = true;
+  coverError.value = "";
+  coverMessage.value = "";
+  try {
+    const body = new FormData();
+    if (cover.value) body.append("cover", cover.value);
+    const result = await $fetch<{
+      coverStoragePath: string | null;
+      coverUrl: string | null;
+      cleanupPending: boolean;
+    }>(`/me/trips/${trip.value.id}/cover`, {
+      baseURL: config.public.apiBase,
+      method: remove ? "DELETE" : "PUT",
+      body: remove ? undefined : body,
+      retry: 0,
+    });
+    Object.assign(trip.value, result);
+    cover.value = null;
+    coverMessage.value = remove ? "Cover supprimée." : "Cover enregistrée.";
+  } catch (cause) {
+    const statusCode = (cause as { statusCode?: number }).statusCode;
+    coverError.value =
+      statusCode === 409
+        ? "La cover a été modifiée ailleurs. Rechargez le voyage puis réessayez."
+        : "Modification de la cover non confirmée. Votre sélection est conservée ; réessayez.";
+  } finally {
+    changingCover.value = false;
+  }
+}
 </script>
 
 <template>
@@ -28,12 +63,39 @@ const {
       <button class="text-button" @click="refresh()">Réessayer</button>
     </div>
     <article v-else-if="trip">
-      <img
-        v-if="trip.coverStoragePath"
+      <TripCover
         class="detail-cover"
-        :src="trip.coverStoragePath"
-        :alt="`Cover de ${trip.title}`"
+        :url="trip.coverUrl"
+        :title="trip.title"
       />
+      <fieldset class="form-fields" :disabled="changingCover">
+        <CoverPicker
+          id="detail-cover"
+          v-model="cover"
+          :disabled="changingCover"
+        />
+        <button
+          v-if="cover"
+          class="text-button"
+          type="button"
+          @click="changeCover()"
+        >
+          Enregistrer la cover
+        </button>
+        <button
+          v-if="trip.coverStoragePath"
+          class="text-button"
+          type="button"
+          @click="changeCover(true)"
+        >
+          Supprimer la cover
+        </button>
+      </fieldset>
+      <p v-if="changingCover" role="status">Modification de la cover…</p>
+      <p v-if="coverMessage" role="status">{{ coverMessage }}</p>
+      <p v-if="coverError" role="alert" class="feedback error">
+        {{ coverError }}
+      </p>
       <span v-if="trip.isRevisit" class="revisit">REVISIT</span>
       <h1>{{ trip.title }}</h1>
       <p class="detail-dates">

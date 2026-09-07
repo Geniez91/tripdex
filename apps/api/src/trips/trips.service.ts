@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from '../prisma/database.service.js';
 import type { CreateTripInput } from './create-trip.pipe.js';
+import { TripCoversService } from './trip-covers.service.js';
 
 type TripSummary = {
   id: string;
@@ -18,7 +19,10 @@ type TripSummary = {
 
 @Injectable()
 export class TripsService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(
+    private readonly database: DatabaseService,
+    private readonly covers: TripCoversService,
+  ) {}
 
   async create(userId: string, input: CreateTripInput) {
     const created = await this.database.client.transaction(async (tx) => {
@@ -52,7 +56,7 @@ export class TripsService {
         endDate: input.endDate,
         rating: input.rating ?? null,
         review: input.review ?? null,
-        coverStoragePath: input.coverStoragePath ?? null,
+        coverStoragePath: null,
       });
       for (const country of countries) {
         await tx.orm.public.TripCountry.create({
@@ -162,6 +166,11 @@ export class TripsService {
     );
     const result = {
       ...trip,
+      coverUrl: await this.covers.readUrl(
+        userId,
+        trip.id,
+        trip.coverStoragePath,
+      ),
       countries,
       isRevisit: revisitedCountryIds.size > 0,
       revisitedCountryIds: [...revisitedCountryIds],

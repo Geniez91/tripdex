@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { test } from 'node:test';
 import { db } from '../dist/prisma/db.js';
 import { TripsService } from '../dist/trips/trips.service.js';
+import { TripCoversService } from '../dist/trips/trip-covers.service.js';
 import { DEVELOPMENT_USER } from '../dist/current-user/development-user.js';
 
 test('Prisma 8: multi-country trips, unique visits, user isolation and rollback', async () => {
@@ -34,9 +35,15 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
           username: otherId,
         });
         // All fixtures and real service queries share one outer rollback-only transaction.
-        const service = new TripsService({
+        const database = {
           client: { orm: tx.orm, transaction: (fn) => fn(tx) },
+        };
+        const covers = new TripCoversService(database, {
+          upload: async () => {},
+          signedUrl: async () => 'https://example.invalid/signed-cover',
+          cleanup: async () => true,
         });
+        const service = new TripsService(database, covers);
         const trip = await service.create(temporaryUserId, {
           title: 'Japan integration',
           startDate: '2026-04-01T00:00:00.000Z',
@@ -44,6 +51,43 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
           countryIds: [japan.id],
         });
         assert.equal(trip.isRevisit, false);
+        assert.equal(trip.coverStoragePath, null);
+        assert.equal(trip.coverUrl, null);
+        const image = Buffer.from('89504e470d0a1a0a00000000', 'hex');
+        const file = {
+          buffer: image,
+          size: image.length,
+          mimetype: 'image/png',
+        };
+        await assert.rejects(covers.replace(otherId, trip.id, file));
+        const firstCover = await covers.replace(temporaryUserId, trip.id, file);
+        assert.ok(
+          firstCover.coverStoragePath.startsWith(
+            `users/${temporaryUserId}/trips/${trip.id}/cover/`,
+          ),
+        );
+        assert.equal(
+          (await service.detail(temporaryUserId, trip.id)).coverUrl,
+          'https://example.invalid/signed-cover',
+        );
+        const secondCover = await covers.replace(
+          temporaryUserId,
+          trip.id,
+          file,
+        );
+        assert.notEqual(
+          secondCover.coverStoragePath,
+          firstCover.coverStoragePath,
+        );
+        assert.equal(
+          (await service.journal(temporaryUserId))[0].coverUrl,
+          'https://example.invalid/signed-cover',
+        );
+        await covers.remove(temporaryUserId, trip.id);
+        assert.equal(
+          (await service.detail(temporaryUserId, trip.id)).coverStoragePath,
+          null,
+        );
         assert.deepEqual(trip.revisitedCountryIds, []);
         assert.equal(
           (await tx.orm.public.TripCountry.where({ tripId: trip.id }).all())

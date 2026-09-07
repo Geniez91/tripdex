@@ -17,6 +17,7 @@ export interface CreatedTrip {
   rating?: number | null;
   review?: string | null;
   coverStoragePath?: string | null;
+  coverUrl?: string | null;
   isRevisit?: boolean;
 }
 

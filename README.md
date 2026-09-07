@@ -1,5 +1,12 @@
 # TripDex
 
+Les covers du Travel Diary passent par NestJS et un bucket privé Supabase Storage.
+Configuration manuelle requise : bucket `trip-covers`, limite 5 Mio, MIME JPEG/PNG/WebP,
+et variables **API uniquement** `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
+`SUPABASE_TRIP_COVERS_BUCKET`. Voir [le guide des covers](docs/trip-covers.md)
+pour les étapes dashboard, les policies, les endpoints et les limites de nettoyage.
+Ne jamais mettre la service-role key dans Nuxt ou Git.
+
 Un carnet de voyage social : logger un voyage et retrouver ses pays sur une carte
 du monde. Ce milestone implémente uniquement les pays, les voyages et la carte.
 

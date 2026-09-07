@@ -58,6 +58,7 @@ describe('Milestone HTTP contract', () => {
       isRevisit: false,
       revisitedCountryIds: [],
       coverStoragePath: null,
+      coverUrl: null,
     });
     journal.mockResolvedValue([]);
     detail.mockResolvedValue({
@@ -72,6 +73,7 @@ describe('Milestone HTTP contract', () => {
       isRevisit: false,
       revisitedCountryIds: [],
       coverStoragePath: null,
+      coverUrl: null,
     });
   });
   afterAll(async () => {
@@ -93,13 +95,13 @@ describe('Milestone HTTP contract', () => {
       cityIds: [],
       rating: null,
       review: null,
-      coverStoragePath: null,
     });
   });
   it.each([
     { ...payload, countryIds: [] },
     { ...payload, startDate: '2026-02-30' },
     { ...payload, userId: 'attacker-selected-user' },
+    { ...payload, coverStoragePath: 'users/attacker/cover.png' },
   ])('rejects invalid requests before writes %#', async (body) => {
     await request(app.getHttpServer()).post('/trips').send(body).expect(400);
     expect(create).not.toHaveBeenCalled();

@@ -39,7 +39,6 @@ for (const failsRefresh of [false, true]) {
         cityIds: [],
         rating: null,
         review: null,
-        coverStoragePath: null,
       });
       posts++;
       created = true;

@@ -9,7 +9,6 @@ export interface CreateTripInput {
   cityIds?: string[];
   rating?: number | null;
   review?: string | null;
-  coverStoragePath?: string | null;
 }
 
 function parseDate(value: unknown, field: string): string {
@@ -46,7 +45,6 @@ export class CreateTripPipe implements PipeTransform<unknown, CreateTripInput> {
             'cityIds',
             'rating',
             'review',
-            'coverStoragePath',
           ].includes(key),
       )
     ) {
@@ -118,16 +116,6 @@ export class CreateTripPipe implements PipeTransform<unknown, CreateTripInput> {
         'Review must contain at most 10000 characters.',
       );
     }
-    const coverStoragePath =
-      input.coverStoragePath == null ? null : input.coverStoragePath;
-    if (
-      coverStoragePath !== null &&
-      (typeof coverStoragePath !== 'string' ||
-        coverStoragePath.length > 2048 ||
-        !/^[A-Za-z0-9][A-Za-z0-9/_\-.]*$/.test(coverStoragePath))
-    ) {
-      throw new BadRequestException('Cover photo reference is invalid.');
-    }
     return {
       title: input.title.trim(),
       startDate,
@@ -136,7 +124,6 @@ export class CreateTripPipe implements PipeTransform<unknown, CreateTripInput> {
       cityIds,
       rating,
       review: review?.trim() || null,
-      coverStoragePath: coverStoragePath?.trim() || null,
     };
   }
 }

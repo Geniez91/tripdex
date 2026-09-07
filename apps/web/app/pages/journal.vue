@@ -37,8 +37,8 @@ const trips = computed(() => data.value ?? []);
     </div>
     <section v-else class="journal-list" aria-label="Voyages enregistrés">
       <article v-for="trip in trips" :key="trip.id" class="journal-entry">
-        <div v-if="trip.coverStoragePath" class="entry-cover">
-          <img :src="trip.coverStoragePath" :alt="`Cover de ${trip.title}`" />
+        <div v-if="trip.coverUrl" class="entry-cover">
+          <TripCover :url="trip.coverUrl" :title="trip.title" />
         </div>
         <div class="entry-body">
           <div class="entry-meta">
