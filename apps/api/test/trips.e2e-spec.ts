@@ -5,8 +5,8 @@ import type { INestApplication } from '@nestjs/common';
 import type { App } from 'supertest/types.js';
 import request from 'supertest';
 import { AppModule } from '../src/app.module.js';
-import { CountriesService } from '../src/countries/countries.module.js';
-import { CurrentUserService } from '../src/current-user/current-user.module.js';
+import { CountriesService } from '../src/countries/countries.service.js';
+import { CurrentUserService } from '../src/current-user/current-user.service.js';
 import { TripsService } from '../src/trips/trips.service.js';
 
 describe('Milestone HTTP contract', () => {

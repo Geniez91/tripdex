@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { DatabaseService } from '../prisma/database.module.js';
+import { DatabaseService } from '../prisma/database.service.js';
 import type { CreateTripInput } from './create-trip.pipe.js';
 
 @Injectable()

@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals';
 import { UnauthorizedException } from '@nestjs/common';
-import { CurrentUserService } from './current-user.module.js';
+import { CurrentUserService } from './current-user.service.js';
 import { DEVELOPMENT_USER } from './development-user.js';
-import type { DatabaseService } from '../prisma/database.module.js';
+import type { DatabaseService } from '../prisma/database.service.js';
 
 describe('CurrentUserService', () => {
   const originalEnvironment = {
