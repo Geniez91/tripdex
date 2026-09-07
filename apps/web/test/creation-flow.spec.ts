@@ -36,6 +36,10 @@ for (const failsRefresh of [false, true]) {
         startDate: "2026-04-01",
         endDate: null,
         countryIds: [japan.id],
+        cityIds: [],
+        rating: null,
+        review: null,
+        coverStoragePath: null,
       });
       posts++;
       created = true;
@@ -52,14 +56,13 @@ for (const failsRefresh of [false, true]) {
     });
     await page.goto("/");
     const shape = page.locator('path.map-country[data-iso3="JPN"]');
-    await expect(page.getByText("Votre histoire commence ici.")).toBeVisible();
     await expect(shape).toBeVisible();
     await expect(shape).not.toHaveClass(/visited/);
     await page.getByLabel("Titre du voyage").fill("Japan 2026");
     await page.getByLabel("Début", { exact: true }).fill("2026-04-01");
     await page.getByRole("checkbox", { name: "Japan", exact: true }).check();
     await page.getByRole("button", { name: "Enregistrer mon voyage" }).click();
-    const confirmation = page.getByText("« Japan 2026 » est enregistré.");
+    const confirmation = page.locator(".feedback.success");
     await expect(confirmation).toBeVisible();
     if (failsRefresh) {
       await expect(

@@ -1,0 +1,17 @@
+[
+  { "id": "city-jp-tokyo", "iso2": "JP", "name": "Tokyo", "slug": "tokyo", "latitude": 35.6762, "longitude": 139.6503 },
+  { "id": "city-jp-kyoto", "iso2": "JP", "name": "Kyoto", "slug": "kyoto", "latitude": 35.0116, "longitude": 135.7681 },
+  { "id": "city-fr-paris", "iso2": "FR", "name": "Paris", "slug": "paris", "latitude": 48.8566, "longitude": 2.3522 },
+  { "id": "city-fr-lyon", "iso2": "FR", "name": "Lyon", "slug": "lyon", "latitude": 45.764, "longitude": 4.8357 },
+  { "id": "city-gb-london", "iso2": "GB", "name": "London", "slug": "london", "latitude": 51.5072, "longitude": -0.1276 },
+  { "id": "city-it-rome", "iso2": "IT", "name": "Rome", "slug": "rome", "latitude": 41.9028, "longitude": 12.4964 },
+  { "id": "city-es-barcelona", "iso2": "ES", "name": "Barcelona", "slug": "barcelona", "latitude": 41.3874, "longitude": 2.1686 },
+  { "id": "city-us-new-york", "iso2": "US", "name": "New York", "slug": "new-york", "latitude": 40.7128, "longitude": -74.006 },
+  { "id": "city-us-san-francisco", "iso2": "US", "name": "San Francisco", "slug": "san-francisco", "latitude": 37.7749, "longitude": -122.4194 },
+  { "id": "city-ca-montreal", "iso2": "CA", "name": "Montreal", "slug": "montreal", "latitude": 45.5019, "longitude": -73.5674 },
+  { "id": "city-au-sydney", "iso2": "AU", "name": "Sydney", "slug": "sydney", "latitude": -33.8688, "longitude": 151.2093 },
+  { "id": "city-th-bangkok", "iso2": "TH", "name": "Bangkok", "slug": "bangkok", "latitude": 13.7563, "longitude": 100.5018 },
+  { "id": "city-pt-lisbon", "iso2": "PT", "name": "Lisbon", "slug": "lisbon", "latitude": 38.7223, "longitude": -9.1393 },
+  { "id": "city-mx-mexico-city", "iso2": "MX", "name": "Mexico City", "slug": "mexico-city", "latitude": 19.4326, "longitude": -99.1332 },
+  { "id": "city-ma-marrakesh", "iso2": "MA", "name": "Marrakesh", "slug": "marrakesh", "latitude": 31.6295, "longitude": -7.9811 }
+]

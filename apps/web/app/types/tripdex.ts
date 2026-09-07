@@ -13,4 +13,22 @@ export interface CreatedTrip {
   startDate: string;
   endDate: string | null;
   countries: Pick<Country, "id" | "iso2" | "iso3" | "name">[];
+  cities?: City[];
+  rating?: number | null;
+  review?: string | null;
+  coverStoragePath?: string | null;
+  isRevisit?: boolean;
+}
+
+export interface City {
+  id: string;
+  countryId: string;
+  name: string;
+  slug: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface JournalTrip extends CreatedTrip {
+  revisitedCountryIds?: string[];
 }

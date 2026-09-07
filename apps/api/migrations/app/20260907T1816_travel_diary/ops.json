@@ -1,0 +1,83 @@
+[
+  {
+    "id": "column.public.trip.coverStoragePath",
+    "label": "Add column \"coverStoragePath\" to \"trip\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "coverStoragePath",
+        "table": "trip"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"coverStoragePath\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "trip",
+          "coverStoragePath"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"coverStoragePath\"",
+        "sql": "ALTER TABLE \"public\".\"trip\" ADD COLUMN \"coverStoragePath\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"coverStoragePath\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "trip",
+          "coverStoragePath"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.trip.trip_userId_startDate_id_idx_295d51d9",
+    "label": "Create index \"trip_userId_startDate_id_idx_295d51d9\" on \"trip\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "trip_userId_startDate_id_idx_295d51d9",
+        "table": "trip"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"trip_userId_startDate_id_idx_295d51d9\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"trip_userId_startDate_id_idx_295d51d9\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"trip_userId_startDate_id_idx_295d51d9\"",
+        "sql": "CREATE INDEX \"trip_userId_startDate_id_idx_295d51d9\" ON \"public\".\"trip\" (\"userId\", \"startDate\", \"id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"trip_userId_startDate_id_idx_295d51d9\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"trip_userId_startDate_id_idx_295d51d9\""
+        ]
+      }
+    ]
+  }
+]

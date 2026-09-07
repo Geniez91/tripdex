@@ -279,6 +279,13 @@
           },
           "Trip": {
             "fields": {
+              "coverStoragePath": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -392,6 +399,9 @@
             },
             "storage": {
               "fields": {
+                "coverStoragePath": {
+                  "column": "coverStoragePath"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -857,6 +867,11 @@
             },
             "trip": {
               "columns": {
+                "coverStoragePath": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -932,6 +947,16 @@
                   ],
                   "name": "trip_userId_idx_a489d58a",
                   "prefix": "trip_userId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId",
+                    "startDate",
+                    "id"
+                  ],
+                  "name": "trip_userId_startDate_id_idx_295d51d9",
+                  "prefix": "trip_userId_startDate_id_idx",
                   "unique": false
                 }
               ],
@@ -1176,7 +1201,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "cedac38e72ad05a1b88d36efb1c9bcda3ab0e0e4d679c989cb207db7b2b56270"
+    "storageHash": "ddbf534774b40fbcfb518efd693c7f45f034416db8ff2accb27ff65d37cdf13a"
   },
   "execution": {
     "executionHash": "dcb0f5c0f6fdf5fbf33ed102a0e6ccaf6f2a8053a320f910704633c29383791b",

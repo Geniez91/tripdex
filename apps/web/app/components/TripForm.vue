@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Country, CreatedTrip } from "~/types/tripdex";
+import type { City, Country, CreatedTrip } from "~/types/tripdex";
 
 const props = defineProps<{ countries: Country[]; loading: boolean }>();
 const emit = defineEmits<{ created: [trip: CreatedTrip] }>();
@@ -7,10 +7,18 @@ const config = useRuntimeConfig();
 const title = ref("");
 const startDate = ref("");
 const endDate = ref("");
+const rating = ref<number | null>(null);
+const review = ref("");
 const search = ref("");
 const countryIds = ref<string[]>([]);
+const cityIds = ref<string[]>([]);
 const submitting = ref(false);
 const error = ref("");
+const { data: cities } = await useFetch<City[]>("/cities", {
+  baseURL: config.public.apiBase,
+  server: false,
+  default: () => [],
+});
 const filteredCountries = computed(() => {
   const query = search.value.trim().toLocaleLowerCase();
   return props.countries.filter((country) =>
@@ -21,6 +29,11 @@ const filteredCountries = computed(() => {
 });
 const selectedCountries = computed(() =>
   props.countries.filter((country) => countryIds.value.includes(country.id)),
+);
+const availableCities = computed(() =>
+  (cities.value ?? []).filter((city) =>
+    countryIds.value.includes(city.countryId),
+  ),
 );
 
 async function submit() {
@@ -41,13 +54,20 @@ async function submit() {
         startDate: startDate.value,
         endDate: endDate.value || null,
         countryIds: countryIds.value,
+        cityIds: cityIds.value,
+        rating: rating.value,
+        review: review.value || null,
+        coverStoragePath: null,
       },
     });
     title.value = "";
     startDate.value = "";
     endDate.value = "";
+    rating.value = null;
+    review.value = "";
     search.value = "";
     countryIds.value = [];
+    cityIds.value = [];
     emit("created", trip);
   } catch (cause) {
     const status = (cause as { statusCode?: number }).statusCode;
@@ -110,6 +130,28 @@ async function submit() {
             />
           </div>
         </div>
+        <div class="field">
+          <label for="trip-rating">Note</label>
+          <select id="trip-rating" v-model="rating">
+            <option :value="null">Non noté</option>
+            <option
+              v-for="value in [1, 2, 3, 4, 5]"
+              :key="value"
+              :value="value"
+            >
+              {{ "★".repeat(value) }}
+            </option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="trip-review">Souvenir</label>
+          <textarea
+            id="trip-review"
+            v-model="review"
+            maxlength="10000"
+            rows="4"
+          />
+        </div>
         <fieldset class="country-picker">
           <legend>Pays visités <span class="optional">1 minimum</span></legend>
           <label class="sr-only" for="country-search"
@@ -158,6 +200,24 @@ async function submit() {
             >
               {{ country.name }} <span aria-hidden="true">×</span>
             </button>
+          </div>
+        </fieldset>
+        <fieldset v-if="availableCities.length" class="country-picker">
+          <legend>Villes <span class="optional">facultatif</span></legend>
+          <div class="country-options">
+            <label
+              v-for="city in availableCities"
+              :key="city.id"
+              class="country-option"
+            >
+              <input
+                v-model="cityIds"
+                type="checkbox"
+                :value="city.id"
+                :aria-label="city.name"
+              />
+              <span>{{ city.name }}</span>
+            </label>
           </div>
         </fieldset>
         <button

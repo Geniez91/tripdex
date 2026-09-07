@@ -22,6 +22,8 @@ describe('Milestone HTTP contract', () => {
   const userId = jest.fn<() => Promise<string>>();
   const create = jest.fn<TripsService['create']>();
   const visited = jest.fn<TripsService['visitedCountries']>();
+  const journal = jest.fn<TripsService['journal']>();
+  const detail = jest.fn<TripsService['detail']>();
   const payload = {
     title: 'Japan 2026',
     startDate: '2026-04-01',
@@ -35,7 +37,7 @@ describe('Milestone HTTP contract', () => {
       .overrideProvider(CountriesService)
       .useValue({ list: () => [country] })
       .overrideProvider(TripsService)
-      .useValue({ create, visitedCountries: visited })
+      .useValue({ create, visitedCountries: visited, journal, detail })
       .compile();
     app = module.createNestApplication();
     await app.init();
@@ -50,6 +52,26 @@ describe('Milestone HTTP contract', () => {
       startDate: '2026-04-01T00:00:00.000Z',
       endDate: null,
       countries: [country],
+      cities: [],
+      rating: null,
+      review: null,
+      isRevisit: false,
+      revisitedCountryIds: [],
+      coverStoragePath: null,
+    });
+    journal.mockResolvedValue([]);
+    detail.mockResolvedValue({
+      id: 'new-trip',
+      title: 'Japan 2026',
+      startDate: '2026-04-01T00:00:00.000Z',
+      endDate: null,
+      countries: [country],
+      cities: [],
+      rating: 5,
+      review: 'First trip',
+      isRevisit: false,
+      revisitedCountryIds: [],
+      coverStoragePath: null,
     });
   });
   afterAll(async () => {
@@ -68,6 +90,10 @@ describe('Milestone HTTP contract', () => {
       ...payload,
       startDate: '2026-04-01T00:00:00.000Z',
       endDate: null,
+      cityIds: [],
+      rating: null,
+      review: null,
+      coverStoragePath: null,
     });
   });
   it.each([
@@ -84,6 +110,12 @@ describe('Milestone HTTP contract', () => {
       .expect(200)
       .expect([country]);
     expect(visited).toHaveBeenCalledWith('current-user');
+  });
+  it('serves the private journal and trip detail through the current identity', async () => {
+    await request(app.getHttpServer()).get('/me/trips').expect(200).expect([]);
+    await request(app.getHttpServer()).get('/me/trips/new-trip').expect(200);
+    expect(journal).toHaveBeenCalledWith('current-user');
+    expect(detail).toHaveBeenCalledWith('current-user', 'new-trip');
   });
   it('rejects private endpoints when no identity is available', async () => {
     userId.mockRejectedValue(new UnauthorizedException());

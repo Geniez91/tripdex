@@ -10,7 +10,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "node --import ./scripts/development.mjs ../../node_modules/@nestjs/cli/bin/nest.js start --watch",
+    "start:dev": "node --import ./scripts/development.mjs ./node_modules/@nestjs/cli/bin/nest.js start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node --import ./scripts/production.mjs dist/main.js",
     "typecheck": "tsc --noEmit --incremental false",
