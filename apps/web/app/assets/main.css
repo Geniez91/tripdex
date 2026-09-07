@@ -491,6 +491,9 @@ form .feedback {
   border-radius: 12px;
   overflow: hidden;
 }
+.journal-entry:not(:has(.entry-cover)) {
+  grid-template-columns: minmax(0, 1fr);
+}
 .entry-cover {
   min-height: 150px;
   background: #eaf0e2;
