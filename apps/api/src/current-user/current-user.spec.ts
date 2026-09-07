@@ -28,20 +28,28 @@ describe('CurrentUserService', () => {
     else process.env.DEV_AUTH_ENABLED = originalEnvironment.auth;
   });
 
-  it('uses only the configured local identity', async () => {
-    first.mockResolvedValue({ id: DEVELOPMENT_USER.id });
-    expect(await service.getUserId()).toBe(DEVELOPMENT_USER.id);
-    expect(where).toHaveBeenCalledWith({ id: DEVELOPMENT_USER.id });
-  });
+  it.each(['development', 'test'])(
+    'uses only the configured local identity in %s',
+    async (environment) => {
+      process.env.NODE_ENV = environment;
+      first.mockResolvedValue({ id: DEVELOPMENT_USER.id });
+      expect(await service.getUserId()).toBe(DEVELOPMENT_USER.id);
+      expect(where).toHaveBeenCalledWith({ id: DEVELOPMENT_USER.id });
+    },
+  );
   it('rejects a missing seeded user', async () => {
     first.mockResolvedValue(null);
     await expect(service.getUserId()).rejects.toThrow(UnauthorizedException);
   });
-  it('never enables development auth in production', async () => {
-    process.env.NODE_ENV = 'production';
-    await expect(service.getUserId()).rejects.toThrow(UnauthorizedException);
-    expect(where).not.toHaveBeenCalled();
-  });
+  it.each(['production', 'staging', '', undefined])(
+    'rejects development auth in environment %s',
+    async (environment) => {
+      if (environment === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = environment;
+      await expect(service.getUserId()).rejects.toThrow(UnauthorizedException);
+      expect(where).not.toHaveBeenCalled();
+    },
+  );
   it('requires explicit opt-in', async () => {
     delete process.env.DEV_AUTH_ENABLED;
     await expect(service.getUserId()).rejects.toThrow(UnauthorizedException);

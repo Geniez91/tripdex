@@ -7,7 +7,8 @@ export const DEVELOPMENT_USER = {
 
 export function developmentAuthEnabled() {
   return (
-    process.env.NODE_ENV !== 'production' &&
+    (process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test') &&
     process.env.DEV_AUTH_ENABLED === 'true'
   );
 }

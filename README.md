@@ -17,7 +17,9 @@ pas déjà**, puis renseigner la connexion PostgreSQL dans ce fichier local.
 Ne jamais copier la connexion dans le frontend ou la committer.
 
 - API : `PORT=3001`, `HOST=127.0.0.1`, `WEB_ORIGIN=http://localhost:3000`.
-- Identité locale : `DEV_AUTH_ENABLED=true` dans l’environnement API.
+- Identité locale : `DEV_AUTH_ENABLED=true` et `NODE_ENV=development` dans
+  l’environnement API (également pour créer l’utilisateur local avec le seed).
+  Ajouter `NODE_ENV=development` aux anciens fichiers `.env` si nécessaire.
 - Web : `NUXT_PUBLIC_API_BASE` vaut `http://localhost:3001` par défaut.
   `apps/web/.env.example` permet de changer cette adresse publique.
 
@@ -89,7 +91,10 @@ introduite dans ce milestone.
 `CurrentUserService` constitue le point d’intégration pour Supabase Auth. En
 attendant, les routes privées utilisent un utilisateur partagé de développement,
 sans identité fournie par le navigateur. Ce mode exige `DEV_AUTH_ENABLED=true`
-et est toujours refusé lorsque `NODE_ENV=production` (`401`). Le lancement local
+et un `NODE_ENV` explicitement égal à `development` ou `test`. Toute autre valeur,
+y compris une valeur absente, est refusée (`401`). `start:dev` impose
+`development` et `start:prod` impose `production` avant de charger l’application,
+même si l’environnement hérité indique autre chose. Le lancement local
 de l’API charge `apps/api/.env` via dotenv.
 
 ## Prisma 8 conservé
