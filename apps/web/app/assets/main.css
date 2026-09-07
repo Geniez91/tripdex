@@ -60,6 +60,16 @@ p {
   justify-content: space-between;
   border-bottom: 1px solid #dedfd5;
 }
+.main-nav {
+  display: flex;
+  gap: 18px;
+  padding-top: 18px;
+  font-size: 12px;
+}
+.main-nav a.router-link-active {
+  color: #b66843;
+  font-weight: 700;
+}
 .wordmark {
   display: flex;
   align-items: center;
@@ -330,6 +340,20 @@ input:not([type="checkbox"]) {
   color: #314938;
   font-size: 12px;
 }
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #dfe3d7;
+  background: #fffefa;
+  padding: 12px;
+  border-radius: 7px;
+  color: #314938;
+  font: inherit;
+  font-size: 12px;
+}
+textarea {
+  resize: vertical;
+}
 input::placeholder {
   color: #969c90;
 }
@@ -455,6 +479,94 @@ form .feedback {
   background: #e8efdf;
   color: #375a34;
 }
+.journal-list {
+  display: grid;
+  gap: 14px;
+}
+.journal-entry {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  border: 1px solid #dfe2d8;
+  background: #fffefa;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.journal-entry:not(:has(.entry-cover)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.entry-cover {
+  min-height: 150px;
+  background: #eaf0e2;
+}
+.entry-cover img,
+.detail-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.entry-body {
+  padding: 18px 20px;
+}
+.entry-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #778071;
+  font-size: 11px;
+}
+.entry-body h2 {
+  margin: 12px 0 6px;
+}
+.entry-body h2 a {
+  text-decoration: none;
+}
+.entry-body p {
+  color: #74806d;
+  font-size: 12px;
+}
+.revisit {
+  color: #b15c35;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+.stars {
+  color: #b66843 !important;
+  letter-spacing: 2px;
+  margin-top: 12px;
+}
+.stars span {
+  color: #dfe3d7;
+}
+.trip-detail {
+  max-width: 760px;
+  padding: 52px 0;
+}
+.trip-detail article {
+  background: #fffefa;
+  border: 1px solid #dfe2d8;
+  border-radius: 18px;
+  overflow: hidden;
+  padding-bottom: 32px;
+}
+.trip-detail article > :not(.detail-cover) {
+  margin-left: 32px;
+  margin-right: 32px;
+}
+.trip-detail h1 {
+  margin-top: 24px;
+}
+.detail-cover {
+  display: block;
+  max-height: 360px;
+}
+.detail-dates {
+  color: #74806d;
+}
+.detail-review {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  margin-top: 28px;
+}
 .map-panel > .feedback {
   margin: 10px 28px 0;
 }
@@ -573,6 +685,12 @@ form .feedback {
   }
   .site-footer {
     flex-direction: column;
+  }
+  .journal-entry {
+    grid-template-columns: 1fr;
+  }
+  .entry-cover {
+    min-height: 170px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

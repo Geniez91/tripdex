@@ -18,6 +18,15 @@ async function snapshot() {
     links: await db.orm.public.TripCountry.select('tripId', 'countryId')
       .orderBy([(link) => link.tripId.asc(), (link) => link.countryId.asc()])
       .all(),
+    cities: await db.orm.public.City.select(
+      'id',
+      'countryId',
+      'slug',
+      'latitude',
+      'longitude',
+    )
+      .orderBy((city) => city.id.asc())
+      .all(),
   };
 }
 

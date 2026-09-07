@@ -1,5 +1,6 @@
 import { db } from './db.js';
 import countries from './data/countries.json' with { type: 'json' };
+import cities from './data/cities.json' with { type: 'json' };
 import {
   DEVELOPMENT_USER,
   developmentAuthEnabled,
@@ -31,8 +32,33 @@ function validateCountries() {
   }
 }
 
+function validateCities() {
+  const keys = cities.map((city) => `${city.iso2}:${city.slug}`);
+  if (new Set(cities.map((city) => city.id)).size !== cities.length)
+    throw new Error('Duplicate city id.');
+  if (new Set(keys).size !== cities.length)
+    throw new Error('Duplicate city country/slug.');
+  for (const city of cities) {
+    if (
+      !city.id ||
+      !/^[A-Z]{2}$/.test(city.iso2) ||
+      !city.name ||
+      !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(city.slug) ||
+      !Number.isFinite(city.latitude) ||
+      !Number.isFinite(city.longitude) ||
+      city.latitude < -90 ||
+      city.latitude > 90 ||
+      city.longitude < -180 ||
+      city.longitude > 180
+    ) {
+      throw new Error(`Invalid city record: ${city.id}`);
+    }
+  }
+}
+
 async function seed() {
   validateCountries();
+  validateCities();
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required.');
   await db.transaction(async (tx) => {
     for (const country of countries) {
@@ -47,12 +73,40 @@ async function seed() {
         conflictOn: { iso2: country.iso2 },
       });
     }
+    const countryRows = await tx.orm.public.Country.select('id', 'iso2').all();
+    const countryIds = new Map(
+      countryRows.map((country) => [country.iso2, country.id]),
+    );
+    for (const city of cities) {
+      const countryId = countryIds.get(city.iso2);
+      if (!countryId) throw new Error(`Unknown city country: ${city.iso2}`);
+      const existing = await tx.orm.public.City.where({
+        countryId,
+        slug: city.slug,
+      }).first();
+      if (existing) {
+        await tx.orm.public.City.where({ id: existing.id }).update({
+          name: city.name,
+          latitude: city.latitude,
+          longitude: city.longitude,
+        });
+      } else {
+        await tx.orm.public.City.create({
+          id: city.id,
+          countryId,
+          name: city.name,
+          slug: city.slug,
+          latitude: city.latitude,
+          longitude: city.longitude,
+        });
+      }
+    }
     if (developmentAuthEnabled()) {
       await tx.orm.public.User.upsert({ create: DEVELOPMENT_USER, update: {} });
     }
   });
   console.log(
-    `Seed complete: ${countries.length} ISO countries. Existing IDs and trips preserved.`,
+    `Seed complete: ${countries.length} ISO countries and ${cities.length} MVP cities. Existing IDs and trips preserved.`,
   );
   console.log(
     `Development user: ${developmentAuthEnabled() ? 'ready' : 'disabled'}.`,

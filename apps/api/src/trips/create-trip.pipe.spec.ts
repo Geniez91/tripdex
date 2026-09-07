@@ -15,6 +15,9 @@ describe('CreateTripPipe', () => {
       startDate: '2026-04-01T00:00:00.000Z',
       endDate: null,
       countryIds: ['japan'],
+      cityIds: [],
+      rating: null,
+      review: null,
     });
   });
 
@@ -27,6 +30,21 @@ describe('CreateTripPipe', () => {
         countryIds: ['japan', 'france'],
       }).endDate,
     ).toBe('2024-02-29T00:00:00.000Z');
+  });
+
+  it('rejects client storage paths and external URLs', () => {
+    expect(() =>
+      pipe.transform({
+        ...valid,
+        coverStoragePath: 'users/u/trips/t/cover.webp',
+      }),
+    ).toThrow(BadRequestException);
+    expect(() =>
+      pipe.transform({
+        ...valid,
+        coverStoragePath: 'https://example.com/cover.jpg',
+      }),
+    ).toThrow(BadRequestException);
   });
 
   it.each([

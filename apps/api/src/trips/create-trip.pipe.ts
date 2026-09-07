@@ -6,6 +6,9 @@ export interface CreateTripInput {
   startDate: string;
   endDate: string | null;
   countryIds: string[];
+  cityIds?: string[];
+  rating?: number | null;
+  review?: string | null;
 }
 
 function parseDate(value: unknown, field: string): string {
@@ -33,7 +36,16 @@ export class CreateTripPipe implements PipeTransform<unknown, CreateTripInput> {
     const input = value as Record<string, unknown>;
     if (
       Object.keys(input).some(
-        (key) => !['title', 'startDate', 'endDate', 'countryIds'].includes(key),
+        (key) =>
+          ![
+            'title',
+            'startDate',
+            'endDate',
+            'countryIds',
+            'cityIds',
+            'rating',
+            'review',
+          ].includes(key),
       )
     ) {
       throw new BadRequestException('Unknown field in trip.');
@@ -69,11 +81,49 @@ export class CreateTripPipe implements PipeTransform<unknown, CreateTripInput> {
     if (new Set(input.countryIds).size !== input.countryIds.length) {
       throw new BadRequestException('Each country can only be selected once.');
     }
+    const cityIds = input.cityIds == null ? [] : input.cityIds;
+    if (
+      !Array.isArray(cityIds) ||
+      cityIds.length > 249 ||
+      !cityIds.every(
+        (id): id is string =>
+          typeof id === 'string' && id.length > 0 && id.length <= 128,
+      )
+    ) {
+      throw new BadRequestException('Select valid city IDs.');
+    }
+    if (new Set(cityIds).size !== cityIds.length) {
+      throw new BadRequestException('Each city can only be selected once.');
+    }
+    const rating = input.rating == null ? null : input.rating;
+    if (
+      rating !== null &&
+      (typeof rating !== 'number' ||
+        !Number.isInteger(rating) ||
+        rating < 1 ||
+        rating > 5)
+    ) {
+      throw new BadRequestException(
+        'Rating must be an integer between 1 and 5.',
+      );
+    }
+    const review = input.review == null ? null : input.review;
+    if (
+      review !== null &&
+      (typeof review !== 'string' || review.length > 10_000)
+    ) {
+      throw new BadRequestException(
+        'Review must contain at most 10000 characters.',
+      );
+    }
     return {
       title: input.title.trim(),
       startDate,
       endDate,
       countryIds: input.countryIds,
+      cityIds,
+      rating,
+      review: review?.trim() || null,
     };
   }
 }

@@ -1,0 +1,991 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.city",
+    "label": "Create table \"city\"",
+    "summary": "Creates table \"city\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "city"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"city\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"city\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"city\"",
+        "sql": "CREATE TABLE \"public\".\"city\" (\n  \"countryId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"latitude\" float8 NOT NULL,\n  \"longitude\" float8 NOT NULL,\n  \"name\" text NOT NULL,\n  \"slug\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"city\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"city\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.country",
+    "label": "Create table \"country\"",
+    "summary": "Creates table \"country\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "country"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"country\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"country\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"country\"",
+        "sql": "CREATE TABLE \"public\".\"country\" (\n  \"continentCode\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"iso2\" text NOT NULL,\n  \"iso3\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"slug\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"country\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"country\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.trip",
+    "label": "Create table \"trip\"",
+    "summary": "Creates table \"trip\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "trip"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"trip\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"trip\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"trip\"",
+        "sql": "CREATE TABLE \"public\".\"trip\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"endDate\" timestamptz,\n  \"id\" text NOT NULL,\n  \"rating\" float8,\n  \"review\" text,\n  \"startDate\" timestamptz NOT NULL,\n  \"title\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"trip\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"trip\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.tripCity",
+    "label": "Create table \"tripCity\"",
+    "summary": "Creates table \"tripCity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "tripCity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"tripCity\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"tripCity\"",
+        "sql": "CREATE TABLE \"public\".\"tripCity\" (\n  \"arrivalDate\" timestamptz,\n  \"cityId\" text NOT NULL,\n  \"departureDate\" timestamptz,\n  \"tripId\" text NOT NULL,\n  PRIMARY KEY (\"tripId\", \"cityId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"tripCity\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.tripCountry",
+    "label": "Create table \"tripCountry\"",
+    "summary": "Creates table \"tripCountry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "tripCountry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"tripCountry\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCountry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"tripCountry\"",
+        "sql": "CREATE TABLE \"public\".\"tripCountry\" (\n  \"arrivalDate\" timestamptz,\n  \"countryId\" text NOT NULL,\n  \"departureDate\" timestamptz,\n  \"tripId\" text NOT NULL,\n  PRIMARY KEY (\"tripId\", \"countryId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"tripCountry\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCountry\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.user",
+    "label": "Create table \"user\"",
+    "summary": "Creates table \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"user\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"user\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"user\"",
+        "sql": "CREATE TABLE \"public\".\"user\" (\n  \"avatarUrl\" text,\n  \"bio\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"username\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"user\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"user\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.city.city_countryId_slug_key",
+    "label": "Add unique constraint on \"city\" (countryId, slug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "city_countryId_slug_key",
+        "table": "city"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"city_countryId_slug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "city_countryId_slug_key",
+          "public",
+          "\"public\".\"city\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"city_countryId_slug_key\"",
+        "sql": "ALTER TABLE \"public\".\"city\" ADD CONSTRAINT \"city_countryId_slug_key\" UNIQUE (\"countryId\", \"slug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"city_countryId_slug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "city_countryId_slug_key",
+          "public",
+          "\"public\".\"city\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.country.country_iso2_key",
+    "label": "Add unique constraint on \"country\" (iso2)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "country_iso2_key",
+        "table": "country"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"country_iso2_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "country_iso2_key",
+          "public",
+          "\"public\".\"country\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"country_iso2_key\"",
+        "sql": "ALTER TABLE \"public\".\"country\" ADD CONSTRAINT \"country_iso2_key\" UNIQUE (\"iso2\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"country_iso2_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "country_iso2_key",
+          "public",
+          "\"public\".\"country\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.country.country_iso3_key",
+    "label": "Add unique constraint on \"country\" (iso3)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "country_iso3_key",
+        "table": "country"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"country_iso3_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "country_iso3_key",
+          "public",
+          "\"public\".\"country\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"country_iso3_key\"",
+        "sql": "ALTER TABLE \"public\".\"country\" ADD CONSTRAINT \"country_iso3_key\" UNIQUE (\"iso3\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"country_iso3_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "country_iso3_key",
+          "public",
+          "\"public\".\"country\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.country.country_slug_key",
+    "label": "Add unique constraint on \"country\" (slug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "country_slug_key",
+        "table": "country"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"country_slug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "country_slug_key",
+          "public",
+          "\"public\".\"country\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"country_slug_key\"",
+        "sql": "ALTER TABLE \"public\".\"country\" ADD CONSTRAINT \"country_slug_key\" UNIQUE (\"slug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"country_slug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "country_slug_key",
+          "public",
+          "\"public\".\"country\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.user.user_email_key",
+    "label": "Add unique constraint on \"user\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "user_email_key",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"user_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_email_key",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"user_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD CONSTRAINT \"user_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"user_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_email_key",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.user.user_username_key",
+    "label": "Add unique constraint on \"user\" (username)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "user_username_key",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"user_username_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_username_key",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"user_username_key\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD CONSTRAINT \"user_username_key\" UNIQUE (\"username\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"user_username_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_username_key",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.city.city_countryId_idx_27b43b27",
+    "label": "Create index \"city_countryId_idx_27b43b27\" on \"city\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "city_countryId_idx_27b43b27",
+        "table": "city"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"city_countryId_idx_27b43b27\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"city_countryId_idx_27b43b27\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"city_countryId_idx_27b43b27\"",
+        "sql": "CREATE INDEX \"city_countryId_idx_27b43b27\" ON \"public\".\"city\" (\"countryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"city_countryId_idx_27b43b27\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"city_countryId_idx_27b43b27\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.trip.trip_userId_idx_a489d58a",
+    "label": "Create index \"trip_userId_idx_a489d58a\" on \"trip\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "trip_userId_idx_a489d58a",
+        "table": "trip"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"trip_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"trip_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"trip_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"trip_userId_idx_a489d58a\" ON \"public\".\"trip\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"trip_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"trip_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.tripCity.tripCity_cityId_idx_1ab1b247",
+    "label": "Create index \"tripCity_cityId_idx_1ab1b247\" on \"tripCity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "tripCity_cityId_idx_1ab1b247",
+        "table": "tripCity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"tripCity_cityId_idx_1ab1b247\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCity_cityId_idx_1ab1b247\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"tripCity_cityId_idx_1ab1b247\"",
+        "sql": "CREATE INDEX \"tripCity_cityId_idx_1ab1b247\" ON \"public\".\"tripCity\" (\"cityId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"tripCity_cityId_idx_1ab1b247\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCity_cityId_idx_1ab1b247\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.tripCity.tripCity_tripId_idx_75da6d97",
+    "label": "Create index \"tripCity_tripId_idx_75da6d97\" on \"tripCity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "tripCity_tripId_idx_75da6d97",
+        "table": "tripCity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"tripCity_tripId_idx_75da6d97\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCity_tripId_idx_75da6d97\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"tripCity_tripId_idx_75da6d97\"",
+        "sql": "CREATE INDEX \"tripCity_tripId_idx_75da6d97\" ON \"public\".\"tripCity\" (\"tripId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"tripCity_tripId_idx_75da6d97\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCity_tripId_idx_75da6d97\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.tripCountry.tripCountry_countryId_idx_27b43b27",
+    "label": "Create index \"tripCountry_countryId_idx_27b43b27\" on \"tripCountry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "tripCountry_countryId_idx_27b43b27",
+        "table": "tripCountry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"tripCountry_countryId_idx_27b43b27\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCountry_countryId_idx_27b43b27\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"tripCountry_countryId_idx_27b43b27\"",
+        "sql": "CREATE INDEX \"tripCountry_countryId_idx_27b43b27\" ON \"public\".\"tripCountry\" (\"countryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"tripCountry_countryId_idx_27b43b27\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCountry_countryId_idx_27b43b27\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.tripCountry.tripCountry_tripId_idx_75da6d97",
+    "label": "Create index \"tripCountry_tripId_idx_75da6d97\" on \"tripCountry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "tripCountry_tripId_idx_75da6d97",
+        "table": "tripCountry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"tripCountry_tripId_idx_75da6d97\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCountry_tripId_idx_75da6d97\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"tripCountry_tripId_idx_75da6d97\"",
+        "sql": "CREATE INDEX \"tripCountry_tripId_idx_75da6d97\" ON \"public\".\"tripCountry\" (\"tripId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"tripCountry_tripId_idx_75da6d97\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tripCountry_tripId_idx_75da6d97\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.city.city_countryId_fkey",
+    "label": "Add foreign key \"city_countryId_fkey\" on \"city\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "city_countryId_fkey",
+        "table": "city"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"city_countryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "city_countryId_fkey",
+          "public",
+          "\"public\".\"city\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"city_countryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"city\"\nADD CONSTRAINT \"city_countryId_fkey\"\nFOREIGN KEY (\"countryId\")\nREFERENCES \"public\".\"country\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"city_countryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "city_countryId_fkey",
+          "public",
+          "\"public\".\"city\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.trip.trip_userId_fkey",
+    "label": "Add foreign key \"trip_userId_fkey\" on \"trip\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "trip_userId_fkey",
+        "table": "trip"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"trip_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "trip_userId_fkey",
+          "public",
+          "\"public\".\"trip\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"trip_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"trip\"\nADD CONSTRAINT \"trip_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"trip_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "trip_userId_fkey",
+          "public",
+          "\"public\".\"trip\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.tripCity.tripCity_tripId_fkey",
+    "label": "Add foreign key \"tripCity_tripId_fkey\" on \"tripCity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "tripCity_tripId_fkey",
+        "table": "tripCity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"tripCity_tripId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCity_tripId_fkey",
+          "public",
+          "\"public\".\"tripCity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"tripCity_tripId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"tripCity\"\nADD CONSTRAINT \"tripCity_tripId_fkey\"\nFOREIGN KEY (\"tripId\")\nREFERENCES \"public\".\"trip\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"tripCity_tripId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCity_tripId_fkey",
+          "public",
+          "\"public\".\"tripCity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.tripCity.tripCity_cityId_fkey",
+    "label": "Add foreign key \"tripCity_cityId_fkey\" on \"tripCity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "tripCity_cityId_fkey",
+        "table": "tripCity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"tripCity_cityId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCity_cityId_fkey",
+          "public",
+          "\"public\".\"tripCity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"tripCity_cityId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"tripCity\"\nADD CONSTRAINT \"tripCity_cityId_fkey\"\nFOREIGN KEY (\"cityId\")\nREFERENCES \"public\".\"city\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"tripCity_cityId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCity_cityId_fkey",
+          "public",
+          "\"public\".\"tripCity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.tripCountry.tripCountry_tripId_fkey",
+    "label": "Add foreign key \"tripCountry_tripId_fkey\" on \"tripCountry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "tripCountry_tripId_fkey",
+        "table": "tripCountry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"tripCountry_tripId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCountry_tripId_fkey",
+          "public",
+          "\"public\".\"tripCountry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"tripCountry_tripId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"tripCountry\"\nADD CONSTRAINT \"tripCountry_tripId_fkey\"\nFOREIGN KEY (\"tripId\")\nREFERENCES \"public\".\"trip\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"tripCountry_tripId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCountry_tripId_fkey",
+          "public",
+          "\"public\".\"tripCountry\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.tripCountry.tripCountry_countryId_fkey",
+    "label": "Add foreign key \"tripCountry_countryId_fkey\" on \"tripCountry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "tripCountry_countryId_fkey",
+        "table": "tripCountry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"tripCountry_countryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCountry_countryId_fkey",
+          "public",
+          "\"public\".\"tripCountry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"tripCountry_countryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"tripCountry\"\nADD CONSTRAINT \"tripCountry_countryId_fkey\"\nFOREIGN KEY (\"countryId\")\nREFERENCES \"public\".\"country\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"tripCountry_countryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCountry_countryId_fkey",
+          "public",
+          "\"public\".\"tripCountry\""
+        ]
+      }
+    ]
+  }
+]
