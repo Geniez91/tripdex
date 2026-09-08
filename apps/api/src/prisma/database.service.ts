@@ -6,7 +6,7 @@ import { db } from './db.js';
 export class DatabaseService implements OnApplicationShutdown {
   readonly client = db;
 
-  async onApplicationShutdown() {
+  async onApplicationShutdown(): Promise<void> {
     await this.client.close();
   }
 }

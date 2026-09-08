@@ -1,20 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../prisma/database.service.js';
+import { Inject, Injectable } from '@nestjs/common';
+import type { CountryResponseDto } from './dto/country-response.dto.js';
+import { CountryMapper } from './mappers/country.mapper.js';
+import {
+  COUNTRY_REPOSITORY,
+  type CountryRepositoryPort,
+} from './types/country-repository.port.js';
 
 @Injectable()
 export class CountriesService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(
+    @Inject(COUNTRY_REPOSITORY)
+    private readonly countries: CountryRepositoryPort,
+  ) {}
 
-  async list() {
-    return await this.database.client.orm.public.Country.select(
-      'id',
-      'iso2',
-      'iso3',
-      'name',
-      'slug',
-      'continentCode',
-    )
-      .orderBy((country) => country.name.asc())
-      .all();
+  async list(): Promise<CountryResponseDto[]> {
+    const countries = await this.countries.findAll();
+    return countries.map((country) => CountryMapper.toResponse(country));
   }
 }

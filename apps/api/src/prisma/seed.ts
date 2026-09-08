@@ -6,7 +6,7 @@ import {
   developmentAuthEnabled,
 } from '../current-user/development-user.js';
 
-function validateCountries() {
+function validateCountries(): void {
   if (countries.length !== 249)
     throw new Error('Expected 249 ISO country records.');
   for (const key of ['iso2', 'iso3', 'slug'] as const) {
@@ -32,7 +32,7 @@ function validateCountries() {
   }
 }
 
-function validateCities() {
+function validateCities(): void {
   const keys = cities.map((city) => `${city.iso2}:${city.slug}`);
   if (new Set(cities.map((city) => city.id)).size !== cities.length)
     throw new Error('Duplicate city id.');
@@ -56,7 +56,7 @@ function validateCities() {
   }
 }
 
-async function seed() {
+async function seed(): Promise<void> {
   validateCountries();
   validateCities();
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required.');

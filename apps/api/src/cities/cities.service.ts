@@ -1,27 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../prisma/database.service.js';
+import { Inject, Injectable } from '@nestjs/common';
+import type { CityResponseDto } from './dto/city-response.dto.js';
+import { CityMapper } from './mappers/city.mapper.js';
+import {
+  CITY_REPOSITORY,
+  type CityRepositoryPort,
+} from './types/city-repository.port.js';
 
 @Injectable()
 export class CitiesService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(
+    @Inject(CITY_REPOSITORY) private readonly cities: CityRepositoryPort,
+  ) {}
 
-  async list(countryId?: string, query?: string) {
-    let cities = this.database.client.orm.public.City.select(
-      'id',
-      'countryId',
-      'name',
-      'slug',
-      'latitude',
-      'longitude',
-    );
-    if (countryId) cities = cities.where({ countryId });
-    const normalized = query?.trim();
-    if (normalized) {
-      cities = cities.where((city) => city.name.ilike(`%${normalized}%`));
-    }
-    return cities
-      .orderBy((city) => city.name.asc())
-      .limit(50)
-      .all();
+  async list(countryId?: string, query?: string): Promise<CityResponseDto[]> {
+    const normalizedQuery = query?.trim();
+    const cities = await this.cities.findAll(countryId, normalizedQuery);
+    return cities.map((city) => CityMapper.toResponse(city));
   }
 }

@@ -5,7 +5,7 @@ export const DEVELOPMENT_USER = {
   username: 'tripdex-dev',
 };
 
-export function developmentAuthEnabled() {
+export function developmentAuthEnabled(): boolean {
   return (
     (process.env.NODE_ENV === 'development' ||
       process.env.NODE_ENV === 'test') &&
