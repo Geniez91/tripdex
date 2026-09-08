@@ -2,16 +2,17 @@
 import type { JournalTrip } from "~/types/tripdex";
 
 const route = useRoute();
-const config = useRuntimeConfig();
+const api = useTripdexApi();
 const {
   data: trip,
   status,
   error,
   refresh,
-} = await useFetch<JournalTrip>(`/me/trips/${route.params.id}`, {
-  baseURL: config.public.apiBase,
-  server: false,
-});
+} = await useAsyncData<JournalTrip>(
+  `private-trip-${route.params.id}`,
+  () => api.get<JournalTrip>(`/me/trips/${route.params.id}`),
+  { server: false },
+);
 const cover = ref<File | null>(null);
 const changingCover = ref(false);
 const coverError = ref("");
@@ -24,15 +25,12 @@ async function changeCover(remove = false) {
   try {
     const body = new FormData();
     if (cover.value) body.append("cover", cover.value);
-    const result = await $fetch<{
+    const result = await (remove ? api.delete : api.put)<{
       coverStoragePath: string | null;
       coverUrl: string | null;
       cleanupPending: boolean;
     }>(`/me/trips/${trip.value.id}/cover`, {
-      baseURL: config.public.apiBase,
-      method: remove ? "DELETE" : "PUT",
       body: remove ? undefined : body,
-      retry: 0,
     });
     Object.assign(trip.value, result);
     cover.value = null;
