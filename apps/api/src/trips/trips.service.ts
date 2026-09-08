@@ -66,23 +66,12 @@ export class TripsService {
     const countryLinks = await this.trips.findCountryLinks(trip.id);
     const countryIds = countryLinks.map((link) => link.countryId);
     const countries = await this.trips.findCountries(countryIds);
-    const earlierLinks = await this.trips.findEarlierCountryLinks(countryIds);
-    const earlierTripIds = [
-      ...new Set(earlierLinks.map((link) => link.tripId)),
-    ];
-    const earlierTrips = await this.trips.findTripOwnership(earlierTripIds);
     const revisitedCountryIds = new Set(
-      earlierLinks
-        .filter((link) =>
-          earlierTrips.some(
-            (candidate) =>
-              candidate.id === link.tripId &&
-              candidate.userId === userId &&
-              candidate.startDate < trip.startDate &&
-              candidate.id !== trip.id,
-          ),
-        )
-        .map((link) => link.countryId),
+      await this.trips.findRevisitedCountryIds(
+        userId,
+        trip.startDate,
+        countryIds,
+      ),
     );
     const cityIds = includeCities ? await this.trips.findCityIds(trip.id) : [];
     const cities = includeCities

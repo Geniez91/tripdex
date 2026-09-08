@@ -6,7 +6,8 @@ import type { App } from 'supertest/types.js';
 import request from 'supertest';
 import { AppModule } from '../src/app.module.js';
 import { CountriesService } from '../src/countries/countries.service.js';
-import { CurrentUserService } from '../src/current-user/current-user.service.js';
+import { SupabaseAuthService } from '../src/auth/supabase-auth.service.js';
+import { UsersService } from '../src/users/users.service.js';
 import { TripsService } from '../src/trips/trips.service.js';
 
 describe('Milestone HTTP contract', () => {
@@ -32,8 +33,23 @@ describe('Milestone HTTP contract', () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(CurrentUserService)
-      .useValue({ getUserId: userId })
+      .overrideProvider(SupabaseAuthService)
+      .useValue({
+        verifyAccessToken: () =>
+          Promise.resolve({
+            supabaseAuthId: 'auth-id',
+            email: 'test@example.invalid',
+            requestedUsername: 'test-user',
+          }),
+      })
+      .overrideProvider(UsersService)
+      .useValue({
+        resolveOrCreateUser: async () => ({
+          id: await userId(),
+          email: 'test@example.invalid',
+          username: 'test-user',
+        }),
+      })
       .overrideProvider(CountriesService)
       .useValue({ list: () => [country] })
       .overrideProvider(TripsService)
@@ -87,7 +103,11 @@ describe('Milestone HTTP contract', () => {
       .expect([country]);
   });
   it('creates with the server identity and normalized dates', async () => {
-    await request(app.getHttpServer()).post('/trips').send(payload).expect(201);
+    await request(app.getHttpServer())
+      .post('/trips')
+      .set('Authorization', 'Bearer test-token')
+      .send(payload)
+      .expect(201);
     expect(create).toHaveBeenCalledWith('current-user', {
       ...payload,
       startDate: '2026-04-01T00:00:00.000Z',
@@ -103,19 +123,31 @@ describe('Milestone HTTP contract', () => {
     { ...payload, userId: 'attacker-selected-user' },
     { ...payload, coverStoragePath: 'users/attacker/cover.png' },
   ])('rejects invalid requests before writes %#', async (body) => {
-    await request(app.getHttpServer()).post('/trips').send(body).expect(400);
+    await request(app.getHttpServer())
+      .post('/trips')
+      .set('Authorization', 'Bearer test-token')
+      .send(body)
+      .expect(400);
     expect(create).not.toHaveBeenCalled();
   });
   it('scopes visited countries to the current user', async () => {
     await request(app.getHttpServer())
       .get('/me/visited-countries')
+      .set('Authorization', 'Bearer test-token')
       .expect(200)
       .expect([country]);
     expect(visited).toHaveBeenCalledWith('current-user');
   });
   it('serves the private journal and trip detail through the current identity', async () => {
-    await request(app.getHttpServer()).get('/me/trips').expect(200).expect([]);
-    await request(app.getHttpServer()).get('/me/trips/new-trip').expect(200);
+    await request(app.getHttpServer())
+      .get('/me/trips')
+      .set('Authorization', 'Bearer test-token')
+      .expect(200)
+      .expect([]);
+    await request(app.getHttpServer())
+      .get('/me/trips/new-trip')
+      .set('Authorization', 'Bearer test-token')
+      .expect(200);
     expect(journal).toHaveBeenCalledWith('current-user');
     expect(detail).toHaveBeenCalledWith('current-user', 'new-trip');
   });

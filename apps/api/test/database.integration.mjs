@@ -4,6 +4,8 @@ import { test } from 'node:test';
 import { db } from '../dist/prisma/db.js';
 import { TripsService } from '../dist/trips/trips.service.js';
 import { TripCoversService } from '../dist/trips/trip-covers.service.js';
+import { TripRepository } from '../dist/trips/repositories/trip.repository.js';
+import { TripCoversRepository } from '../dist/trips/repositories/trip-covers.repository.js';
 import { DEVELOPMENT_USER } from '../dist/current-user/development-user.js';
 
 test('Prisma 8: multi-country trips, unique visits, user isolation and rollback', async () => {
@@ -38,16 +40,31 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
         const database = {
           client: { orm: tx.orm, transaction: (fn) => fn(tx) },
         };
-        const covers = new TripCoversService(database, {
-          upload: async () => {},
-          signedUrl: async () => 'https://example.invalid/signed-cover',
-          cleanup: async () => true,
+        const covers = new TripCoversService(
+          new TripCoversRepository(database),
+          {
+            upload: async () => {},
+            signedUrl: async () => 'https://example.invalid/signed-cover',
+            cleanup: async () => true,
+          },
+        );
+        const service = new TripsService(new TripRepository(database), covers);
+        await service.create(otherId, {
+          title: 'Japan for another user',
+          startDate: '2025-01-01T00:00:00.000Z',
+          endDate: null,
+          cityIds: [],
+          rating: null,
+          review: null,
+          countryIds: [japan.id],
         });
-        const service = new TripsService(database, covers);
         const trip = await service.create(temporaryUserId, {
           title: 'Japan integration',
           startDate: '2026-04-01T00:00:00.000Z',
           endDate: null,
+          cityIds: [],
+          rating: null,
+          review: null,
           countryIds: [japan.id],
         });
         assert.equal(trip.isRevisit, false);
@@ -98,6 +115,9 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
           title: 'Japan and Spain again',
           startDate: '2026-05-01T00:00:00.000Z',
           endDate: null,
+          cityIds: [],
+          rating: null,
+          review: null,
           countryIds: [japan.id, spain.id],
         });
         assert.equal(revisit.isRevisit, true);
@@ -108,7 +128,12 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
             .sort(),
           ['ESP', 'JPN'],
         );
-        assert.deepEqual(await service.visitedCountries(otherId), []);
+        assert.deepEqual(
+          (await service.visitedCountries(otherId)).map(
+            (country) => country.iso3,
+          ),
+          ['JPN'],
+        );
         const sameDateUserId = randomUUID();
         await tx.orm.public.User.create({
           id: sameDateUserId,
@@ -119,12 +144,18 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
           title: 'Same date first',
           startDate: '2027-01-01T00:00:00.000Z',
           endDate: null,
+          cityIds: [],
+          rating: null,
+          review: null,
           countryIds: [france.id],
         });
         const sameDateSecond = await service.create(sameDateUserId, {
           title: 'Same date second',
           startDate: '2027-01-01T00:00:00.000Z',
           endDate: null,
+          cityIds: [],
+          rating: null,
+          review: null,
           countryIds: [france.id],
         });
         assert.equal(sameDateFirst.isRevisit, false);
@@ -137,6 +168,9 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
             title: 'Invalid country',
             startDate: '2026-05-01T00:00:00.000Z',
             endDate: null,
+            cityIds: [],
+            rating: null,
+            review: null,
             countryIds: [japan.id, 'missing-country'],
           }),
         );
@@ -162,7 +196,7 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
     ).all();
     const title = `rollback-${randomUUID()}`;
     const forcedFailure = new Error('Simulated second junction write failure');
-    const service = new TripsService({
+    const repository = new TripRepository({
       client: {
         transaction: (fn) =>
           db.transaction(async (tx) => {
@@ -185,10 +219,13 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
       },
     });
     await assert.rejects(
-      service.create(DEVELOPMENT_USER.id, {
+      repository.create(DEVELOPMENT_USER.id, {
         title,
         startDate: '2026-04-01T00:00:00.000Z',
         endDate: null,
+        cityIds: [],
+        rating: null,
+        review: null,
         countryIds: countries.map((country) => country.id),
       }),
       (error) => error === forcedFailure,

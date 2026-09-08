@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CurrentUserModule } from '../current-user/current-user.module.js';
+import { AuthModule } from '../auth/auth.module.js';
 import { TripsController } from './trips.controller.js';
 import { VisitedCountriesController } from './visited-countries.controller.js';
 import { TripsJournalController } from './trips.journal.controller.js';
@@ -11,7 +11,7 @@ import { TripRepository } from './repositories/trip.repository.js';
 import { TripCoversRepository } from './repositories/trip-covers.repository.js';
 
 @Module({
-  imports: [CurrentUserModule],
+  imports: [AuthModule],
   controllers: [
     TripsController,
     VisitedCountriesController,

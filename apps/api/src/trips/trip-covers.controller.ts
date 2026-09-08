@@ -9,21 +9,22 @@ import {
   Param,
   Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CurrentUserService } from '../current-user/current-user.service.js';
+import { AuthGuard } from '../auth/guards/auth.guard.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import type { TripDexUser } from '../users/types/tripdex-user.js';
 import { MAX_COVER_BYTES } from './cover-file.js';
 import type { CoverFile } from './cover-file.js';
 import type { TripCoverResponseDto } from './dto/trip-cover-response.dto.js';
 import { TripCoversService } from './trip-covers.service.js';
 
 @Controller('me/trips/:id/cover')
+@UseGuards(AuthGuard)
 export class TripCoversController {
-  constructor(
-    private readonly currentUser: CurrentUserService,
-    private readonly covers: TripCoversService,
-  ) {}
+  constructor(private readonly covers: TripCoversService) {}
 
   @Put()
   @HttpCode(HttpStatus.OK)
@@ -37,16 +38,19 @@ export class TripCoversController {
     @Param('id') id: string,
     @UploadedFile() file: CoverFile | undefined,
     @Body() body: Record<string, unknown> | undefined,
+    @CurrentUser() user: TripDexUser,
   ): Promise<TripCoverResponseDto> {
-    const userId = await this.currentUser.getUserId();
     if (body && Object.keys(body).length)
       throw new BadRequestException('Seul le fichier cover est accepté.');
-    return this.covers.replace(userId, id, file);
+    return this.covers.replace(user.id, id, file);
   }
 
   @Delete()
   @HttpCode(HttpStatus.OK)
-  async remove(@Param('id') id: string): Promise<TripCoverResponseDto> {
-    return this.covers.remove(await this.currentUser.getUserId(), id);
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser() user: TripDexUser,
+  ): Promise<TripCoverResponseDto> {
+    return this.covers.remove(user.id, id);
   }
 }
