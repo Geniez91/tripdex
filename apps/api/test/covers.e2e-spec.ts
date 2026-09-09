@@ -4,7 +4,9 @@ import { UnauthorizedException } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
 import type { App } from 'supertest/types.js';
 import request from 'supertest';
-import { CurrentUserService } from '../src/current-user/current-user.service.js';
+import { AuthModule } from '../src/auth/auth.module.js';
+import { SupabaseAuthService } from '../src/auth/supabase-auth.service.js';
+import { UsersService } from '../src/users/users.service.js';
 import { TripCoversController } from '../src/trips/trip-covers.controller.js';
 import { TripCoversService } from '../src/trips/trip-covers.service.js';
 import { CoverStorageService } from '../src/trips/cover-storage.service.js';
@@ -14,16 +16,16 @@ import { TripCoversRepository } from '../src/trips/repositories/trip-covers.repo
 describe('Cover multipart HTTP contract', () => {
   let app: INestApplication<App>;
   let path: string | null = null;
-  const identity = jest.fn<CurrentUserService['getUserId']>();
+  const identity = jest.fn<() => Promise<string>>();
   const upload = jest.fn<CoverStorageService['upload']>();
   const cleanup = jest.fn<CoverStorageService['cleanup']>();
   const image = Buffer.from('89504e470d0a1a0a00000000', 'hex');
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [AuthModule],
       controllers: [TripCoversController],
       providers: [
         TripCoversService,
-        { provide: CurrentUserService, useValue: { getUserId: identity } },
         {
           provide: CoverStorageService,
           useValue: {
@@ -59,7 +61,25 @@ describe('Cover multipart HTTP contract', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(SupabaseAuthService)
+      .useValue({
+        verifyAccessToken: () =>
+          Promise.resolve({
+            supabaseAuthId: 'auth-id',
+            email: 'test@example.invalid',
+            requestedUsername: 'test-user',
+          }),
+      })
+      .overrideProvider(UsersService)
+      .useValue({
+        resolveOrCreateUser: async () => ({
+          id: await identity(),
+          email: 'test@example.invalid',
+          username: 'test-user',
+        }),
+      })
+      .compile();
     app = module.createNestApplication();
     await app.init();
   });
@@ -76,6 +96,7 @@ describe('Cover multipart HTTP contract', () => {
   it('uploads, replaces, then deletes using only the server identity', async () => {
     const first = await request(app.getHttpServer())
       .put('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
       .attach('cover', image, 'first.png')
       .expect(200);
     expect(first.body).toMatchObject({
@@ -86,12 +107,14 @@ describe('Cover multipart HTTP contract', () => {
     const previous = path;
     await request(app.getHttpServer())
       .put('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
       .attach('cover', image, 'second.png')
       .expect(200);
     expect(path).not.toBe(previous);
     expect(cleanup).toHaveBeenCalledWith(previous);
     await request(app.getHttpServer())
       .delete('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
       .expect(200)
       .expect({
         coverStoragePath: null,
@@ -105,6 +128,7 @@ describe('Cover multipart HTTP contract', () => {
     async (field) => {
       await request(app.getHttpServer())
         .put('/me/trips/trip/cover')
+        .set('Authorization', 'Bearer test-token')
         .field(field, 'attacker')
         .attach('cover', image, 'cover.png')
         .expect(400);
@@ -114,14 +138,19 @@ describe('Cover multipart HTTP contract', () => {
   it('rejects invalid MIME and missing files', async () => {
     await request(app.getHttpServer())
       .put('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
       .attach('cover', Buffer.from('text'), 'cover.txt')
       .expect(400);
-    await request(app.getHttpServer()).put('/me/trips/trip/cover').expect(400);
+    await request(app.getHttpServer())
+      .put('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
+      .expect(400);
     expect(upload).not.toHaveBeenCalled();
   });
   it('enforces the multipart file limit', async () => {
     await request(app.getHttpServer())
       .put('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
       .attach('cover', Buffer.alloc(MAX_COVER_BYTES + 1), 'cover.png')
       .expect(413);
     expect(upload).not.toHaveBeenCalled();
@@ -130,10 +159,12 @@ describe('Cover multipart HTTP contract', () => {
     identity.mockResolvedValue('attacker');
     await request(app.getHttpServer())
       .put('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
       .attach('cover', image, 'cover.png')
       .expect(404);
     await request(app.getHttpServer())
       .delete('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
       .expect(404);
     expect(upload).not.toHaveBeenCalled();
     expect(cleanup).not.toHaveBeenCalled();
@@ -152,6 +183,7 @@ describe('Cover multipart HTTP contract', () => {
     upload.mockRejectedValue(new Error('Storage failed'));
     await request(app.getHttpServer())
       .put('/me/trips/trip/cover')
+      .set('Authorization', 'Bearer test-token')
       .attach('cover', image, 'cover.png')
       .expect(503);
     expect(path).toBeNull();

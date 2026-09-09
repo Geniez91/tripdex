@@ -3,6 +3,7 @@ import type { City, Country, CreatedTrip } from "~/types/tripdex";
 
 const props = defineProps<{ countries: Country[]; loading: boolean }>();
 const emit = defineEmits<{ created: [trip: CreatedTrip] }>();
+const api = useTripdexApi();
 const config = useRuntimeConfig();
 const title = ref("");
 const startDate = ref("");
@@ -50,10 +51,7 @@ async function submit() {
   try {
     const trip =
       savedTrip.value ??
-      (await $fetch<CreatedTrip>("/trips", {
-        baseURL: config.public.apiBase,
-        method: "POST",
-        retry: 0,
+      (await api.post<CreatedTrip>("/trips", {
         body: {
           title: title.value,
           startDate: startDate.value,
@@ -69,14 +67,11 @@ async function submit() {
       uploading.value = true;
       const body = new FormData();
       body.append("cover", cover.value);
-      const result = await $fetch<{
+      const result = await api.put<{
         coverStoragePath: string;
         coverUrl: string;
       }>(`/me/trips/${trip.id}/cover`, {
-        baseURL: config.public.apiBase,
-        method: "PUT",
         body,
-        retry: 0,
       });
       Object.assign(trip, result);
     }

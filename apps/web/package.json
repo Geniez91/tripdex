@@ -7,12 +7,14 @@
     "typecheck": "nuxt typecheck",
     "format:check": "prettier --check app nuxt.config.ts",
     "test:e2e": "playwright test",
+    "test:unit": "node --test test/unit/*.test.mjs",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
     "d3-geo": "^3.1.1",
     "nuxt": "^4.5.2",
     "vue": "^3.5.42",

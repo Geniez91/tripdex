@@ -4,7 +4,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["~/assets/main.css"],
   runtimeConfig: {
-    public: { apiBase: "http://localhost:3001" },
+    public: {
+      apiBase: "http://localhost:3001",
+      supabaseUrl: "",
+      supabasePublishableKey: "",
+    },
   },
   app: {
     head: {

@@ -1,18 +1,24 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import { CurrentUserService } from '../current-user/current-user.service.js';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '../auth/guards/auth.guard.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import type { TripDexUser } from '../users/types/tripdex-user.js';
 import type { CountryResponseDto } from './dto/trip-response.dto.js';
 import { TripsService } from './trips.service.js';
 
 @Controller('me')
+@UseGuards(AuthGuard)
 export class VisitedCountriesController {
-  constructor(
-    private readonly trips: TripsService,
-    private readonly currentUser: CurrentUserService,
-  ) {}
+  constructor(private readonly trips: TripsService) {}
 
   @Get('visited-countries')
   @HttpCode(HttpStatus.OK)
-  async list(): Promise<CountryResponseDto[]> {
-    return this.trips.visitedCountries(await this.currentUser.getUserId());
+  async list(@CurrentUser() user: TripDexUser): Promise<CountryResponseDto[]> {
+    return this.trips.visitedCountries(user.id);
   }
 }

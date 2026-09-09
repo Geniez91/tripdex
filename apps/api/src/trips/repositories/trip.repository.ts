@@ -5,7 +5,6 @@ import type {
   CityRecord,
   CountryRecord,
   TripCountryLink,
-  TripOwnershipRecord,
   TripRecord,
 } from '../types/trip-records.js';
 
@@ -98,24 +97,26 @@ export class TripRepository {
       .all();
   }
 
-  async findEarlierCountryLinks(
+  async findRevisitedCountryIds(
+    userId: string,
+    startDate: string,
     countryIds: string[],
-  ): Promise<TripCountryLink[]> {
+  ): Promise<string[]> {
     if (!countryIds.length) return [];
-    return this.database.client.orm.public.TripCountry.where((link) =>
-      link.countryId.in(countryIds),
-    )
-      .select('countryId', 'tripId')
+    const earlierTrips = await this.database.client.orm.public.Trip.where({
+      userId,
+    })
+      .where((trip) => trip.startDate.lt(startDate))
+      .select('id')
       .all();
-  }
-
-  async findTripOwnership(tripIds: string[]): Promise<TripOwnershipRecord[]> {
-    if (!tripIds.length) return [];
-    return this.database.client.orm.public.Trip.where((trip) =>
-      trip.id.in(tripIds),
+    if (!earlierTrips.length) return [];
+    const links = await this.database.client.orm.public.TripCountry.where(
+      (link) => link.countryId.in(countryIds),
     )
-      .select('id', 'userId', 'startDate')
+      .where((link) => link.tripId.in(earlierTrips.map((trip) => trip.id)))
+      .select('countryId')
       .all();
+    return [...new Set(links.map((link) => link.countryId))];
   }
 
   async findCityIds(tripId: string): Promise<string[]> {

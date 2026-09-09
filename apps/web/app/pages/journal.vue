@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import type { JournalTrip } from "~/types/tripdex";
 
-const config = useRuntimeConfig();
-const { data, status, error, refresh } = await useFetch<JournalTrip[]>(
-  "/me/trips",
-  {
-    baseURL: config.public.apiBase,
-    server: false,
-    default: () => [],
-  },
+const auth = useAuth();
+const api = useTripdexApi();
+await auth.initialize();
+const { data, status, error, refresh } = await useAsyncData<JournalTrip[]>(
+  "private-journal",
+  () =>
+    auth.status.value === "authenticated"
+      ? api.get<JournalTrip[]>("/me/trips")
+      : Promise.resolve([]),
+  { server: false, default: () => [] },
 );
 const trips = computed(() => data.value ?? []);
 </script>

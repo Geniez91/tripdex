@@ -8,10 +8,21 @@
       </NuxtLink>
       <nav class="main-nav" aria-label="Navigation principale">
         <NuxtLink to="/">Carte</NuxtLink>
-        <NuxtLink to="/journal">Journal</NuxtLink>
+        <NuxtLink v-if="auth.status.value === 'authenticated'" to="/journal"
+          >Journal</NuxtLink
+        >
+        <NuxtLink v-if="auth.status.value === 'authenticated'" to="/profile"
+          >Profil</NuxtLink
+        >
+        <NuxtLink v-if="auth.status.value !== 'authenticated'" to="/login"
+          >Connexion</NuxtLink
+        >
+        <NuxtLink v-if="auth.status.value !== 'authenticated'" to="/register"
+          >Inscription</NuxtLink
+        >
       </nav>
     </header>
-    <NuxtPage />
+    <NuxtPage :key="auth.sessionVersion.value" />
     <footer class="site-footer">
       <span>TripDex · Un voyage à la fois.</span>
       <span
@@ -33,3 +44,6 @@
     </footer>
   </div>
 </template>
+<script setup lang="ts">
+const auth = useAuth();
+</script>

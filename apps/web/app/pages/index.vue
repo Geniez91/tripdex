@@ -12,23 +12,29 @@ const {
   server: false,
   default: () => [],
 });
+const auth = useAuth();
+const api = useTripdexApi();
+await auth.initialize();
 const {
   data: visited,
   status: visitedStatus,
   error: visitedError,
   refresh: refreshVisited,
-} = await useFetch<Country[]>("/me/visited-countries", {
-  baseURL: config.public.apiBase,
-  server: false,
-  default: () => [],
-});
+} = await useAsyncData<Country[]>(
+  "private-visited-countries",
+  () =>
+    auth.status.value === "authenticated"
+      ? api.get<Country[]>("/me/visited-countries")
+      : Promise.resolve([]),
+  { server: false, default: () => [] },
+);
 const savedTrip = ref<CreatedTrip | null>(null);
 const visitedIso3 = computed(() =>
   visited.value.map((country) => country.iso3),
 );
 async function onCreated(trip: CreatedTrip) {
   savedTrip.value = trip;
-  await refreshVisited();
+  if (auth.status.value === "authenticated") await refreshVisited();
 }
 </script>
 

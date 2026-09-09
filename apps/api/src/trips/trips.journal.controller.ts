@@ -5,29 +5,33 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  UseGuards,
 } from '@nestjs/common';
-import { CurrentUserService } from '../current-user/current-user.service.js';
+import { AuthGuard } from '../auth/guards/auth.guard.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import type { TripDexUser } from '../users/types/tripdex-user.js';
 import type { TripResponseDto } from './dto/trip-response.dto.js';
 import { TripsService } from './trips.service.js';
 
 @Controller('me/trips')
+@UseGuards(AuthGuard)
 export class TripsJournalController {
-  constructor(
-    private readonly trips: TripsService,
-    private readonly currentUser: CurrentUserService,
-  ) {}
+  constructor(private readonly trips: TripsService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'private, no-store')
-  async list(): Promise<TripResponseDto[]> {
-    return this.trips.journal(await this.currentUser.getUserId());
+  async list(@CurrentUser() user: TripDexUser): Promise<TripResponseDto[]> {
+    return this.trips.journal(user.id);
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'private, no-store')
-  async detail(@Param('id') id: string): Promise<TripResponseDto> {
-    return this.trips.detail(await this.currentUser.getUserId(), id);
+  async detail(
+    @Param('id') id: string,
+    @CurrentUser() user: TripDexUser,
+  ): Promise<TripResponseDto> {
+    return this.trips.detail(user.id, id);
   }
 }
