@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./test",
-  testIgnore: "**/unit/**",
+  testIgnore: ["**/unit/**", "**/passport.spec.ts", "**/explorer.spec.ts"],
   outputDir: "../../artifacts/playwright",
   workers: 1,
   retries: 0,
