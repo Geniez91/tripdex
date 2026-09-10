@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { harness } from "./auth-harness.mjs";
 
-for (const path of ["/journal", "/trips/trip-a", "/profile"]) {
+for (const path of ["/journal", "/trips/trip-a", "/profile", "/profile/map"]) {
   test(`global middleware redirects anonymous ${path} to login`, async () => {
     // Arrange
     const h = harness(null);
