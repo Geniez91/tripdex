@@ -99,6 +99,11 @@ export function harness(initialSession = sessionA, server = false) {
   const authTypes = load("../app/types/auth.ts");
   context.require = (name) => {
     if (name === "~/types/auth") return authTypes;
+    if (name === "~/services/api/auth") {
+      return {
+        getCurrentProfile: (api) => api.get("/me"),
+      };
+    }
     throw new Error(`Unexpected test import: ${name}`);
   };
   context.usePrivateSession = load(

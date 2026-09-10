@@ -12,8 +12,9 @@ watch(file, (value) => {
 onBeforeUnmount(() => {
   if (preview.value) URL.revokeObjectURL(preview.value);
 });
-function select(event: Event) {
-  const target = event.target as HTMLInputElement;
+function select(event: Event): void {
+  if (!(event.target instanceof HTMLInputElement)) return;
+  const target = event.target;
   const selected = target.files?.[0] ?? null;
   error.value = "";
   if (

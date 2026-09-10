@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { AuthActionError } from "~/types/auth";
 
+import { safeRedirect } from "~/services/navigation";
+
 const auth = useAuth();
 const route = useRoute();
 const email = ref("");
@@ -43,16 +45,6 @@ async function submit() {
   } finally {
     submitting.value = false;
   }
-}
-
-function safeRedirect(value: unknown): string {
-  if (
-    typeof value !== "string" ||
-    !value.startsWith("/") ||
-    value.startsWith("//")
-  )
-    return "/journal";
-  return value;
 }
 </script>
 

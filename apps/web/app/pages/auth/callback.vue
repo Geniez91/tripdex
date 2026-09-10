@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { safeRedirect } from "~/services/navigation";
+
 const auth = useAuth();
 const route = useRoute();
 const failed = ref(false);
@@ -11,16 +13,6 @@ if (
   await navigateTo("/auth/username");
 } else if (auth.status.value !== "authenticated") failed.value = true;
 else await navigateTo(safeRedirect(route.query.redirect));
-
-function safeRedirect(value: unknown): string {
-  if (
-    typeof value !== "string" ||
-    !value.startsWith("/") ||
-    value.startsWith("//")
-  )
-    return "/journal";
-  return value;
-}
 </script>
 
 <template>
