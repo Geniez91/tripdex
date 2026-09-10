@@ -4,7 +4,7 @@ export function usePrivateSession() {
     version: 0,
   }));
 
-  function changeUser(userId: string | null) {
+  function changeUser(userId: string | null): void {
     if (scope.value.userId === userId) return;
     scope.value = { userId, version: scope.value.version + 1 };
     clearNuxtData((key) => key.startsWith("private-"));

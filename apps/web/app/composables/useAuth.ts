@@ -5,6 +5,7 @@ import type {
   TripDexProfile,
 } from "~/types/auth";
 import { AuthActionError as AuthActionErrorClass } from "~/types/auth";
+import { getCurrentProfile } from "~/services/api/auth";
 
 interface AuthState {
   status: AuthStatus;
@@ -36,7 +37,7 @@ export function useAuth() {
     state.value.status = "anonymous";
   }
 
-  function setSession(session: Session | null) {
+  function setSession(session: Session | null): void {
     state.value.session = session
       ? { expiresAt: session.expires_at ?? null }
       : null;
@@ -51,7 +52,7 @@ export function useAuth() {
     state.value.error = null;
     state.value.errorCode = null;
     try {
-      const profile = await api.get<TripDexProfile>("/me");
+      const profile = await getCurrentProfile(api);
       if (request !== profileRequest) return;
       state.value.profile = profile;
       state.value.status = "authenticated";
@@ -267,12 +268,12 @@ export function useAuth() {
   }
 
   return {
-    status: computed(() => state.value.status),
-    session: computed(() => state.value.session),
-    profile: computed(() => state.value.profile),
-    error: computed(() => state.value.error),
-    errorCode: computed(() => state.value.errorCode),
-    sessionVersion: computed(() => scope.value.version),
+    status: computed<AuthStatus>(() => state.value.status),
+    session: computed<AuthSessionSnapshot | null>(() => state.value.session),
+    profile: computed<TripDexProfile | null>(() => state.value.profile),
+    error: computed<string | null>(() => state.value.error),
+    errorCode: computed<string | null>(() => state.value.errorCode),
+    sessionVersion: computed<number>(() => scope.value.version),
     initialize,
     register,
     login,

@@ -1,10 +1,6 @@
-type ApiOptions = {
-  method?: "GET" | "POST" | "PUT" | "DELETE";
-  body?: BodyInit | Record<string, unknown>;
-  headers?: HeadersInit;
-};
+import type { ApiOptions, TripdexApi } from "~/types/interfaces/api";
 
-export function useTripdexApi() {
+export function useTripdexApi(): TripdexApi {
   const config = useRuntimeConfig();
   const { $supabase } = useNuxtApp();
   const { scope } = usePrivateSession();
@@ -27,7 +23,7 @@ export function useTripdexApi() {
 
     const version = scope.value.version;
     const userId = scope.value.userId;
-    function assertCurrentSession() {
+    function assertCurrentSession(): void {
       if (scope.value.version !== version)
         throw new DOMException("Session changed.", "AbortError");
     }

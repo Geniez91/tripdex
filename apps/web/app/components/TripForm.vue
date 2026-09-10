@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { City, Country, CreatedTrip } from "~/types/tripdex";
+import { toCreateTripInput } from "~/services/mappers/tripMapper";
+import { createTrip, updateTripCover } from "~/services/api/trips";
+import { statusCodeFrom } from "~/services/errors";
 
 const props = defineProps<{ countries: Country[]; loading: boolean }>();
 const emit = defineEmits<{ created: [trip: CreatedTrip] }>();
@@ -23,7 +26,7 @@ const { data: cities } = await useFetch<City[]>("/cities", {
   server: false,
   default: () => [],
 });
-const filteredCountries = computed(() => {
+const filteredCountries = computed<Country[]>(() => {
   const query = search.value.trim().toLocaleLowerCase();
   return props.countries.filter((country) =>
     `${country.name} ${country.iso2} ${country.iso3}`
@@ -31,16 +34,16 @@ const filteredCountries = computed(() => {
       .includes(query),
   );
 });
-const selectedCountries = computed(() =>
+const selectedCountries = computed<Country[]>(() =>
   props.countries.filter((country) => countryIds.value.includes(country.id)),
 );
-const availableCities = computed(() =>
+const availableCities = computed<City[]>(() =>
   (cities.value ?? []).filter((city) =>
     countryIds.value.includes(city.countryId),
   ),
 );
 
-async function submit() {
+async function submit(): Promise<void> {
   if (submitting.value) return;
   error.value = "";
   if (!countryIds.value.length) {
@@ -51,28 +54,24 @@ async function submit() {
   try {
     const trip =
       savedTrip.value ??
-      (await api.post<CreatedTrip>("/trips", {
-        body: {
+      (await createTrip(
+        api,
+        toCreateTripInput({
           title: title.value,
           startDate: startDate.value,
-          endDate: endDate.value || null,
+          endDate: endDate.value,
           countryIds: countryIds.value,
           cityIds: cityIds.value,
           rating: rating.value,
-          review: review.value || null,
-        },
-      }));
+          review: review.value,
+        }),
+      ));
     savedTrip.value = trip;
     if (cover.value) {
       uploading.value = true;
       const body = new FormData();
       body.append("cover", cover.value);
-      const result = await api.put<{
-        coverStoragePath: string;
-        coverUrl: string;
-      }>(`/me/trips/${trip.id}/cover`, {
-        body,
-      });
+      const result = await updateTripCover(api, trip.id, body);
       Object.assign(trip, result);
     }
     title.value = "";
@@ -87,7 +86,7 @@ async function submit() {
     savedTrip.value = null;
     emit("created", trip);
   } catch (cause) {
-    const status = (cause as { statusCode?: number }).statusCode;
+    const status = statusCodeFrom(cause);
     error.value = savedTrip.value
       ? "Le voyage est enregistré, mais l’envoi de la cover a échoué. Réessayez ou retirez la sélection pour terminer sans cover."
       : status === 400
