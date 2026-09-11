@@ -37,6 +37,12 @@ async function setup(page: Page) {
     route.fulfill({ json: { id: profile.id, email: profile.email } }),
   );
   await page.route("**/me", (route) => route.fulfill({ json: profile }));
+  await page.route("**/countries", (route) =>
+    route.fulfill({ json: countries }),
+  );
+  await page.route("**/me/residence", (route) =>
+    route.fulfill({ json: { residenceCountry: null } }),
+  );
 }
 for (const count of [0, 1, 7]) {
   for (const width of [1440, 768, 390]) {
@@ -162,12 +168,15 @@ test("loading and API failure never masquerade as an empty passport; retry recov
   await expect(page.getByText("Ouverture de ton passeport…")).toBeVisible();
   await expect(page.locator(".empty-stamp")).toHaveCount(0);
   release!();
-  await expect(page.getByRole("alert")).toContainText(
-    "Impossible de charger tes tampons.",
-  );
+  const passportError = page.getByRole("alert").filter({
+    hasText: "Impossible de charger tes tampons.",
+  });
+  await expect(passportError).toBeVisible();
   await expect(page.locator(".passport-empty")).toHaveCount(0);
   fail = false;
-  await page.getByRole("button", { name: "Réessayer", exact: true }).click();
+  await passportError
+    .getByRole("button", { name: "Réessayer", exact: true })
+    .click();
   await expect(page.locator(".badge-earned")).toHaveCount(1);
 });
 

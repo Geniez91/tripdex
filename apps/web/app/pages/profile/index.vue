@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Country } from "~/types/tripdex";
 import PassportBook from "~/components/passport/PassportBook.vue";
+import ResidenceEditor from "~/components/profile/ResidenceEditor.vue";
 import { getVisitedCountries } from "~/services/api/profile";
 
 const auth = useAuth();
@@ -48,6 +49,7 @@ async function logout() {
         @retry="refresh()"
         @logout="logout"
       />
+      <ResidenceEditor />
       <template #fallback
         ><p class="feedback" role="status">
           Ouverture de ton passeport…

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
+import { communityFixture } from "./community-fixtures";
 
 const countries = JSON.parse(
   readFileSync(
@@ -11,6 +12,13 @@ const countries = JSON.parse(
   id: `fixture-${country.iso2}`,
 }));
 async function publicReference(page: Page) {
+  await page.route("**/test-api/community/countries?**", (route) =>
+    route.fulfill({
+      json: communityFixture(
+        Number(new URL(route.request().url()).searchParams.get("year")),
+      ),
+    }),
+  );
   await page.route("**/test-api/countries", (route) =>
     route.fulfill({ json: countries }),
   );
@@ -53,7 +61,7 @@ for (const width of [1440, 1024, 390]) {
       "src",
       /country-flags\/jp.svg$/,
     );
-    await expect(japan).toHaveAttribute("aria-label", /À découvrir/);
+    await expect(japan).toHaveAttribute("aria-label", /14 voyageurs/);
     await page.keyboard.press("Space");
     await expect(japan).toHaveAttribute("aria-pressed", "true");
     expect(privateRequests).toEqual([]);
@@ -127,8 +135,7 @@ test("signed-in Explorer preserves visited data while Ma carte owns the personal
   );
   await page.goto("/");
   const japan = page.locator('path.map-country[data-iso3="JPN"]');
-  await expect(japan).toHaveClass(/visited/);
-  await expect(japan).toHaveAttribute("aria-label", /Visité/);
+  await expect(japan).toHaveAttribute("aria-label", /14 voyageurs/);
   await expect(page.locator(".visited-count")).toHaveCount(0);
   await expect(
     page.getByRole("link", { name: "Ma carte", exact: true }),

@@ -8,6 +8,7 @@
     "format:check": "prettier --check app nuxt.config.ts",
     "test:e2e": "playwright test",
     "test:passport": "playwright test --config playwright.passport.config.ts",
+    "test:community": "playwright test --config playwright.community.config.ts",
     "test:unit": "node --test test/unit/*.test.mjs",
     "dev": "nuxt dev",
     "generate": "nuxt generate",

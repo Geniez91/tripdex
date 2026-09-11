@@ -10,3 +10,8 @@ export interface MapShape {
   path: string;
   marker: [number, number] | null;
 }
+
+export interface MapCountryAppearance {
+  fill: string;
+  description: string;
+}

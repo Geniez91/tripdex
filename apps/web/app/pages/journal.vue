@@ -15,7 +15,7 @@ const { data, status, error, refresh } = await useAsyncData<JournalTrip[]>(
   { server: false, default: () => [] },
 );
 const trips = computed<JournalTrip[]>(() => data.value ?? []);
-const tripYears = computed<number[]>(() => journalYears(trips.value));
+const tripYears = computed<(number | null)[]>(() => journalYears(trips.value));
 </script>
 
 <template>

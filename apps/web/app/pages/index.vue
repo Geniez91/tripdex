@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Country, CreatedTrip } from "~/types/tripdex";
 import { getVisitedCountries } from "~/services/api/profile";
+import CommunityExplorer from "~/components/community/CommunityExplorer.vue";
+import { getCountries } from "~/services/api/countries";
 
 const config = useRuntimeConfig();
 const route = useRoute();
@@ -10,11 +12,11 @@ const {
   status: countriesStatus,
   error: countriesError,
   refresh: refreshCountries,
-} = await useFetch<Country[]>("/countries", {
-  baseURL: config.public.apiBase,
-  server: false,
-  default: () => [],
-});
+} = await useAsyncData<Country[]>(
+  "explorer-countries",
+  (_nuxtApp, { signal }) => getCountries(config.public.apiBase, signal),
+  { server: false, default: () => [] },
+);
 const auth = useAuth();
 const api = useTripdexApi();
 await auth.initialize();
@@ -32,12 +34,14 @@ const {
   { server: false, default: () => [] },
 );
 const savedTrip = ref<CreatedTrip | null>(null);
+const communityRevision = ref(0);
 const visitedIso3 = computed<string[]>(() =>
   visited.value.map((country) => country.iso3),
 );
 async function onCreated(trip: CreatedTrip): Promise<void> {
   savedTrip.value = trip;
   if (auth.status.value === "authenticated") await refreshVisited();
+  communityRevision.value++;
 }
 </script>
 
@@ -61,7 +65,7 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
           {{
             personalMap
               ? "Gardez vos souvenirs. Retrouvez les traces de vos voyages."
-              : "Commence à construire la tienne."
+              : "Voir où voyage la communauté TripDex."
           }}
         </p>
       </div>
@@ -92,7 +96,7 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
               {{
                 personalMap
                   ? "Les traces de vos voyages"
-                  : "Un monde à découvrir"
+                  : "Le monde au rythme de la communauté"
               }}
             </h2>
           </div>
@@ -103,13 +107,23 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
             ><span>pays {{ visited.length > 1 ? "visités" : "visité" }}</span>
           </div>
         </div>
-        <div v-if="visitedError" class="feedback error" role="alert">
+        <div
+          v-if="personalMap && visitedError"
+          class="feedback error"
+          role="alert"
+        >
           Impossible de récupérer vos pays visités.
           <button class="text-button" @click="refreshVisited()">
             Réessayer
           </button>
         </div>
+        <CommunityExplorer
+          v-if="!personalMap"
+          :countries="countries"
+          :revision="communityRevision"
+        />
         <WorldMap
+          v-else
           :visited-iso3="visitedIso3"
           :loading="visitedStatus === 'pending' || visitedStatus === 'idle'"
           :available="visitedStatus === 'success'"
