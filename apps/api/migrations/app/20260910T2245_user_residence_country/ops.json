@@ -1,0 +1,113 @@
+[
+  {
+    "id": "column.public.user.residenceCountryId",
+    "label": "Add column \"residenceCountryId\" to \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "residenceCountryId",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"residenceCountryId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": ["public", "user", "residenceCountryId"]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"residenceCountryId\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD COLUMN \"residenceCountryId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"residenceCountryId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": ["public", "user", "residenceCountryId"]
+      }
+    ]
+  },
+  {
+    "id": "index.user.user_residenceCountryId_idx_410126ba",
+    "label": "Create index \"user_residenceCountryId_idx_410126ba\" on \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "user_residenceCountryId_idx_410126ba",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"user_residenceCountryId_idx_410126ba\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"user_residenceCountryId_idx_410126ba\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"user_residenceCountryId_idx_410126ba\"",
+        "sql": "CREATE INDEX \"user_residenceCountryId_idx_410126ba\" ON \"public\".\"user\" (\"residenceCountryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"user_residenceCountryId_idx_410126ba\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"user_residenceCountryId_idx_410126ba\""]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.user.user_residenceCountryId_fkey",
+    "label": "Add foreign key \"user_residenceCountryId_fkey\" on \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "user_residenceCountryId_fkey",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"user_residenceCountryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_residenceCountryId_fkey",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"user_residenceCountryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"user\"\nADD CONSTRAINT \"user_residenceCountryId_fkey\"\nFOREIGN KEY (\"residenceCountryId\")\nREFERENCES \"public\".\"country\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"user_residenceCountryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_residenceCountryId_fkey",
+          "public",
+          "\"public\".\"user\""
+        ]
+      }
+    ]
+  }
+]

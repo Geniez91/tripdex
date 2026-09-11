@@ -6,11 +6,15 @@ model User {
   username  String @unique
   avatarUrl String?
   bio       String?
+  residenceCountryId String?
+  residenceCountry Country? @relation(fields: [residenceCountryId], references: [id], onDelete: SetNull)
 
   trips Trip[]
 
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
+
+  @@index([residenceCountryId])
 }
 
 model Country {

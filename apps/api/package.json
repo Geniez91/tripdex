@@ -21,6 +21,7 @@
     "test:e2e": "npm test -- --config ./test/jest-e2e.json --runInBand",
     "test:db": "npm run build && node --test --test-concurrency=1 test/database.integration.mjs test/users.integration.mjs test/seed.integration.mjs",
     "test:db:users": "npm run build && node --test test/users.integration.mjs",
+    "test:db:community": "npm run build && node --test test/community.integration.mjs",
     "test:storage": "npm run build && node --test test/covers.storage.integration.mjs",
     "db:seed": "npm run build && node dist/prisma/seed.js",
     "db:verify": "prisma db verify",

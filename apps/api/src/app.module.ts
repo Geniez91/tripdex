@@ -5,9 +5,16 @@ import { DatabaseModule } from './prisma/database.module.js';
 import { CountriesModule } from './countries/countries.module.js';
 import { TripsModule } from './trips/trips.module.js';
 import { CitiesModule } from './cities/cities.module.js';
+import { CommunityModule } from './community/community.module.js';
 
 @Module({
-  imports: [DatabaseModule, CountriesModule, TripsModule, CitiesModule],
+  imports: [
+    DatabaseModule,
+    CountriesModule,
+    TripsModule,
+    CitiesModule,
+    CommunityModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

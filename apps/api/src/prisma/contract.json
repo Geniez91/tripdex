@@ -635,6 +635,13 @@
                   "kind": "scalar"
                 }
               },
+              "residenceCountryId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "supabaseAuthId": {
                 "nullable": true,
                 "type": {
@@ -658,6 +665,21 @@
               }
             },
             "relations": {
+              "residenceCountry": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "residenceCountryId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Country",
+                  "namespace": "public"
+                }
+              },
               "trips": {
                 "cardinality": "1:N",
                 "on": {
@@ -690,6 +712,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "residenceCountryId": {
+                  "column": "residenceCountryId"
                 },
                 "supabaseAuthId": {
                   "column": "supabaseAuthId"
@@ -1174,6 +1199,11 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "residenceCountryId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "supabaseAuthId": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
@@ -1190,8 +1220,35 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
-              "indexes": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "residenceCountryId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "country"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "residenceCountryId"
+                  ],
+                  "name": "user_residenceCountryId_idx_410126ba",
+                  "prefix": "user_residenceCountryId_idx",
+                  "unique": false
+                }
+              ],
               "primaryKey": {
                 "columns": [
                   "id"
@@ -1221,7 +1278,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "a148478d9a8de5696f87c13a6d465f98f0d5b05532f9eb3f79208de54cfa9208"
+    "storageHash": "61f3606ee05c8287dba4ff47c3025ded53b28aaa1ca09951257bb102272470a0"
   },
   "execution": {
     "executionHash": "dcb0f5c0f6fdf5fbf33ed102a0e6ccaf6f2a8053a320f910704633c29383791b",
