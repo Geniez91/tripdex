@@ -1,5 +1,6 @@
 import {
   HttpException,
+  HttpStatus,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -24,12 +25,12 @@ export function authHttpError(error: unknown): HttpException {
       case 'USERNAME_INVALID':
         return new HttpException(
           { code: error.code, message: 'Choose a valid username.' },
-          422,
+          HttpStatus.UNPROCESSABLE_ENTITY,
         );
       case 'USERNAME_TAKEN':
         return new HttpException(
           { code: error.code, message: 'Choose another username.' },
-          409,
+          HttpStatus.CONFLICT,
         );
       case 'ACCOUNT_LINK_CONFLICT':
         return new HttpException(
@@ -37,7 +38,7 @@ export function authHttpError(error: unknown): HttpException {
             code: error.code,
             message: 'Account provisioning requires assistance.',
           },
-          409,
+          HttpStatus.CONFLICT,
         );
       case 'USER_PROVISIONING_UNAVAILABLE':
         return new ServiceUnavailableException({

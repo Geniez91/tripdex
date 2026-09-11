@@ -45,6 +45,7 @@ export class TripCoversController {
     return this.covers.replace(user.id, id, file);
   }
 
+  // Return the updated cover state and cleanupPending; this is not a bodyless DELETE.
   @Delete()
   @HttpCode(HttpStatus.OK)
   async remove(
