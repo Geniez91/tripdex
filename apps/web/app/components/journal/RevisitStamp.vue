@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { civilYear } from "~/utils/dates";
 const props = defineProps<{
   destination: string;
   country?: string;
@@ -12,7 +13,7 @@ const rotation = computed<string>(() => {
     hash = (hash * 17 + character.charCodeAt(0)) | 0;
   return `${(Math.abs(hash) % 5) - 2}deg`;
 });
-const year = computed<number>(() => new Date(props.date).getFullYear());
+const year = computed<number | null>(() => civilYear(props.date));
 </script>
 
 <template>

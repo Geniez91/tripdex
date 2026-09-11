@@ -1,3 +1,4 @@
+import { loadDateUtility } from "./date-helpers.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
@@ -36,7 +37,7 @@ test("JournalEntry uses backend revisit state and links to the trip", () => {
   // Assert
   assert.equal(hasBackendFlag, true);
   assert.equal(hasTripLink, true);
-  assert.equal(source.includes("new Date"), true);
+  assert.equal(source.includes("formatTripPeriod"), true);
   assert.equal(source.includes("revisitedCountryIds"), false);
 });
 
@@ -92,9 +93,7 @@ test("timeline years derive from dates without changing trip order", () => {
     { id: "earlier", startDate: "2025-08-01" },
   ];
   // Act
-  const displayedYears = trips.map((trip) =>
-    new Date(trip.startDate).getFullYear(),
-  );
+  const displayedYears = loadDateUtility("journalTimeline").journalYears(trips);
   // Assert
   assert.equal(source.includes("trips.map"), true);
   assert.deepEqual(displayedYears, [2026, 2025]);

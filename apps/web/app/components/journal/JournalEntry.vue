@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatDate, formatTripPeriod } from "~/utils/dates";
 import type { Country, JournalTrip } from "~/types/tripdex";
 import TravelStamp from "~/components/journal/TravelStamp.vue";
 import RevisitStamp from "~/components/journal/RevisitStamp.vue";
@@ -14,22 +15,12 @@ const cities = computed<string>(
   () => props.trip.cities?.map((city) => city.name).join(" · ") ?? "",
 );
 const photoCaption = computed<string>(() => {
-  const date = new Date(props.trip.startDate).toLocaleDateString("fr-FR", {
-    month: "short",
-    year: "numeric",
-  });
+  const date = formatDate(props.trip.startDate, "caption");
   return `${firstCountry.value?.name ?? "VOYAGE"} · ${date}`.toUpperCase();
 });
-const dateLabel = computed<string>(() => {
-  const start = new Date(props.trip.startDate).toLocaleDateString("fr-FR", {
-    dateStyle: "medium",
-  });
-  if (!props.trip.endDate) return start;
-  const end = new Date(props.trip.endDate).toLocaleDateString("fr-FR", {
-    dateStyle: "medium",
-  });
-  return `${start} → ${end}`;
-});
+const dateLabel = computed<string>(() =>
+  formatTripPeriod(props.trip.startDate, props.trip.endDate),
+);
 </script>
 
 <template>

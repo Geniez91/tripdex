@@ -198,6 +198,9 @@ test("shared stamp remains coherent in journal and trip detail; revisits stay se
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/journal");
+    await expect(page.locator(".journal-dates").first()).toContainText(
+      "1 avril 2026",
+    );
     await expect(page.locator(".travel-stamp")).toHaveCount(1);
     await expect(page.locator(".revisit-stamp")).toHaveCount(1);
     await expect(page.locator(".travel-stamp")).toContainText("2026");
@@ -206,6 +209,7 @@ test("shared stamp remains coherent in journal and trip detail; revisits stay se
       fullPage: true,
     });
     await page.goto("/trips/passport-trip");
+    await expect(page.locator(".trip-hero")).toContainText("1 avril 2026");
     await expect(page.locator(".trip-hero .travel-stamp")).toBeVisible();
     await expect(page.locator(".trip-hero .travel-stamp")).toContainText(
       "TRIPDEX",

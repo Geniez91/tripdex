@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { civilYear } from "~/utils/dates";
 import CountryFlag from "~/components/tripdex/CountryFlag.vue";
 const props = defineProps<{
   destination: string;
@@ -15,10 +16,7 @@ const rotation = computed<string>(() => {
     hash = (hash * 31 + character.charCodeAt(0)) | 0;
   return `${(Math.abs(hash) % 3) - 1}deg`;
 });
-const year = computed<number | null>(() => {
-  const value = props.date ? new Date(props.date).getUTCFullYear() : NaN;
-  return Number.isFinite(value) ? value : null;
-});
+const year = computed<number | null>(() => civilYear(props.date));
 </script>
 
 <template>

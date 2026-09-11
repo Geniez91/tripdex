@@ -1,15 +1,12 @@
 <script setup lang="ts">
+import { formatTripPeriod } from "~/utils/dates";
 import type { JournalTrip } from "~/types/tripdex";
 import CountryFlag from "~/components/tripdex/CountryFlag.vue";
 
 const props = defineProps<{ trip: JournalTrip }>();
-const dateLabel = computed<string>(() => {
-  const start = new Date(props.trip.startDate).toLocaleDateString("fr-FR", {
-    dateStyle: "medium",
-  });
-  if (!props.trip.endDate) return start;
-  return `${start} → ${new Date(props.trip.endDate).toLocaleDateString("fr-FR", { dateStyle: "medium" })}`;
-});
+const dateLabel = computed<string>(() =>
+  formatTripPeriod(props.trip.startDate, props.trip.endDate),
+);
 const duration = computed<string | null>(() => {
   if (!props.trip.endDate) return null;
   const days = Math.round(

@@ -1,3 +1,4 @@
+import { loadDateUtility } from "./date-helpers.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
@@ -44,21 +45,23 @@ function load(path, data = trip) {
       module,
       exports: module.exports,
       require: (id) =>
-        id.endsWith(".json")
-          ? { default: require(id) }
-          : id.startsWith("~/")
-            ? id === "~/services/errors"
-              ? {
-                  statusCodeFrom: () => undefined,
-                }
-              : id === "~/services/api/trips"
+        id === "~/utils/dates"
+          ? loadDateUtility()
+          : id.endsWith(".json")
+            ? { default: require(id) }
+            : id.startsWith("~/")
+              ? id === "~/services/errors"
                 ? {
-                    getTrip: async () => data,
-                    removeTripCover: async () => ({}),
-                    updateTripCover: async () => ({}),
+                    statusCodeFrom: () => undefined,
                   }
-                : { default: load(id.slice(2), data) }
-            : require(id),
+                : id === "~/services/api/trips"
+                  ? {
+                      getTrip: async () => data,
+                      removeTripCover: async () => ({}),
+                      updateTripCover: async () => ({}),
+                    }
+                  : { default: load(id.slice(2), data) }
+              : require(id),
       ...Vue,
       useRuntimeConfig: () => ({ app: { baseURL: "/" } }),
       useRoute: () => ({ params: { id: data.id } }),
@@ -101,7 +104,7 @@ test("Hero renders real cover, title, cities, dates and ordinary passport stamp"
     data.coverUrl,
     data.title,
     "Tokyo · Kyoto",
-    "2026",
+    "12 mars 2026 → 28 mars 2026",
     "Japon",
     "4 / 5",
     "Tampon de voyage",
