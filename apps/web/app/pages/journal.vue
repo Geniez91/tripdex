@@ -1,20 +1,10 @@
 <script setup lang="ts">
-import type { JournalTrip } from "~/types/tripdex";
 import { journalYears } from "~/utils/journalTimeline";
-import { getJournalTrips } from "~/services/api/journal";
 
 const auth = useAuth();
-const api = useTripdexApi();
+const { trips, hasLoaded, loading, error, load } = useTrips();
+onMounted(() => load());
 await auth.initialize();
-const { data, status, error, refresh } = await useAsyncData<JournalTrip[]>(
-  "private-journal",
-  () =>
-    auth.status.value === "authenticated"
-      ? getJournalTrips(api)
-      : Promise.resolve([]),
-  { server: false, default: () => [] },
-);
-const trips = computed<JournalTrip[]>(() => data.value ?? []);
 const tripYears = computed<(number | null)[]>(() => journalYears(trips.value));
 </script>
 
@@ -37,7 +27,7 @@ const tripYears = computed<(number | null)[]>(() => journalYears(trips.value));
       >
     </section>
     <div
-      v-if="status === 'pending' || status === 'idle'"
+      v-if="loading || (!hasLoaded && !error)"
       class="feedback"
       role="status"
     >
@@ -45,7 +35,7 @@ const tripYears = computed<(number | null)[]>(() => journalYears(trips.value));
     </div>
     <div v-else-if="error" class="feedback error" role="alert">
       Impossible de charger le journal.
-      <button class="text-button" @click="refresh()">Réessayer</button>
+      <button class="text-button" @click="load()">Réessayer</button>
     </div>
     <VSheet
       v-else-if="!trips.length"

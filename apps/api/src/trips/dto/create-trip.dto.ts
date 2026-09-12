@@ -6,4 +6,5 @@ export interface CreateTripDto {
   cityIds: string[];
   rating: number | null;
   review: string | null;
+  visibility: 'public' | 'private';
 }

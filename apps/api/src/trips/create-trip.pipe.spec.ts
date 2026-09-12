@@ -9,7 +9,7 @@ describe('CreateTripPipe', () => {
     countryIds: ['japan'],
   };
 
-  it('normalizes a calendar date to UTC and trims the title', () => {
+  it('normalizes a calendar date to UTC, trims the title and defaults visibility to private', () => {
     // Arrange
     const input = valid;
 
@@ -25,7 +25,19 @@ describe('CreateTripPipe', () => {
       cityIds: [],
       rating: null,
       review: null,
+      visibility: 'private',
     });
+  });
+
+  it('preserves an explicit public visibility choice', () => {
+    // Arrange
+    const input = { ...valid, visibility: 'public' };
+
+    // Act
+    const result = pipe.transform(input);
+
+    // Assert
+    expect(result.visibility).toBe('public');
   });
 
   it('accepts a leap day, a same-day trip and multiple countries', () => {

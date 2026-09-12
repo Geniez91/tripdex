@@ -1,0 +1,86 @@
+[
+  {
+    "id": "column.public.trip.visibility",
+    "label": "Add column \"visibility\" to \"trip\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "visibility",
+        "table": "trip"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"visibility\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "trip",
+          "visibility"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"visibility\"",
+        "sql": "ALTER TABLE \"public\".\"trip\" ADD COLUMN \"visibility\" text DEFAULT 'private' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"visibility\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "trip",
+          "visibility"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.trip.trip_visibility_check_b9e4faaa",
+    "label": "Add check constraint \"trip_visibility_check_b9e4faaa\" on \"trip\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "trip_visibility_check_b9e4faaa",
+        "table": "trip"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"trip_visibility_check_b9e4faaa\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "trip_visibility_check_b9e4faaa",
+          "public",
+          "\"public\".\"trip\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"trip_visibility_check_b9e4faaa\"",
+        "sql": "ALTER TABLE \"public\".\"trip\" ADD CONSTRAINT \"trip_visibility_check_b9e4faaa\" CHECK (\"visibility\" IN ('public', 'private'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"trip_visibility_check_b9e4faaa\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "trip_visibility_check_b9e4faaa",
+          "public",
+          "\"public\".\"trip\""
+        ]
+      }
+    ]
+  }
+]

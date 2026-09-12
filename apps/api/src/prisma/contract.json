@@ -32,6 +32,21 @@
   "domain": {
     "namespaces": {
       "public": {
+        "enum": {
+          "trip_visibility": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "public",
+                "value": "public"
+              },
+              {
+                "name": "private",
+                "value": "private"
+              }
+            ]
+          }
+        },
         "models": {
           "City": {
             "fields": {
@@ -348,6 +363,19 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "visibility": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "trip_visibility",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
               }
             },
             "relations": {
@@ -428,6 +456,9 @@
                 },
                 "userId": {
                   "column": "userId"
+                },
+                "visibility": {
+                  "column": "visibility"
                 }
               },
               "namespaceId": "public",
@@ -901,6 +932,13 @@
               ]
             },
             "trip": {
+              "checks": [
+                {
+                  "expression": "\"visibility\" IN ('public', 'private')",
+                  "name": "trip_visibility_check_b9e4faaa",
+                  "prefix": "trip_visibility_check"
+                }
+              ],
               "columns": {
                 "coverStoragePath": {
                   "codecId": "pg/text@1",
@@ -955,6 +993,21 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "visibility": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "private"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "trip_visibility",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 }
               },
               "foreignKeys": [
@@ -1272,13 +1325,22 @@
                 }
               ]
             }
+          },
+          "valueSet": {
+            "trip_visibility": {
+              "kind": "valueSet",
+              "values": [
+                "public",
+                "private"
+              ]
+            }
           }
         },
         "id": "public",
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "61f3606ee05c8287dba4ff47c3025ded53b28aaa1ca09951257bb102272470a0"
+    "storageHash": "724bacc108b76cf89752f01172466f208df1c4b33d797cebfa490738c6f91a60"
   },
   "execution": {
     "executionHash": "dcb0f5c0f6fdf5fbf33ed102a0e6ccaf6f2a8053a320f910704633c29383791b",

@@ -9,5 +9,6 @@ export function toCreateTripInput(values: TripFormValues): CreateTripInput {
     cityIds: values.cityIds,
     rating: values.rating,
     review: values.review || null,
+    visibility: values.visibility,
   };
 }

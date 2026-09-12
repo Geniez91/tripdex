@@ -2,6 +2,7 @@
 import type { Country, CreatedTrip } from "~/types/tripdex";
 import { getVisitedCountries } from "~/services/api/profile";
 import CommunityExplorer from "~/components/community/CommunityExplorer.vue";
+import CommunityActivityFeed from "~/components/community/CommunityActivityFeed.vue";
 import { getCountries } from "~/services/api/countries";
 
 const config = useRuntimeConfig();
@@ -204,6 +205,7 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
           />
         </div>
       </section>
+      <CommunityActivityFeed v-if="!personalMap" />
     </div>
   </main>
 </template>

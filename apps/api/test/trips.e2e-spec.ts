@@ -71,6 +71,7 @@ describe('Milestone HTTP contract', () => {
       cities: [],
       rating: null,
       review: null,
+      visibility: 'private',
       isRevisit: false,
       revisitedCountryIds: [],
       coverStoragePath: null,
@@ -86,6 +87,7 @@ describe('Milestone HTTP contract', () => {
       cities: [],
       rating: 5,
       review: 'First trip',
+      visibility: 'private',
       isRevisit: false,
       revisitedCountryIds: [],
       coverStoragePath: null,
@@ -115,6 +117,7 @@ describe('Milestone HTTP contract', () => {
       cityIds: [],
       rating: null,
       review: null,
+      visibility: 'private',
     });
   });
   it.each([

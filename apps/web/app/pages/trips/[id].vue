@@ -12,6 +12,7 @@ import {
 
 const route = useRoute();
 const api = useTripdexApi();
+const tripsCache = useTrips();
 const {
   data: trip,
   status,
@@ -39,6 +40,7 @@ async function changeCover(remove = false): Promise<void> {
       ? await removeTripCover(api, trip.value.id)
       : await updateTripCover(api, trip.value.id, body);
     Object.assign(trip.value, result);
+    tripsCache.invalidate();
     cover.value = null;
     coverDialog.value = false;
     coverMessage.value = remove ? "Cover supprimée." : "Cover enregistrée.";

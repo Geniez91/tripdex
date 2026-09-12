@@ -6,6 +6,7 @@ export interface CreateTripInput {
   cityIds: string[];
   rating: number | null;
   review: string | null;
+  visibility: "public" | "private";
 }
 
 export interface TripFormValues {
@@ -16,6 +17,7 @@ export interface TripFormValues {
   cityIds: string[];
   rating: number | null;
   review: string;
+  visibility: "public" | "private";
 }
 
 export interface TripCoverResult {

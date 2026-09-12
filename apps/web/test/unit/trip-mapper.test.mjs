@@ -20,7 +20,7 @@ vm.runInNewContext(
 );
 const { toCreateTripInput } = module.exports;
 
-test("maps a complete form model to the create trip input", () => {
+test("maps a complete form model to the create trip input with private visibility by default", () => {
   // Arrange
   const values = {
     title: "Japan 2026",
@@ -30,6 +30,7 @@ test("maps a complete form model to the create trip input", () => {
     cityIds: ["tokyo", "kyoto"],
     rating: 5,
     review: "Un voyage marquant",
+    visibility: "private",
   };
 
   // Act
@@ -44,6 +45,7 @@ test("maps a complete form model to the create trip input", () => {
     cityIds: ["tokyo", "kyoto"],
     rating: 5,
     review: "Un voyage marquant",
+    visibility: "private",
   });
 });
 
@@ -68,7 +70,7 @@ test("maps empty optional form values to null", () => {
   assert.equal(input.rating, null);
 });
 
-test("preserves provided values and does not invent fields", () => {
+test("preserves explicit public visibility and does not invent fields", () => {
   // Arrange
   const countryIds = ["es"];
   const cityIds = ["barcelona"];
@@ -80,6 +82,7 @@ test("preserves provided values and does not invent fields", () => {
     cityIds,
     rating: 3,
     review: "Une note courte",
+    visibility: "public",
   };
 
   // Act
@@ -93,6 +96,7 @@ test("preserves provided values and does not invent fields", () => {
   assert.equal(input.endDate, values.endDate);
   assert.equal(input.rating, values.rating);
   assert.equal(input.review, values.review);
+  assert.equal(input.visibility, "public");
   assert.deepEqual(Object.keys(input).sort(), [
     "cityIds",
     "countryIds",
@@ -101,5 +105,6 @@ test("preserves provided values and does not invent fields", () => {
     "review",
     "startDate",
     "title",
+    "visibility",
   ]);
 });

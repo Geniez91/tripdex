@@ -16,6 +16,10 @@ export function getTrip(api: TripdexApi, tripId: string): Promise<JournalTrip> {
   return api.get<JournalTrip>(`/me/trips/${tripId}`);
 }
 
+export function getJournalTrips(api: TripdexApi): Promise<JournalTrip[]> {
+  return api.get<JournalTrip[]>("/me/trips");
+}
+
 export function updateTripCover(
   api: TripdexApi,
   tripId: string,

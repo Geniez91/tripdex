@@ -51,6 +51,13 @@ model City {
   @@index([countryId])
 }
 
+enum trip_visibility {
+  @@type("pg/text@1")
+
+  public  = "public"
+  private = "private"
+}
+
 model Trip {
   id     String @id @default(uuid())
   userId String
@@ -58,6 +65,7 @@ model Trip {
   title     String
   startDate TimestamptzString
   endDate   TimestamptzString?
+  visibility trip_visibility @default(private)
 
   rating Float?
   review String?

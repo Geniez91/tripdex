@@ -36,6 +36,7 @@ export class TripRepository {
         endDate: input.endDate,
         rating: input.rating,
         review: input.review,
+        visibility: input.visibility,
         coverStoragePath: null,
       });
       for (const countryId of input.countryIds) {
@@ -55,6 +56,7 @@ export class TripRepository {
         rating: trip.rating,
         review: trip.review,
         coverStoragePath: trip.coverStoragePath,
+        visibility: trip.visibility,
       };
     });
   }
@@ -69,6 +71,7 @@ export class TripRepository {
         'rating',
         'review',
         'coverStoragePath',
+        'visibility',
       )
       .orderBy([(trip) => trip.startDate.desc(), (trip) => trip.id.desc()])
       .all();
@@ -87,6 +90,7 @@ export class TripRepository {
         'rating',
         'review',
         'coverStoragePath',
+        'visibility',
       )
       .first();
   }

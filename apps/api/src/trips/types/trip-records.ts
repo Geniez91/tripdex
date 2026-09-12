@@ -6,6 +6,7 @@ export interface TripRecord {
   rating: number | null;
   review: string | null;
   coverStoragePath: string | null;
+  visibility: 'public' | 'private';
 }
 
 export interface CountryRecord {

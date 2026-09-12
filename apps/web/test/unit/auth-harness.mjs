@@ -106,6 +106,9 @@ export function harness(initialSession = sessionA, server = false) {
     }
     throw new Error(`Unexpected test import: ${name}`);
   };
+  const tripsState = load("../app/composables/useTripsState.ts");
+  context.resetTripsCache = tripsState.resetTripsCache;
+  context.useTripsState = tripsState.useTripsState;
   context.usePrivateSession = load(
     "../app/composables/usePrivateSession.ts",
   ).usePrivateSession;

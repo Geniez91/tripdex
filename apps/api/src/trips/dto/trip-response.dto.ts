@@ -25,6 +25,7 @@ export interface TripResponseDto {
   review: string | null;
   coverStoragePath: string | null;
   coverUrl: string | null;
+  visibility: 'public' | 'private';
   countries: CountryResponseDto[];
   cities?: CityResponseDto[];
   isRevisit: boolean;

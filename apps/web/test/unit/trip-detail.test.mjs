@@ -66,6 +66,7 @@ function load(path, data = trip) {
       useRuntimeConfig: () => ({ app: { baseURL: "/" } }),
       useRoute: () => ({ params: { id: data.id } }),
       useTripdexApi: () => ({}),
+      useTrips: () => ({ invalidate: () => {} }),
       useAsyncData: async () => ({
         data: Vue.ref(data),
         status: Vue.ref("success"),

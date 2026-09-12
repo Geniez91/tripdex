@@ -25,5 +25,6 @@ import { TripCoversRepository } from './repositories/trip-covers.repository.js';
     TripCoversService,
     TripCoversRepository,
   ],
+  exports: [TripCoversService],
 })
 export class TripsModule {}

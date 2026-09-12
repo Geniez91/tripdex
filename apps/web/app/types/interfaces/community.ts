@@ -20,3 +20,26 @@ export interface CommunityStatistics {
 export interface ResidenceResponse {
   residenceCountry: Country | null;
 }
+
+export interface CommunityActivity {
+  type: "TRIP_LOGGED";
+  activityDate: string;
+  user: { username: string; avatarUrl: string | null };
+  trip: {
+    id: string;
+    title: string;
+    countries: Pick<Country, "id" | "iso2" | "iso3" | "name">[];
+    cities: { id: string; name: string }[];
+    startDate: string;
+    endDate: string | null;
+    durationDays: number | null;
+    rating: number | null;
+    review: string | null;
+    coverUrl: string | null;
+  };
+}
+
+export interface CommunityActivityResponse {
+  activities: CommunityActivity[];
+  nextCursor: string | null;
+}

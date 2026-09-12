@@ -36,6 +36,7 @@ export class CreateTripPipe implements PipeTransform<unknown, CreateTripDto> {
             'cityIds',
             'rating',
             'review',
+            'visibility',
           ].includes(key),
       )
     ) {
@@ -107,6 +108,12 @@ export class CreateTripPipe implements PipeTransform<unknown, CreateTripDto> {
         'Review must contain at most 10000 characters.',
       );
     }
+    const visibility = input.visibility == null ? 'private' : input.visibility;
+    if (visibility !== 'public' && visibility !== 'private') {
+      throw new BadRequestException(
+        'visibility must be either public or private.',
+      );
+    }
     return {
       title: input.title.trim(),
       startDate,
@@ -115,6 +122,7 @@ export class CreateTripPipe implements PipeTransform<unknown, CreateTripDto> {
       cityIds,
       rating,
       review: review?.trim() || null,
+      visibility,
     };
   }
 }

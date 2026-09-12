@@ -19,6 +19,7 @@ export interface CreatedTrip {
   coverStoragePath?: string | null;
   coverUrl?: string | null;
   isRevisit?: boolean;
+  visibility?: "public" | "private";
 }
 
 export interface City {

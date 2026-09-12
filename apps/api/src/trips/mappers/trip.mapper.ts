@@ -39,6 +39,7 @@ export class TripMapper {
       review: parts.trip.review,
       coverStoragePath: parts.trip.coverStoragePath,
       coverUrl: parts.coverUrl,
+      visibility: parts.trip.visibility,
       countries: parts.countries.map((country) => this.toCountryDto(country)),
       isRevisit: parts.isRevisit,
       revisitedCountryIds: parts.revisitedCountryIds,

@@ -7,12 +7,15 @@ import { statusCodeFrom } from "~/services/errors";
 const props = defineProps<{ countries: Country[]; loading: boolean }>();
 const emit = defineEmits<{ created: [trip: CreatedTrip] }>();
 const api = useTripdexApi();
+const communityActivity = useCommunityActivity();
+const tripsCache = useTrips();
 const config = useRuntimeConfig();
 const title = ref("");
 const startDate = ref("");
 const endDate = ref("");
 const rating = ref<number | null>(null);
 const review = ref("");
+const visibility = ref<"public" | "private">("private");
 const search = ref("");
 const countryIds = ref<string[]>([]);
 const cityIds = ref<string[]>([]);
@@ -64,8 +67,13 @@ async function submit(): Promise<void> {
           cityIds: cityIds.value,
           rating: rating.value,
           review: review.value,
+          visibility: visibility.value,
         }),
       ));
+    if (!savedTrip.value) {
+      tripsCache.invalidate();
+      if (trip.visibility === "public") communityActivity.invalidate();
+    }
     savedTrip.value = trip;
     if (cover.value) {
       uploading.value = true;
@@ -73,12 +81,15 @@ async function submit(): Promise<void> {
       body.append("cover", cover.value);
       const result = await updateTripCover(api, trip.id, body);
       Object.assign(trip, result);
+      tripsCache.invalidate();
+      if (trip.visibility === "public") communityActivity.invalidate();
     }
     title.value = "";
     startDate.value = "";
     endDate.value = "";
     rating.value = null;
     review.value = "";
+    visibility.value = "private";
     search.value = "";
     countryIds.value = [];
     cityIds.value = [];
@@ -170,6 +181,13 @@ async function submit(): Promise<void> {
               maxlength="10000"
               rows="4"
             />
+          </div>
+          <div class="field">
+            <label for="trip-visibility">Visibilité</label>
+            <select id="trip-visibility" v-model="visibility">
+              <option value="private">Privé, visible seulement par vous</option>
+              <option value="public">Public, visible dans la communauté</option>
+            </select>
           </div>
           <fieldset class="country-picker">
             <legend>
