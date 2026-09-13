@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Country } from "~/types/tripdex";
-import { getResidence, updateResidence } from "~/services/api/profile";
+import { updateResidence } from "~/services/api/profile";
 import { getCountries } from "~/services/api/countries";
 
 const config = useRuntimeConfig();
@@ -14,11 +14,7 @@ const {
   (_nuxtApp, { signal }) => getCountries(config.public.apiBase, signal),
   { server: false, default: () => [] },
 );
-const { data, status, error, refresh } = await useAsyncData(
-  "private-residence",
-  () => getResidence(api),
-  { server: false },
-);
+const { data, status, error, refresh } = await useResidence();
 const selected = ref<string | null>(null);
 const saving = ref(false);
 const message = ref("");

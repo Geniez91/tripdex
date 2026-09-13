@@ -4,6 +4,7 @@ import { getVisitedCountries } from "~/services/api/profile";
 import CommunityExplorer from "~/components/community/CommunityExplorer.vue";
 import CommunityActivityFeed from "~/components/community/CommunityActivityFeed.vue";
 import { getCountries } from "~/services/api/countries";
+import PersonalMap from "~/components/profile/PersonalMap.vue";
 
 const config = useRuntimeConfig();
 const route = useRoute();
@@ -123,7 +124,7 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
           :countries="countries"
           :revision="communityRevision"
         />
-        <WorldMap
+        <PersonalMap
           v-else
           :visited-iso3="visitedIso3"
           :loading="visitedStatus === 'pending' || visitedStatus === 'idle'"
