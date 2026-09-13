@@ -141,7 +141,7 @@ function selectCountry(iso3: string | null): void {
       :selected-iso3="selectedIso3"
       :available="status === 'success'"
       :loading="loading"
-      scrollable
+      zoomable
       @select="selectCountry"
     >
       <template #annotations="{ anchors, zoom, camera }">
