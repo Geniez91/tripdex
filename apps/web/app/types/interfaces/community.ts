@@ -21,7 +21,7 @@ export interface ResidenceResponse {
   residenceCountry: Country | null;
 }
 
-export interface CommunityActivity {
+export interface TripCommunityActivity {
   type: "TRIP_LOGGED";
   activityDate: string;
   user: { username: string; avatarUrl: string | null };
@@ -39,7 +39,16 @@ export interface CommunityActivity {
   };
 }
 
+export interface PhotoContestCommunityActivity {
+  type: "PHOTO_CONTEST_OPENED";
+  activityDate: string;
+  contest: import("./photo-contests").PhotoContest;
+}
+
+export type CommunityActivity = TripCommunityActivity | PhotoContestCommunityActivity;
+
 export interface CommunityActivityResponse {
+  openContest?: PhotoContestCommunityActivity | null;
   activities: CommunityActivity[];
   nextCursor: string | null;
 }

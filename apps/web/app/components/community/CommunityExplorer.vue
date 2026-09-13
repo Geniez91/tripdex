@@ -18,8 +18,14 @@ import {
 import CommunityMapControls from "~/components/community/CommunityMapControls.vue";
 import CommunityCountryPanel from "~/components/community/CommunityCountryPanel.vue";
 import CommunityFlowLayer from "~/components/community/CommunityFlowLayer.vue";
+import CommunityMemoryMarker from "~/components/community/CommunityMemoryMarker.vue";
+import { getCountryMemories } from "~/services/api/photo-contests";
+import type { CountryMemory } from "~/types/interfaces/photo-contests";
 const props = defineProps<{ countries: Country[]; revision: number }>();
 const config = useRuntimeConfig();
+const { data: memories } = await useAsyncData<CountryMemory[]>("community-memories",
+  () => getCountryMemories(config.public.apiBase), { server: false, default: () => [] });
+const activeMemory = ref<string | null>(null);
 const year = ref<number>(new Date().getUTCFullYear());
 const mode = ref<CommunityMapMode>("travelers");
 const selectedIso3 = ref<string | null>(null);
@@ -138,6 +144,13 @@ function selectCountry(iso3: string | null): void {
       scrollable
       @select="selectCountry"
     >
+      <template #annotations="{ anchors, zoom, camera }">
+        <template v-for="memory in memories" :key="memory.winnerSubmissionId">
+          <CommunityMemoryMarker v-if="anchors.has(memory.countryCode) && memory.winnerSubmissionId && memory.imageUrl"
+            :memory="memory" :anchor="anchors.get(memory.countryCode)!" :zoom="zoom" :camera="camera" :active="activeMemory === memory.countryCode"
+            @update:active="activeMemory = $event ? memory.countryCode : activeMemory === memory.countryCode ? null : activeMemory" />
+        </template>
+      </template>
       <template #routes="{ anchors, drawRoute }"
         ><CommunityFlowLayer
           v-if="mode === 'flows'"

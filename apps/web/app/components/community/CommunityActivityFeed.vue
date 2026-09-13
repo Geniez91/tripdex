@@ -1,12 +1,41 @@
-<script setup lang="ts">
-import { formatDate, formatTripPeriod } from "~/utils/dates";
-import CountryFlag from "~/components/tripdex/CountryFlag.vue";
+﻿<script setup lang="ts">
+import { communityActivityKey, presentCommunityActivity } from "~/services/communityActivity";
+import CommunityActivityItem from "./CommunityActivityItem.vue";
 
 const {
-  activities, nextCursor, hasLoaded, loading, error,
-  load, loadMore, retry,
+  activities,
+  openContest,
+  nextCursor,
+  hasLoaded,
+  loading,
+  error,
+  loadMore,
+  retry,
+  refresh,
 } = useCommunityActivity();
-onMounted(() => load());
+const now = ref(Date.now());
+const presentation = computed(() => presentCommunityActivity(activities.value, now.value, openContest.value));
+let expiryTimer: ReturnType<typeof setTimeout> | undefined;
+function scheduleExpiry() {
+  const endsAt = presentation.value.featured?.contest.endsAt;
+  if (expiryTimer) clearTimeout(expiryTimer);
+  if (endsAt) expiryTimer = setTimeout(() => { now.value = Date.now(); }, Math.max(0, Date.parse(endsAt) - Date.now()));
+}
+watch(() => presentation.value.featured?.contest.endsAt, scheduleExpiry);
+function refreshVisibleFeed() {
+  now.value = Date.now();
+  if (document.visibilityState === "visible") void refresh();
+}
+onMounted(() => {
+  now.value = Date.now();
+  scheduleExpiry();
+  void refresh();
+  document.addEventListener("visibilitychange", refreshVisibleFeed);
+});
+onUnmounted(() => {
+  if (expiryTimer) clearTimeout(expiryTimer);
+  document.removeEventListener("visibilitychange", refreshVisibleFeed);
+});
 </script>
 
 <template>
@@ -14,7 +43,7 @@ onMounted(() => load());
     <div class="feed-heading">
       <div>
         <span class="eyebrow">LE CARNET COMMUN</span>
-        <h2 id="activity-feed-title">Activité récente</h2>
+        <h2 id="activity-feed-title">{{ presentation.featured ? "Carnet commun" : "Activité récente" }}</h2>
         <p>Les voyages que la communauté choisit de partager.</p>
       </div>
       <VIcon
@@ -30,74 +59,24 @@ onMounted(() => load());
     <div v-else-if="!hasLoaded" class="feed-loading" role="status">
       Le carnet commun s’ouvre…
     </div>
-    <div v-else-if="!activities.length" class="feed-empty" role="status">
+    <div v-else-if="!activities.length && !presentation.featured" class="feed-empty" role="status">
       Aucun voyage public pour le moment. Le prochain récit peut commencer ici.
     </div>
-    <div v-else class="feed-list">
-      <article
-        v-for="activity in activities"
-        :key="activity.trip.id"
-        class="activity-card"
-      >
-        <div class="activity-author">
-          <VAvatar color="primary" size="34">
-            <VImg
-              v-if="activity.user.avatarUrl"
-              :src="activity.user.avatarUrl"
-              alt=""
-            />
-            <span v-else>{{
-              activity.user.username.slice(0, 1).toUpperCase()
-            }}</span>
-          </VAvatar>
-          <div>
-            <strong>{{ activity.user.username }}</strong>
-            <span>a enregistré un voyage</span>
-          </div>
-          <time :datetime="activity.activityDate">{{
-            formatDate(activity.activityDate)
-          }}</time>
-        </div>
-        <div class="activity-destination">
-          <div class="destination-title">
-            <CountryFlag
-              :iso2="activity.trip.countries[0]?.iso2"
-              :name="activity.trip.countries[0]?.name"
-            />
-            <h3>{{ activity.trip.title }}</h3>
-          </div>
-          <p>
-            {{
-              activity.trip.countries.map((country) => country.name).join(" · ")
-            }}
-          </p>
-          <p v-if="activity.trip.cities.length" class="activity-cities">
-            {{ activity.trip.cities.map((city) => city.name).join(" · ") }}
-          </p>
-        </div>
-        <img
-          v-if="activity.trip.coverUrl"
-          class="activity-cover"
-          :src="activity.trip.coverUrl"
-          :alt="`Cover de ${activity.trip.title}`"
-          loading="lazy"
+    <template v-else>
+      <CommunityActivityItem
+        v-if="presentation.featured"
+        :key="communityActivityKey(presentation.featured)"
+        :activity="presentation.featured"
+      />
+      <h3 v-if="presentation.featured" class="recent-divider">Activités récentes</h3>
+      <div class="feed-list">
+        <CommunityActivityItem
+          v-for="activity in presentation.recent"
+          :key="communityActivityKey(activity)"
+          :activity="activity"
         />
-        <div class="activity-meta">
-          <span v-if="activity.trip.rating">{{
-            "★".repeat(activity.trip.rating)
-          }}</span>
-          <span v-if="activity.trip.durationDays"
-            >{{ activity.trip.durationDays }} jours</span
-          >
-          <span>{{
-            formatTripPeriod(activity.trip.startDate, activity.trip.endDate)
-          }}</span>
-        </div>
-        <p v-if="activity.trip.review" class="activity-review">
-          « {{ activity.trip.review }} »
-        </p>
-      </article>
-    </div>
+      </div>
+    </template>
     <VBtn
       v-if="nextCursor"
       variant="outlined"
@@ -106,7 +85,7 @@ onMounted(() => load());
       prepend-icon="mdi-book-arrow-down-outline"
       @click="loadMore"
     >
-      Voir les voyages suivants
+      Voir les activités suivantes
     </VBtn>
   </section>
 </template>
@@ -119,10 +98,7 @@ onMounted(() => load());
   border: 1px solid rgb(var(--v-theme-outline));
   border-radius: var(--tripdex-radius-lg);
 }
-.feed-heading,
-.activity-author,
-.destination-title,
-.activity-meta {
+.feed-heading {
   display: flex;
   align-items: center;
 }
@@ -136,9 +112,6 @@ onMounted(() => load());
   color: rgb(var(--v-theme-ink));
 }
 .feed-heading p,
-.activity-author span,
-.activity-destination p,
-.activity-meta,
 .feed-empty,
 .feed-loading {
   color: rgb(var(--v-theme-muted));
@@ -152,64 +125,21 @@ onMounted(() => load());
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
-.activity-card {
-  overflow: hidden;
-  border: 1px solid rgb(var(--v-theme-outline));
-  border-radius: 8px;
-  background: rgb(var(--v-theme-background));
+.recent-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 28px 0 22px;
+  color: #27677C;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
 }
-.activity-author {
-  gap: 10px;
-  padding: 16px 16px 12px;
-}
-.activity-author div {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-.activity-author span,
-.activity-author time {
-  font-size: 12px;
-}
-.activity-author time {
-  margin-left: auto;
-  color: rgb(var(--v-theme-muted));
-}
-.activity-destination {
-  padding: 10px 16px 16px;
-}
-.destination-title {
-  gap: 9px;
-}
-.destination-title h3 {
-  margin: 0;
-  color: rgb(var(--v-theme-ink));
-}
-.activity-destination p {
-  margin: 8px 0 0;
-}
-.activity-cities {
-  font-size: 13px;
-}
-.activity-cover {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 8;
-  object-fit: cover;
-}
-.activity-meta {
-  flex-wrap: wrap;
-  gap: 8px 14px;
-  padding: 14px 16px 0;
-  font-size: 12px;
-}
-.activity-meta span:first-child {
-  color: rgb(var(--v-theme-sun));
-}
-.activity-review {
-  margin: 12px 16px 16px;
-  line-height: 1.5;
-  color: rgb(var(--v-theme-ink));
+.recent-divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid #27677c40;
 }
 .activity-feed > .v-btn {
   margin-top: 20px;
@@ -220,9 +150,6 @@ onMounted(() => load());
   }
   .feed-list {
     grid-template-columns: 1fr;
-  }
-  .activity-author time {
-    align-self: flex-start;
   }
 }
 </style>

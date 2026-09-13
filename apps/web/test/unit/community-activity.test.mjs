@@ -24,6 +24,8 @@ function harness() {
   const tripCalls = [];
   let tripTransport = async () => [{ id: "own-trip" }];
   let transport = async () => page(["own"]);
+  const keys = { exports: {} };
+  vm.runInNewContext(compile(read("services/communityActivity.ts")), keys);
   const globals = {
     exports: {}, ref, computed, toRefs,
     useRuntimeConfig: () => ({ public: { apiBase: "http://api.test" } }),
@@ -31,7 +33,7 @@ function harness() {
       if (!states.has(key)) states.set(key, ref(init()));
       return states.get(key);
     },
-    require: () => ({ getCommunityActivity: (...args) => {
+    require: (name) => name === "~/services/communityActivity" ? keys.exports : ({ getCommunityActivity: (...args) => {
       calls.push(args);
       return transport(...args);
     } }),
@@ -75,6 +77,43 @@ test("first load fills the cache; a new consumer reuses it without HTTP", async 
   assert.equal(returned.nextCursor, "next");
   assert.equal(h.cache.hasLoaded.value, true);
   assert.equal(h.cache.invalidated.value, false);
+});
+
+test("refresh discovers a server-created contest while retaining cached activities during the request", async () => {
+  const h = harness();
+  await h.cache.load();
+  const pending = deferred();
+  h.respond(() => pending.promise);
+  const refreshing = h.cache.refresh();
+  assert.equal(h.cache.activities.value[0].trip.id, "own");
+  pending.resolve({ activities: [{ type: "PHOTO_CONTEST_OPENED", contest: { id: "weekly" } }, activity("own")], nextCursor: null });
+  await refreshing;
+  assert.equal(h.cache.activities.value[0].contest.id, "weekly");
+  await h.useCache().load();
+  assert.equal(h.calls.length, 2);
+});
+
+test("current contest survives pagination and is replaced on view refresh without changing the cursor", async () => {
+  // Arrange
+  const h = harness();
+  const openContest = { type: "PHOTO_CONTEST_OPENED", contest: { id: "weekly" } };
+  h.respond(async () => ({ ...page(["new"], "page-2"), openContest }));
+  await h.cache.load();
+  h.respond(async () => ({ activities: [openContest, activity("older")], nextCursor: "page-3" }));
+  // Act
+  await h.cache.loadMore();
+  // Assert
+  assert.equal(h.cache.openContest.value.contest.id, "weekly");
+  assert.equal(h.cache.nextCursor.value, "page-3");
+  assert.equal(h.calls[1][1], "page-2");
+  assert.equal(h.cache.activities.value.filter(a => a.type === "PHOTO_CONTEST_OPENED").length, 1);
+  // Arrange: the server closed the contest while the user was away.
+  h.respond(async () => ({ ...page(["new"]), openContest: null }));
+  // Act
+  await h.cache.refresh();
+  // Assert
+  assert.equal(h.cache.openContest.value, null);
+  assert.equal(h.cache.nextCursor.value, null);
 });
 
 test("invalidation is lazy and the next load replaces stale pages", async () => {

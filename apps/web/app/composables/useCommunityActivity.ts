@@ -1,10 +1,13 @@
 import type {
   CommunityActivity,
   CommunityActivityResponse,
+  PhotoContestCommunityActivity,
 } from "~/types/interfaces/community";
 import { getCommunityActivity } from "~/services/api/community";
+import { communityActivityKey } from "~/services/communityActivity";
 
 interface CommunityActivityState {
+  openContest: PhotoContestCommunityActivity | null;
   activities: CommunityActivity[];
   nextCursor: string | null;
   hasLoaded: boolean;
@@ -22,6 +25,7 @@ const requests = new WeakMap<CommunityActivityState, {
 export function useCommunityActivity() {
   const config = useRuntimeConfig();
   const state = useState<CommunityActivityState>("community-activity-cache", () => ({
+    openContest: null,
     activities: [],
     nextCursor: null,
     hasLoaded: false,
@@ -42,7 +46,7 @@ export function useCommunityActivity() {
   }
 
   function response(): CommunityActivityResponse {
-    return { activities: state.value.activities, nextCursor: state.value.nextCursor };
+    return { activities: state.value.activities, nextCursor: state.value.nextCursor, openContest: state.value.openContest };
   }
 
   async function fetchPage(cursor: string | null): Promise<void> {
@@ -53,11 +57,12 @@ export function useCommunityActivity() {
       const page = await getCommunityActivity(config.public.apiBase, cursor);
       // A local mutation during the request makes this response obsolete.
       if (version !== coordination.version) return;
+      if (!cursor) state.value.openContest = page.openContest ?? null;
       const activities = cursor
         ? [...state.value.activities, ...page.activities]
         : page.activities;
       state.value.activities = [...new Map(
-        activities.map((activity) => [activity.trip.id, activity]),
+        activities.map((activity) => [communityActivityKey(activity), activity]),
       ).values()];
       state.value.nextCursor = page.nextCursor;
       state.value.hasLoaded = true;
@@ -98,6 +103,11 @@ export function useCommunityActivity() {
     await run(state.value.nextCursor);
   }
 
+  async function refresh(): Promise<CommunityActivityResponse> {
+    invalidate();
+    return load();
+  }
+
   async function retry(): Promise<void> {
     if (state.value.hasLoaded && !state.value.invalidated) await loadMore();
     else await load();
@@ -107,6 +117,7 @@ export function useCommunityActivity() {
     ...toRefs(state.value),
     load,
     loadMore,
+    refresh,
     invalidate,
     retry,
   };
