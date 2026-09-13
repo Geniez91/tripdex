@@ -197,8 +197,8 @@ function selectCountry(iso3: string | null): void {
 .community-context {
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 0 28px 14px;
+  gap: 16px;
+  padding: 0 20px 4px;
 }
 .community-context p {
   flex: 1;
