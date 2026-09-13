@@ -9,13 +9,18 @@ import type {
   CommunityMapMode,
 } from "~/types/interfaces/community-map";
 import type { MapCountryAppearance } from "~/types/interfaces/map";
-import { getCommunityStatistics } from "~/services/api/community";
+import {
+  getCommunityCountryExplorer,
+  getCommunityStatistics,
+} from "~/services/api/community";
+import type { CommunityCountryExplorer } from "~/types/interfaces/community-country-explorer";
 import {
   communityAppearances,
   isCommunityYear,
   selectedFlows,
 } from "~/services/communityMap";
 import CommunityMapControls from "~/components/community/CommunityMapControls.vue";
+import CommunityCountryPreview from "~/components/community/CommunityCountryPreview.vue";
 import CommunityCountryPanel from "~/components/community/CommunityCountryPanel.vue";
 import CommunityFlowLayer from "~/components/community/CommunityFlowLayer.vue";
 import CommunityMemoryMarker from "~/components/community/CommunityMemoryMarker.vue";
@@ -26,9 +31,17 @@ const config = useRuntimeConfig();
 const { data: memories } = await useAsyncData<CountryMemory[]>("community-memories",
   () => getCountryMemories(config.public.apiBase), { server: false, default: () => [] });
 const activeMemory = ref<string | null>(null);
+const hoveredIso3 = ref<string | null>(null);
+const previewPosition = ref({ left: 12, top: 12 });
 const year = ref<number>(new Date().getUTCFullYear());
 const mode = ref<CommunityMapMode>("travelers");
 const selectedIso3 = ref<string | null>(null);
+const panelIso3 = ref<string | null>(null);
+const mapStageElement = ref<HTMLElement | null>(null);
+const countryDetails = shallowRef(new Map<string, CommunityCountryExplorer>());
+const countryDetailLoading = ref(false);
+const countryDetailFailed = ref(false);
+let countryDetailController: AbortController | null = null;
 const { data, status, error, refresh } =
   await useAsyncData<CommunityStatistics>(
     computed<string>(() => `community-countries-${year.value}`),
@@ -46,6 +59,20 @@ const selectedCountry = computed<CommunityCountryStatistics | null>(() =>
     ? (countriesByIso3.value.get(selectedIso3.value) ?? null)
     : null,
 );
+const panelCountry = computed<CommunityCountryStatistics | null>(() =>
+  panelIso3.value ? (countriesByIso3.value.get(panelIso3.value) ?? null) : null,
+);
+const panelDetail = computed<CommunityCountryExplorer | null>(() =>
+  panelIso3.value ? (countryDetails.value.get(panelIso3.value) ?? null) : null,
+);
+const hoveredCountry = computed(() =>
+  hoveredIso3.value
+    ? (props.countries.find((country) => country.iso3 === hoveredIso3.value) ?? null)
+    : null,
+);
+const hoveredStatistics = computed(() =>
+  hoveredIso3.value ? (countriesByIso3.value.get(hoveredIso3.value) ?? null) : null,
+);
 const appearances = computed<Record<string, MapCountryAppearance>>(() =>
   communityAppearances(statistics.value, mode.value, year.value),
 );
@@ -57,9 +84,6 @@ const hasTrending = computed<boolean>(() =>
 );
 const loading = computed<boolean>(
   () => status.value === "pending" || status.value === "idle",
-);
-const asOfDate = computed<string | null>(() =>
-  status.value === "success" ? (data.value?.asOfDate ?? null) : null,
 );
 watch(
   () => props.revision,
@@ -73,7 +97,67 @@ function changeMode(value: CommunityMapMode): void {
 }
 function selectCountry(iso3: string | null): void {
   selectedIso3.value = iso3;
+  panelIso3.value = iso3 && props.countries.some((country) => country.iso3 === iso3)
+    ? iso3
+    : null;
+  hoveredIso3.value = null;
 }
+function setHoveredCountry(
+  iso3: string | null,
+  point: { clientX: number; clientY: number } | null,
+): void {
+  hoveredIso3.value = iso3;
+  if (!iso3) return;
+  const bounds = mapStageElement.value?.getBoundingClientRect();
+  if (!bounds || !point) {
+    previewPosition.value = { left: 12, top: 12 };
+    return;
+  }
+  previewPosition.value = {
+    left: Math.max(8, Math.min(point.clientX - bounds.left + 14, bounds.width - 250)),
+    top: Math.max(8, Math.min(point.clientY - bounds.top + 14, bounds.height - 130)),
+  };
+}
+function closeCountryPanel(): void {
+  panelIso3.value = null;
+}
+async function loadCountryDetail(iso3: string, force = false): Promise<void> {
+  if (!force) {
+    const cached = countryDetails.value.get(iso3);
+    if (cached) {
+      countryDetailFailed.value = false;
+      countryDetailLoading.value = false;
+      return;
+    }
+  }
+  countryDetailController?.abort();
+  const controller = new AbortController();
+  countryDetailController = controller;
+  countryDetailLoading.value = true;
+  countryDetailFailed.value = false;
+  try {
+    const detail = await getCommunityCountryExplorer(config.public.apiBase, iso3, controller.signal);
+    if (controller.signal.aborted) return;
+    countryDetails.value = new Map(countryDetails.value).set(iso3, detail);
+  } catch {
+    if (!controller.signal.aborted) countryDetailFailed.value = true;
+  } finally {
+    if (!controller.signal.aborted) countryDetailLoading.value = false;
+  }
+}
+watch(panelIso3, (iso3) => {
+  if (iso3) void loadCountryDetail(iso3);
+  else {
+    countryDetailController?.abort();
+    countryDetailLoading.value = false;
+    countryDetailFailed.value = false;
+  }
+});
+watch(() => props.revision, () => {
+  countryDetails.value = new Map();
+  if (panelIso3.value) void loadCountryDetail(panelIso3.value, true);
+});
+onBeforeUnmount(() => countryDetailController?.abort());
 </script>
 <template>
   <div class="community-explorer" :data-mode="mode">
@@ -134,43 +218,71 @@ function selectCountry(iso3: string | null): void {
     >
       Aucune origine disponible pour cette destination. Aucun flux à tracer.
     </p>
-    <WorldMap
-      :countries="countries"
-      :visited-iso3="[]"
-      :appearances="appearances"
-      :selected-iso3="selectedIso3"
-      :available="status === 'success'"
-      :loading="loading"
-      zoomable
-      @select="selectCountry"
-    >
-      <template #annotations="{ anchors, zoom, camera }">
-        <template v-for="memory in memories" :key="memory.winnerSubmissionId">
-          <CommunityMemoryMarker v-if="anchors.has(memory.countryCode) && memory.winnerSubmissionId && memory.imageUrl"
-            :memory="memory" :anchor="anchors.get(memory.countryCode)!" :zoom="zoom" :camera="camera" :active="activeMemory === memory.countryCode"
-            @update:active="activeMemory = $event ? memory.countryCode : activeMemory === memory.countryCode ? null : activeMemory" />
-        </template>
-      </template>
-      <template #routes="{ anchors, drawRoute }"
-        ><CommunityFlowLayer
-          v-if="mode === 'flows'"
-          :flows="flows"
-          :anchors="anchors"
-          :draw-route="drawRoute"
-      /></template>
-      <template #legend>
-        <div v-if="mode === 'travelers'" class="community-legend">
-          <span class="intensity-key" aria-hidden="true" />Voyageurs : de peu à
-          beaucoup
-        </div>
-        <div v-else-if="mode === 'trending'" class="community-legend">
-          <span class="sun-key" aria-hidden="true" />Destinations tendance
-        </div>
-        <div v-else class="community-legend">
-          <span aria-hidden="true">○ → ●</span> Résidence → destination
-        </div>
-      </template>
-    </WorldMap>
+    <div class="country-explorer-layout" :class="{ 'has-country-panel': !!panelIso3 }">
+      <div ref="mapStageElement" class="country-map-stage">
+        <WorldMap
+          :countries="countries"
+          :visited-iso3="[]"
+          :appearances="appearances"
+          :selected-iso3="selectedIso3"
+          :available="status === 'success'"
+          :loading="loading"
+          zoomable
+          @select="selectCountry"
+          @hover-country="setHoveredCountry"
+        >
+          <template #annotations="{ anchors, zoom, camera }">
+            <template v-for="memory in memories" :key="memory.winnerSubmissionId">
+              <CommunityMemoryMarker
+                v-if="anchors.has(memory.countryCode) && memory.winnerSubmissionId && memory.imageUrl"
+                :memory="memory"
+                :anchor="anchors.get(memory.countryCode)!"
+                :zoom="zoom"
+                :camera="camera"
+                :active="activeMemory === memory.countryCode"
+                @update:active="activeMemory = $event ? memory.countryCode : activeMemory === memory.countryCode ? null : activeMemory"
+              />
+            </template>
+          </template>
+          <template #routes="{ anchors, drawRoute }">
+            <CommunityFlowLayer
+              v-if="mode === 'flows'"
+              :flows="flows"
+              :anchors="anchors"
+              :draw-route="drawRoute"
+            />
+          </template>
+          <template #legend>
+            <div v-if="mode === 'travelers'" class="community-legend">
+              <span class="intensity-key" aria-hidden="true" />Voyageurs : de peu à beaucoup
+            </div>
+            <div v-else-if="mode === 'trending'" class="community-legend">
+              <span class="sun-key" aria-hidden="true" />Destinations tendance
+            </div>
+            <div v-else class="community-legend">
+              <span aria-hidden="true">○ → ●</span> Résidence → destination
+            </div>
+          </template>
+        </WorldMap>
+        <CommunityCountryPreview
+          v-if="hoveredCountry"
+          class="country-preview-position"
+          :style="{ left: `${previewPosition.left}px`, top: `${previewPosition.top}px` }"
+          :country="hoveredCountry"
+          :statistics="hoveredStatistics"
+          :year="year"
+        />
+      </div>
+      <CommunityCountryPanel
+        v-if="panelIso3"
+        :open="!!panelIso3"
+        :country="panelCountry?.country ?? null"
+        :detail="panelDetail"
+        :loading="countryDetailLoading"
+        :failed="countryDetailFailed"
+        @close="closeCountryPanel"
+      />
+    </div>
     <p class="mobile-map-note">
       Faites glisser la carte ou utilisez la recherche pour choisir un
       pays.<span v-if="mode === 'flows'">
@@ -178,14 +290,6 @@ function selectCountry(iso3: string | null): void {
         figurent ci-dessous.</span
       >
     </p>
-    <CommunityCountryPanel
-      :country="selectedCountry"
-      :year="year"
-      :as-of-date="asOfDate"
-      :loading="loading"
-      :failed="!!error"
-      :has-selection="selectedIso3 !== null"
-    />
     <p class="community-note">
       Un voyageur compte une fois par pays et par année, voyages prévus inclus.
       Les origines correspondent aux pays de résidence renseignés. La présence
@@ -194,6 +298,24 @@ function selectCountry(iso3: string | null): void {
   </div>
 </template>
 <style scoped>
+.country-explorer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 18px;
+}
+.country-explorer-layout.has-country-panel {
+  grid-template-columns: minmax(0, 1fr) minmax(320px, clamp(360px, 40vw, 540px));
+  padding-inline: 20px;
+}
+.country-map-stage {
+  position: relative;
+  min-width: 0;
+}
+.country-preview-position {
+  position: absolute;
+  z-index: 4;
+}
 .community-context {
   display: flex;
   align-items: center;
@@ -251,6 +373,12 @@ function selectCountry(iso3: string | null): void {
 }
 .mobile-map-note {
   display: none;
+}
+@media (max-width: 960px) {
+  .country-explorer-layout.has-country-panel {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 0;
+  }
 }
 @media (max-width: 600px) {
   .community-context {

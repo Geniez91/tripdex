@@ -28,7 +28,13 @@ const props = defineProps<{
   scrollable?: boolean;
   zoomable?: boolean;
 }>();
-const emit = defineEmits<{ select: [iso3: string | null] }>();
+const emit = defineEmits<{
+  select: [iso3: string | null];
+  'hover-country': [
+    iso3: string | null,
+    point: { clientX: number; clientY: number } | null,
+  ];
+}>();
 const viewportElement = ref<HTMLElement | null>(null);
 const viewport = ref({ width: Number(MAP_VIEWBOX.width), height: Number(MAP_VIEWBOX.height) });
 const zoom = computed(() => zoomTransform.value.k);
@@ -219,6 +225,18 @@ function suppressDragClick(event: MouseEvent): void {
 }
 function clearPreview(): void {
   if (props.selectedIso3 !== undefined) active.value = null;
+  emit('hover-country', null, null);
+}
+function previewPointer(iso3: string | null, event: PointerEvent): void {
+  if (event.pointerType === 'mouse') {
+    emit('hover-country', iso3, { clientX: event.clientX, clientY: event.clientY });
+  }
+}
+function previewFocus(iso3: string | null): void {
+  emit('hover-country', iso3, null);
+}
+function clearCountryHover(): void {
+  emit('hover-country', null, null);
 }
 function countryStyle(iso3: string | null): Record<string, string> {
   const appearance = iso3 ? props.appearances?.[iso3] : undefined;
@@ -309,7 +327,9 @@ function countryState(iso3: string | null): string {
               role="button"
               :aria-label="`${shape.properties.name} — ${countryState(shape.properties.iso3)}`"
               @mouseenter="active = shape.properties"
-              @focus="active = shape.properties"
+              @pointerenter="previewPointer(shape.properties.iso3, $event)"
+              @pointerleave="clearCountryHover"
+              @focus="active = shape.properties; previewFocus(shape.properties.iso3)"
               @blur="clearPreview"
               @click="selectCountry(shape.properties)"
               @keydown.enter.prevent="selectCountry(shape.properties)"
@@ -343,7 +363,9 @@ function countryState(iso3: string | null): string {
               role="button"
               :aria-label="`${shape.properties.name} — ${countryState(shape.properties.iso3)}`"
               @mouseenter="active = shape.properties"
-              @focus="active = shape.properties"
+              @pointerenter="previewPointer(shape.properties.iso3, $event)"
+              @pointerleave="clearCountryHover"
+              @focus="active = shape.properties; previewFocus(shape.properties.iso3)"
               @blur="clearPreview"
               @click="selectCountry(shape.properties)"
               @keydown.enter.prevent="selectCountry(shape.properties)"

@@ -14,6 +14,8 @@ import { CommunityActivityRepository } from './repositories/community-activity.r
 import { WeeklyPhotoContestRepository } from './photo-contests/weekly-photo-contest.repository.js';
 import { WeeklyPhotoContestSelectionService } from './photo-contests/photo-contest-selection.service.js';
 import { WeeklyPhotoContestScheduler } from './photo-contests/weekly-photo-contest.scheduler.js';
+import { CommunityCountryExplorerRepository } from './repositories/community-country-explorer.repository.js';
+import { CommunityCountryExplorerService } from './community-country-explorer.service.js';
 
 @Module({
   imports: [DatabaseModule, TripsModule, AuthModule],
@@ -30,6 +32,8 @@ import { WeeklyPhotoContestScheduler } from './photo-contests/weekly-photo-conte
     WeeklyPhotoContestRepository,
     WeeklyPhotoContestSelectionService,
     WeeklyPhotoContestScheduler,
+    CommunityCountryExplorerRepository,
+    CommunityCountryExplorerService,
   ],
 })
 export class CommunityModule {}

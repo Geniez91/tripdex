@@ -1,5 +1,6 @@
 import type { CommunityStatistics } from "~/types/interfaces/community";
 import type { CommunityActivityResponse } from "~/types/interfaces/community";
+import type { CommunityCountryExplorer } from "~/types/interfaces/community-country-explorer";
 
 export function getCommunityStatistics(
   baseURL: string,
@@ -22,4 +23,15 @@ export function getCommunityActivity(
     query: { limit, ...(cursor ? { cursor } : {}) },
     retry: 0,
   });
+}
+
+export function getCommunityCountryExplorer(
+  baseURL: string,
+  countryCode: string,
+  signal?: AbortSignal,
+): Promise<CommunityCountryExplorer> {
+  return $fetch<CommunityCountryExplorer>(
+    `/community/countries/${encodeURIComponent(countryCode)}`,
+    { baseURL, signal, retry: 0 },
+  );
 }

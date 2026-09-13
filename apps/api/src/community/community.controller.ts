@@ -4,6 +4,7 @@ import {
   Header,
   HttpCode,
   HttpStatus,
+  Param,
   Query,
 } from '@nestjs/common';
 import { CommunityService } from './community.service.js';
@@ -15,11 +16,14 @@ import { CommunityActivityQueryPipe } from './community-activity-query.pipe.js';
 import { CommunityActivityService } from './community-activity.service.js';
 import type { CommunityActivityQueryDto } from './dto/community-activity-query.dto.js';
 import type { CommunityActivityResponseDto } from './dto/community-activity-response.dto.js';
+import { CommunityCountryExplorerService } from './community-country-explorer.service.js';
+import type { CommunityCountryExplorerDto } from './dto/community-country-explorer.dto.js';
 @Controller('community')
 export class CommunityController {
   constructor(
     private readonly community: CommunityService,
     private readonly activity: CommunityActivityService,
+    private readonly countries: CommunityCountryExplorerService,
   ) {}
 
   @Get('activity')
@@ -38,5 +42,14 @@ export class CommunityController {
     @Query(CommunityQueryPipe) query: CommunityQueryDto,
   ): Promise<CommunityStatisticsResponseDto> {
     return this.community.statistics(query.year);
+  }
+
+  @Get('countries/:countryCode')
+  @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'no-store')
+  countryExplorer(
+    @Param('countryCode') countryCode: string,
+  ): Promise<CommunityCountryExplorerDto> {
+    return this.countries.detail(countryCode);
   }
 }
