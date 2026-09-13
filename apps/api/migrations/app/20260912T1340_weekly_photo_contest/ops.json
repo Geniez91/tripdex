@@ -1,0 +1,86 @@
+[
+  {
+    "id": "column.public.photoContest.weeklyPeriod",
+    "label": "Add column \"weeklyPeriod\" to \"photoContest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "weeklyPeriod",
+        "table": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"weeklyPeriod\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "photoContest",
+          "weeklyPeriod"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"weeklyPeriod\"",
+        "sql": "ALTER TABLE \"public\".\"photoContest\" ADD COLUMN \"weeklyPeriod\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"weeklyPeriod\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "photoContest",
+          "weeklyPeriod"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.photoContest.photoContest_weeklyPeriod_key",
+    "label": "Add unique constraint on \"photoContest\" (weeklyPeriod)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "photoContest_weeklyPeriod_key",
+        "table": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"photoContest_weeklyPeriod_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContest_weeklyPeriod_key",
+          "public",
+          "\"public\".\"photoContest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"photoContest_weeklyPeriod_key\"",
+        "sql": "ALTER TABLE \"public\".\"photoContest\" ADD CONSTRAINT \"photoContest_weeklyPeriod_key\" UNIQUE (\"weeklyPeriod\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"photoContest_weeklyPeriod_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContest_weeklyPeriod_key",
+          "public",
+          "\"public\".\"photoContest\""
+        ]
+      }
+    ]
+  }
+]

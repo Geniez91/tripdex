@@ -15,7 +15,7 @@ export interface CommunityActivityUserDto {
   avatarUrl: string | null;
 }
 
-export interface CommunityActivityItemDto {
+export interface TripActivityItemDto {
   type: 'TRIP_LOGGED';
   activityDate: string;
   trip: {
@@ -33,7 +33,16 @@ export interface CommunityActivityItemDto {
   user: CommunityActivityUserDto;
 }
 
+export interface PhotoContestActivityItemDto {
+  type: 'PHOTO_CONTEST_OPENED';
+  activityDate: string;
+  contest: import('../photo-contests/photo-contest.dto.js').PhotoContestDto;
+}
+
+export type CommunityActivityItemDto = TripActivityItemDto | PhotoContestActivityItemDto;
+
 export interface CommunityActivityResponseDto {
+  openContest?: PhotoContestActivityItemDto | null;
   activities: CommunityActivityItemDto[];
   nextCursor: string | null;
 }

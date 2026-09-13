@@ -6,6 +6,10 @@ import type { OwnedTripCoverRecord } from '../types/trip-cover-record.js';
 export class TripCoversRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  async isSubmitted(tripId: string, coverStoragePath: string): Promise<boolean> {
+    return !!await this.database.client.orm.public.PhotoContestSubmission.where({ tripId, coverStoragePath }).first();
+  }
+
   findOwned(
     userId: string,
     tripId: string,

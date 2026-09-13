@@ -1,0 +1,1049 @@
+[
+  {
+    "id": "table.photoContest",
+    "label": "Create table \"photoContest\"",
+    "summary": "Creates table \"photoContest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"photoContest\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"photoContest\"",
+        "sql": "CREATE TABLE \"public\".\"photoContest\" (\n  \"countryId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"endsAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"startsAt\" timestamptz NOT NULL,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"winnerSubmissionId\" text,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"photoContest_status_check_32214e16\" CHECK (\"status\" IN ('OPEN', 'CLOSED')),\n  CONSTRAINT \"photo_contest_period_11ffcbfd\" CHECK (\"startsAt\" < \"endsAt\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"photoContest\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.photoContestSubmission",
+    "label": "Create table \"photoContestSubmission\"",
+    "summary": "Creates table \"photoContestSubmission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"photoContestSubmission\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"photoContestSubmission\"",
+        "sql": "CREATE TABLE \"public\".\"photoContestSubmission\" (\n  \"contestId\" text NOT NULL,\n  \"coverStoragePath\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"tripId\" text NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"photoContestSubmission\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.photoContestVote",
+    "label": "Create table \"photoContestVote\"",
+    "summary": "Creates table \"photoContestVote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"photoContestVote\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"photoContestVote\"",
+        "sql": "CREATE TABLE \"public\".\"photoContestVote\" (\n  \"contestId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"submissionId\" text NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"photoContestVote\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.photoContestSubmission.photoContestSubmission_contestId_userId_key",
+    "label": "Add unique constraint on \"photoContestSubmission\" (contestId, userId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "photoContestSubmission_contestId_userId_key",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"photoContestSubmission_contestId_userId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_contestId_userId_key",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"photoContestSubmission_contestId_userId_key\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestSubmission\" ADD CONSTRAINT \"photoContestSubmission_contestId_userId_key\" UNIQUE (\"contestId\", \"userId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"photoContestSubmission_contestId_userId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_contestId_userId_key",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.photoContestSubmission.photoContestSubmission_contestId_id_key",
+    "label": "Add unique constraint on \"photoContestSubmission\" (contestId, id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "photoContestSubmission_contestId_id_key",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"photoContestSubmission_contestId_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_contestId_id_key",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"photoContestSubmission_contestId_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestSubmission\" ADD CONSTRAINT \"photoContestSubmission_contestId_id_key\" UNIQUE (\"contestId\", \"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"photoContestSubmission_contestId_id_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_contestId_id_key",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.photoContestVote.photoContestVote_contestId_userId_key",
+    "label": "Add unique constraint on \"photoContestVote\" (contestId, userId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "photoContestVote_contestId_userId_key",
+        "table": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"photoContestVote_contestId_userId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestVote_contestId_userId_key",
+          "public",
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"photoContestVote_contestId_userId_key\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestVote\" ADD CONSTRAINT \"photoContestVote_contestId_userId_key\" UNIQUE (\"contestId\", \"userId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"photoContestVote_contestId_userId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestVote_contestId_userId_key",
+          "public",
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContest.photoContest_countryId_endsAt_id_idx_f56bfe70",
+    "label": "Create index \"photoContest_countryId_endsAt_id_idx_f56bfe70\" on \"photoContest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContest_countryId_endsAt_id_idx_f56bfe70",
+        "table": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContest_countryId_endsAt_id_idx_f56bfe70\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest_countryId_endsAt_id_idx_f56bfe70\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContest_countryId_endsAt_id_idx_f56bfe70\"",
+        "sql": "CREATE INDEX \"photoContest_countryId_endsAt_id_idx_f56bfe70\" ON \"public\".\"photoContest\" (\"countryId\", \"endsAt\", \"id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContest_countryId_endsAt_id_idx_f56bfe70\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest_countryId_endsAt_id_idx_f56bfe70\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContest.photoContest_countryId_idx_27b43b27",
+    "label": "Create index \"photoContest_countryId_idx_27b43b27\" on \"photoContest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContest_countryId_idx_27b43b27",
+        "table": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContest_countryId_idx_27b43b27\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest_countryId_idx_27b43b27\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContest_countryId_idx_27b43b27\"",
+        "sql": "CREATE INDEX \"photoContest_countryId_idx_27b43b27\" ON \"public\".\"photoContest\" (\"countryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContest_countryId_idx_27b43b27\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest_countryId_idx_27b43b27\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContest.photoContest_startsAt_id_idx_8f6c6775",
+    "label": "Create index \"photoContest_startsAt_id_idx_8f6c6775\" on \"photoContest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContest_startsAt_id_idx_8f6c6775",
+        "table": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContest_startsAt_id_idx_8f6c6775\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest_startsAt_id_idx_8f6c6775\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContest_startsAt_id_idx_8f6c6775\"",
+        "sql": "CREATE INDEX \"photoContest_startsAt_id_idx_8f6c6775\" ON \"public\".\"photoContest\" (\"startsAt\", \"id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContest_startsAt_id_idx_8f6c6775\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest_startsAt_id_idx_8f6c6775\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContest.photoContest_winnerSubmissionId_idx_27cae014",
+    "label": "Create index \"photoContest_winnerSubmissionId_idx_27cae014\" on \"photoContest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContest_winnerSubmissionId_idx_27cae014",
+        "table": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContest_winnerSubmissionId_idx_27cae014\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest_winnerSubmissionId_idx_27cae014\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContest_winnerSubmissionId_idx_27cae014\"",
+        "sql": "CREATE INDEX \"photoContest_winnerSubmissionId_idx_27cae014\" ON \"public\".\"photoContest\" (\"winnerSubmissionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContest_winnerSubmissionId_idx_27cae014\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContest_winnerSubmissionId_idx_27cae014\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContestSubmission.photoContestSubmission_contestId_idx_8a30d986",
+    "label": "Create index \"photoContestSubmission_contestId_idx_8a30d986\" on \"photoContestSubmission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContestSubmission_contestId_idx_8a30d986",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContestSubmission_contestId_idx_8a30d986\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission_contestId_idx_8a30d986\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContestSubmission_contestId_idx_8a30d986\"",
+        "sql": "CREATE INDEX \"photoContestSubmission_contestId_idx_8a30d986\" ON \"public\".\"photoContestSubmission\" (\"contestId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContestSubmission_contestId_idx_8a30d986\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission_contestId_idx_8a30d986\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContestSubmission.photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff",
+    "label": "Create index \"photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff\" on \"photoContestSubmission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff\"",
+        "sql": "CREATE INDEX \"photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff\" ON \"public\".\"photoContestSubmission\" (\"tripId\", \"coverStoragePath\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContestSubmission.photoContestSubmission_tripId_idx_75da6d97",
+    "label": "Create index \"photoContestSubmission_tripId_idx_75da6d97\" on \"photoContestSubmission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContestSubmission_tripId_idx_75da6d97",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContestSubmission_tripId_idx_75da6d97\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission_tripId_idx_75da6d97\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContestSubmission_tripId_idx_75da6d97\"",
+        "sql": "CREATE INDEX \"photoContestSubmission_tripId_idx_75da6d97\" ON \"public\".\"photoContestSubmission\" (\"tripId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContestSubmission_tripId_idx_75da6d97\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission_tripId_idx_75da6d97\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContestSubmission.photoContestSubmission_userId_idx_a489d58a",
+    "label": "Create index \"photoContestSubmission_userId_idx_a489d58a\" on \"photoContestSubmission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContestSubmission_userId_idx_a489d58a",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContestSubmission_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContestSubmission_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"photoContestSubmission_userId_idx_a489d58a\" ON \"public\".\"photoContestSubmission\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContestSubmission_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestSubmission_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContestVote.photoContestVote_contestId_idx_8a30d986",
+    "label": "Create index \"photoContestVote_contestId_idx_8a30d986\" on \"photoContestVote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContestVote_contestId_idx_8a30d986",
+        "table": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContestVote_contestId_idx_8a30d986\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote_contestId_idx_8a30d986\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContestVote_contestId_idx_8a30d986\"",
+        "sql": "CREATE INDEX \"photoContestVote_contestId_idx_8a30d986\" ON \"public\".\"photoContestVote\" (\"contestId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContestVote_contestId_idx_8a30d986\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote_contestId_idx_8a30d986\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContestVote.photoContestVote_contestId_submissionId_idx_3198671f",
+    "label": "Create index \"photoContestVote_contestId_submissionId_idx_3198671f\" on \"photoContestVote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContestVote_contestId_submissionId_idx_3198671f",
+        "table": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContestVote_contestId_submissionId_idx_3198671f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote_contestId_submissionId_idx_3198671f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContestVote_contestId_submissionId_idx_3198671f\"",
+        "sql": "CREATE INDEX \"photoContestVote_contestId_submissionId_idx_3198671f\" ON \"public\".\"photoContestVote\" (\"contestId\", \"submissionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContestVote_contestId_submissionId_idx_3198671f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote_contestId_submissionId_idx_3198671f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContestVote.photoContestVote_submissionId_idx_89cd3f4e",
+    "label": "Create index \"photoContestVote_submissionId_idx_89cd3f4e\" on \"photoContestVote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContestVote_submissionId_idx_89cd3f4e",
+        "table": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContestVote_submissionId_idx_89cd3f4e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote_submissionId_idx_89cd3f4e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContestVote_submissionId_idx_89cd3f4e\"",
+        "sql": "CREATE INDEX \"photoContestVote_submissionId_idx_89cd3f4e\" ON \"public\".\"photoContestVote\" (\"submissionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContestVote_submissionId_idx_89cd3f4e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote_submissionId_idx_89cd3f4e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.photoContestVote.photoContestVote_userId_idx_a489d58a",
+    "label": "Create index \"photoContestVote_userId_idx_a489d58a\" on \"photoContestVote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "photoContestVote_userId_idx_a489d58a",
+        "table": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"photoContestVote_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"photoContestVote_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"photoContestVote_userId_idx_a489d58a\" ON \"public\".\"photoContestVote\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"photoContestVote_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"photoContestVote_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.photoContest.photoContest_countryId_fkey",
+    "label": "Add foreign key \"photoContest_countryId_fkey\" on \"photoContest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "photoContest_countryId_fkey",
+        "table": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"photoContest_countryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContest_countryId_fkey",
+          "public",
+          "\"public\".\"photoContest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"photoContest_countryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"photoContest\"\nADD CONSTRAINT \"photoContest_countryId_fkey\"\nFOREIGN KEY (\"countryId\")\nREFERENCES \"public\".\"country\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"photoContest_countryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContest_countryId_fkey",
+          "public",
+          "\"public\".\"photoContest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.photoContest.photoContest_winnerSubmissionId_fkey",
+    "label": "Add foreign key \"photoContest_winnerSubmissionId_fkey\" on \"photoContest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "photoContest_winnerSubmissionId_fkey",
+        "table": "photoContest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"photoContest_winnerSubmissionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContest_winnerSubmissionId_fkey",
+          "public",
+          "\"public\".\"photoContest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"photoContest_winnerSubmissionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"photoContest\"\nADD CONSTRAINT \"photoContest_winnerSubmissionId_fkey\"\nFOREIGN KEY (\"winnerSubmissionId\")\nREFERENCES \"public\".\"photoContestSubmission\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"photoContest_winnerSubmissionId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContest_winnerSubmissionId_fkey",
+          "public",
+          "\"public\".\"photoContest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.photoContestSubmission.photoContestSubmission_contestId_fkey",
+    "label": "Add foreign key \"photoContestSubmission_contestId_fkey\" on \"photoContestSubmission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "photoContestSubmission_contestId_fkey",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"photoContestSubmission_contestId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_contestId_fkey",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"photoContestSubmission_contestId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestSubmission\"\nADD CONSTRAINT \"photoContestSubmission_contestId_fkey\"\nFOREIGN KEY (\"contestId\")\nREFERENCES \"public\".\"photoContest\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"photoContestSubmission_contestId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_contestId_fkey",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.photoContestSubmission.photoContestSubmission_userId_fkey",
+    "label": "Add foreign key \"photoContestSubmission_userId_fkey\" on \"photoContestSubmission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "photoContestSubmission_userId_fkey",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"photoContestSubmission_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_userId_fkey",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"photoContestSubmission_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestSubmission\"\nADD CONSTRAINT \"photoContestSubmission_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"photoContestSubmission_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_userId_fkey",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.photoContestSubmission.photoContestSubmission_tripId_fkey",
+    "label": "Add foreign key \"photoContestSubmission_tripId_fkey\" on \"photoContestSubmission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "photoContestSubmission_tripId_fkey",
+        "table": "photoContestSubmission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"photoContestSubmission_tripId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_tripId_fkey",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"photoContestSubmission_tripId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestSubmission\"\nADD CONSTRAINT \"photoContestSubmission_tripId_fkey\"\nFOREIGN KEY (\"tripId\")\nREFERENCES \"public\".\"trip\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"photoContestSubmission_tripId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestSubmission_tripId_fkey",
+          "public",
+          "\"public\".\"photoContestSubmission\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.photoContestVote.photoContestVote_contestId_fkey",
+    "label": "Add foreign key \"photoContestVote_contestId_fkey\" on \"photoContestVote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "photoContestVote_contestId_fkey",
+        "table": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"photoContestVote_contestId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestVote_contestId_fkey",
+          "public",
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"photoContestVote_contestId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestVote\"\nADD CONSTRAINT \"photoContestVote_contestId_fkey\"\nFOREIGN KEY (\"contestId\")\nREFERENCES \"public\".\"photoContest\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"photoContestVote_contestId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestVote_contestId_fkey",
+          "public",
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.photoContestVote.photoContestVote_userId_fkey",
+    "label": "Add foreign key \"photoContestVote_userId_fkey\" on \"photoContestVote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "photoContestVote_userId_fkey",
+        "table": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"photoContestVote_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestVote_userId_fkey",
+          "public",
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"photoContestVote_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestVote\"\nADD CONSTRAINT \"photoContestVote_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"photoContestVote_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestVote_userId_fkey",
+          "public",
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.photoContestVote.photoContestVote_contestId_submissionId_fkey",
+    "label": "Add foreign key \"photoContestVote_contestId_submissionId_fkey\" on \"photoContestVote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "photoContestVote_contestId_submissionId_fkey",
+        "table": "photoContestVote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"photoContestVote_contestId_submissionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestVote_contestId_submissionId_fkey",
+          "public",
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"photoContestVote_contestId_submissionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"photoContestVote\"\nADD CONSTRAINT \"photoContestVote_contestId_submissionId_fkey\"\nFOREIGN KEY (\"contestId\", \"submissionId\")\nREFERENCES \"public\".\"photoContestSubmission\" (\"contestId\", \"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"photoContestVote_contestId_submissionId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "photoContestVote_contestId_submissionId_fkey",
+          "public",
+          "\"public\".\"photoContestVote\""
+        ]
+      }
+    ]
+  }
+]

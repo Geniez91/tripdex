@@ -12,6 +12,18 @@
       "model": "Country",
       "namespace": "public"
     },
+    "photoContest": {
+      "model": "PhotoContest",
+      "namespace": "public"
+    },
+    "photoContestSubmission": {
+      "model": "PhotoContestSubmission",
+      "namespace": "public"
+    },
+    "photoContestVote": {
+      "model": "PhotoContestVote",
+      "namespace": "public"
+    },
     "trip": {
       "model": "Trip",
       "namespace": "public"
@@ -33,6 +45,19 @@
     "namespaces": {
       "public": {
         "enum": {
+          "photo_contest_status": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "OPEN",
+                "value": "OPEN"
+              },
+              {
+                "name": "CLOSED",
+                "value": "CLOSED"
+              }
+            ]
+          },
           "trip_visibility": {
             "codecId": "pg/text@1",
             "members": [
@@ -290,6 +315,360 @@
               },
               "namespaceId": "public",
               "table": "country"
+            }
+          },
+          "PhotoContest": {
+            "fields": {
+              "countryId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "endsAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startsAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "photo_contest_status",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "weeklyPeriod": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "winnerSubmissionId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "country": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "countryId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Country",
+                  "namespace": "public"
+                }
+              },
+              "winner": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "winnerSubmissionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PhotoContestSubmission",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "countryId": {
+                  "column": "countryId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "endsAt": {
+                  "column": "endsAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "startsAt": {
+                  "column": "startsAt"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "weeklyPeriod": {
+                  "column": "weeklyPeriod"
+                },
+                "winnerSubmissionId": {
+                  "column": "winnerSubmissionId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "photoContest"
+            }
+          },
+          "PhotoContestSubmission": {
+            "fields": {
+              "contestId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "coverStoragePath": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tripId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "contest": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "contestId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PhotoContest",
+                  "namespace": "public"
+                }
+              },
+              "trip": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "tripId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Trip",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "contestId": {
+                  "column": "contestId"
+                },
+                "coverStoragePath": {
+                  "column": "coverStoragePath"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "tripId": {
+                  "column": "tripId"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "photoContestSubmission"
+            }
+          },
+          "PhotoContestVote": {
+            "fields": {
+              "contestId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "submissionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "contest": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "contestId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PhotoContest",
+                  "namespace": "public"
+                }
+              },
+              "submission": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "contestId",
+                    "submissionId"
+                  ],
+                  "targetFields": [
+                    "contestId",
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PhotoContestSubmission",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "contestId": {
+                  "column": "contestId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "submissionId": {
+                  "column": "submissionId"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "photoContestVote"
             }
           },
           "Trip": {
@@ -931,6 +1310,434 @@
                 }
               ]
             },
+            "photoContest": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('OPEN', 'CLOSED')",
+                  "name": "photoContest_status_check_32214e16",
+                  "prefix": "photoContest_status_check"
+                },
+                {
+                  "expression": "\"startsAt\" < \"endsAt\"",
+                  "name": "photo_contest_period_11ffcbfd",
+                  "prefix": "photo_contest_period"
+                }
+              ],
+              "columns": {
+                "countryId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "endsAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "startsAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "OPEN"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "photo_contest_status",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "weeklyPeriod": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "winnerSubmissionId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "countryId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "country"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "winnerSubmissionId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContestSubmission"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "countryId",
+                    "endsAt",
+                    "id"
+                  ],
+                  "name": "photoContest_countryId_endsAt_id_idx_f56bfe70",
+                  "prefix": "photoContest_countryId_endsAt_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "countryId"
+                  ],
+                  "name": "photoContest_countryId_idx_27b43b27",
+                  "prefix": "photoContest_countryId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "startsAt",
+                    "id"
+                  ],
+                  "name": "photoContest_startsAt_id_idx_8f6c6775",
+                  "prefix": "photoContest_startsAt_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "winnerSubmissionId"
+                  ],
+                  "name": "photoContest_winnerSubmissionId_idx_27cae014",
+                  "prefix": "photoContest_winnerSubmissionId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "weeklyPeriod"
+                  ]
+                }
+              ]
+            },
+            "photoContestSubmission": {
+              "columns": {
+                "contestId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "coverStoragePath": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tripId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "contestId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContestSubmission"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContest"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContestSubmission"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "tripId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContestSubmission"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "trip"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "contestId"
+                  ],
+                  "name": "photoContestSubmission_contestId_idx_8a30d986",
+                  "prefix": "photoContestSubmission_contestId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tripId",
+                    "coverStoragePath"
+                  ],
+                  "name": "photoContestSubmission_tripId_coverStoragePath_idx_3c56c9ff",
+                  "prefix": "photoContestSubmission_tripId_coverStoragePath_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tripId"
+                  ],
+                  "name": "photoContestSubmission_tripId_idx_75da6d97",
+                  "prefix": "photoContestSubmission_tripId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "photoContestSubmission_userId_idx_a489d58a",
+                  "prefix": "photoContestSubmission_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "contestId",
+                    "userId"
+                  ]
+                },
+                {
+                  "columns": [
+                    "contestId",
+                    "id"
+                  ]
+                }
+              ]
+            },
+            "photoContestVote": {
+              "columns": {
+                "contestId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "submissionId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "contestId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContestVote"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContest"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContestVote"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "contestId",
+                      "submissionId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContestVote"
+                  },
+                  "target": {
+                    "columns": [
+                      "contestId",
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "photoContestSubmission"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "contestId"
+                  ],
+                  "name": "photoContestVote_contestId_idx_8a30d986",
+                  "prefix": "photoContestVote_contestId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "contestId",
+                    "submissionId"
+                  ],
+                  "name": "photoContestVote_contestId_submissionId_idx_3198671f",
+                  "prefix": "photoContestVote_contestId_submissionId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "submissionId"
+                  ],
+                  "name": "photoContestVote_submissionId_idx_89cd3f4e",
+                  "prefix": "photoContestVote_submissionId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "photoContestVote_userId_idx_a489d58a",
+                  "prefix": "photoContestVote_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "contestId",
+                    "userId"
+                  ]
+                }
+              ]
+            },
             "trip": {
               "checks": [
                 {
@@ -1327,6 +2134,13 @@
             }
           },
           "valueSet": {
+            "photo_contest_status": {
+              "kind": "valueSet",
+              "values": [
+                "OPEN",
+                "CLOSED"
+              ]
+            },
             "trip_visibility": {
               "kind": "valueSet",
               "values": [
@@ -1340,10 +2154,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "724bacc108b76cf89752f01172466f208df1c4b33d797cebfa490738c6f91a60"
+    "storageHash": "972b17073e6c58a686ad786480387e9b3d3afeeca3e70f25a23d764628110535"
   },
   "execution": {
-    "executionHash": "dcb0f5c0f6fdf5fbf33ed102a0e6ccaf6f2a8053a320f910704633c29383791b",
+    "executionHash": "d9ff98cce359aad076e301f881f9ba3a7bcc7901118d022d7447ffb82c1f7f94",
     "mutations": {
       "defaults": [
         {
@@ -1396,6 +2210,39 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "country"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "photoContest"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "photoContestSubmission"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "photoContestVote"
           }
         },
         {

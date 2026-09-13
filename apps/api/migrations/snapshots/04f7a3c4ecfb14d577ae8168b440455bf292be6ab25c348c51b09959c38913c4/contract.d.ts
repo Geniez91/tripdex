@@ -33,7 +33,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'972b17073e6c58a686ad786480387e9b3d3afeeca3e70f25a23d764628110535'>;
+  StorageHashBase<'04f7a3c4ecfb14d577ae8168b440455bf292be6ab25c348c51b09959c38913c4'>;
 export type ExecutionHash =
   ExecutionHashBase<'d9ff98cce359aad076e301f881f9ba3a7bcc7901118d022d7447ffb82c1f7f94'>;
 export type ProfileHash =
@@ -263,7 +263,6 @@ export type FieldOutputTypes = {
     };
     readonly PhotoContest: {
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly weeklyPeriod: CodecTypes['pg/text@1']['output'] | null;
       readonly countryId: CodecTypes['pg/text@1']['output'];
       readonly startsAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly endsAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -348,7 +347,6 @@ export type FieldInputTypes = {
     };
     readonly PhotoContest: {
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly weeklyPeriod: CodecTypes['pg/text@1']['input'] | null;
       readonly countryId: CodecTypes['pg/text@1']['input'];
       readonly startsAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly endsAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -438,7 +436,6 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly startsAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly status: 'OPEN' | 'CLOSED';
-      readonly weeklyPeriod: CodecTypes['pg/text@1']['output'] | null;
       readonly winnerSubmissionId: CodecTypes['pg/text@1']['output'] | null;
     };
     readonly photoContestSubmission: {
@@ -523,7 +520,6 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly startsAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly status: 'OPEN' | 'CLOSED';
-      readonly weeklyPeriod: CodecTypes['pg/text@1']['input'] | null;
       readonly winnerSubmissionId: CodecTypes['pg/text@1']['input'] | null;
     };
     readonly photoContestSubmission: {
@@ -726,11 +722,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
-                readonly weeklyPeriod: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
                 readonly countryId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -768,7 +759,7 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['weeklyPeriod'] }];
+              uniques: readonly [];
               indexes: readonly [
                 {
                   readonly name: 'photoContest_countryId_endsAt_id_idx_f56bfe70';
@@ -1536,10 +1527,6 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly weeklyPeriod: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
               readonly countryId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -1603,7 +1590,6 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly id: { readonly column: 'id' };
-                readonly weeklyPeriod: { readonly column: 'weeklyPeriod' };
                 readonly countryId: { readonly column: 'countryId' };
                 readonly startsAt: { readonly column: 'startsAt' };
                 readonly endsAt: { readonly column: 'endsAt' };

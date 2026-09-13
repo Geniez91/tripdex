@@ -109,3 +109,53 @@ model TripCity {
   @@id([tripId, cityId])
   @@index([cityId])
 }
+
+enum photo_contest_status {
+  @@type("pg/text@1")
+  OPEN = "OPEN"
+  CLOSED = "CLOSED"
+}
+
+model PhotoContest {
+  id String @id @default(uuid())
+  weeklyPeriod String? @unique
+  countryId String
+  startsAt TimestamptzString
+  endsAt TimestamptzString
+  status photo_contest_status @default(OPEN)
+  winnerSubmissionId String?
+  createdAt TimestamptzString @default(now())
+  country Country @relation(fields: [countryId], references: [id])
+  winner PhotoContestSubmission? @relation(fields: [winnerSubmissionId], references: [id])
+  @@index([countryId, endsAt, id])
+  @@index([startsAt, id])
+  @@check(expression: "\"startsAt\" < \"endsAt\"", name: "photo_contest_period")
+}
+
+model PhotoContestSubmission {
+  id String @id @default(uuid())
+  contestId String
+  userId String
+  tripId String
+  coverStoragePath String
+  createdAt TimestamptzString @default(now())
+  contest PhotoContest @relation(fields: [contestId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  trip Trip @relation(fields: [tripId], references: [id])
+  @@unique([contestId, userId])
+  @@unique([contestId, id])
+  @@index([tripId, coverStoragePath])
+}
+
+model PhotoContestVote {
+  id String @id @default(uuid())
+  contestId String
+  userId String
+  submissionId String
+  createdAt TimestamptzString @default(now())
+  contest PhotoContest @relation(fields: [contestId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  submission PhotoContestSubmission @relation(fields: [contestId, submissionId], references: [contestId, id])
+  @@unique([contestId, userId])
+  @@index([submissionId])
+}

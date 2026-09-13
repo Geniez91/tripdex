@@ -22,13 +22,14 @@ function decodeCursor(value: string): CommunityActivityCursor {
   if (
     !isRecord(decoded) ||
     typeof decoded.createdAt !== 'string' ||
-    typeof decoded.id !== 'string'
+    typeof decoded.id !== 'string' ||
+    !decoded.id
   ) {
     throw new BadRequestException('cursor must be a valid feed cursor.');
   }
   const cursor: CommunityActivityCursor = {
     createdAt: decoded.createdAt,
-    id: decoded.id,
+    id: decoded.id.includes(':') ? decoded.id : `trip:${decoded.id}`,
   };
   if (!Number.isFinite(Date.parse(cursor.createdAt)) || !cursor.id) {
     throw new BadRequestException('cursor must be a valid feed cursor.');

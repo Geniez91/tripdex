@@ -23,7 +23,7 @@ export class CommunityActivityRepository {
         WHERE t.visibility = 'public'
           AND (
             t."createdAt" < ${cursorCreatedAt}::timestamptz
-            OR (t."createdAt" = ${cursorCreatedAt}::timestamptz AND t.id < ${cursorId})
+            OR (t."createdAt" = ${cursorCreatedAt}::timestamptz AND 'trip:' || t.id < ${cursorId})
           )
         ORDER BY t."createdAt" DESC, t.id DESC
         LIMIT ${limit + 1}

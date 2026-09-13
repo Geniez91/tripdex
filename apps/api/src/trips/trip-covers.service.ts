@@ -148,6 +148,11 @@ export class TripCoversService {
     path: string | null,
   ): Promise<boolean> {
     if (!path || !ownsCoverPath(userId, tripId, path)) return false;
+    try {
+      if (await this.trips.isSubmitted(tripId, path)) return false;
+    } catch {
+      return true;
+    }
     return !(await this.storage.cleanup(path));
   }
 }

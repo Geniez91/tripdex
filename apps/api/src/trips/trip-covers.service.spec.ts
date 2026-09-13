@@ -45,8 +45,9 @@ describe('Trip cover ownership and lifecycle', () => {
   const upload = jest.fn<CoverStorageService['upload']>();
   const signedUrl = jest.fn<CoverStorageService['signedUrl']>();
   const cleanup = jest.fn<CoverStorageService['cleanup']>();
+  const isSubmitted = jest.fn<TripCoversRepository['isSubmitted']>();
   const service = new TripCoversService(
-    { findOwned, updatePath } as unknown as TripCoversRepository,
+    { findOwned, updatePath, isSubmitted } as unknown as TripCoversRepository,
     { upload, signedUrl, cleanup } as unknown as CoverStorageService,
   );
   beforeEach(() => {
@@ -59,10 +60,31 @@ describe('Trip cover ownership and lifecycle', () => {
       'https://storage.invalid/cover?token=temporary',
     );
     cleanup.mockResolvedValue(true);
+    isSubmitted.mockResolvedValue(false);
     update.mockImplementation((input) => {
       path = input.coverStoragePath;
       return Promise.resolve({ id: 'trip' });
     });
+  });
+  it('keeps a submitted cover when it is removed from the trip', async () => {
+    // Arrange
+    path = oldPath;
+    isSubmitted.mockResolvedValue(true);
+    // Act
+    const result = await service.remove('owner', 'trip');
+    // Assert
+    expect(result.coverStoragePath).toBeNull();
+    expect(cleanup).not.toHaveBeenCalled();
+  });
+  it('defers cleanup when submission references cannot be checked', async () => {
+    // Arrange
+    path = oldPath;
+    isSubmitted.mockRejectedValue(new Error('database unavailable'));
+    // Act
+    const result = await service.remove('owner', 'trip');
+    // Assert
+    expect(result.cleanupPending).toBe(true);
+    expect(cleanup).not.toHaveBeenCalled();
   });
   it('returns no URL and makes no Storage call without a cover', async () => {
     // Arrange

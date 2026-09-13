@@ -1,4 +1,4 @@
-import type { CommunityActivityItemDto } from '../dto/community-activity-response.dto.js';
+import type { TripActivityItemDto as CommunityActivityItemDto } from '../dto/community-activity-response.dto.js';
 import type { CommunityActivityRow } from '../types/community-activity-row.js';
 
 interface ActivityParts {
@@ -81,7 +81,7 @@ export class CommunityActivityMapper {
           coverUrl: null,
         },
       },
-      cursor: { createdAt: row.activityDate, id: row.tripId },
+      cursor: { createdAt: row.activityDate, id: `trip:${row.tripId}` },
       coverPath: row.coverStoragePath,
       userId: row.userId,
     };
