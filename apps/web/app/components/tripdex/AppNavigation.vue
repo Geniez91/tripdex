@@ -25,6 +25,22 @@ const active = computed<NavigationId | null>(() =>
       <VIcon :icon="item.icon" size="22" aria-hidden="true" />
       <span>{{ item.label }}</span>
     </NuxtLink>
+    <VTooltip text="Logger un voyage" location="bottom" :open-on-focus="true">
+      <template #activator="{ props: tooltipProps }">
+        <NuxtLink
+          v-bind="tooltipProps"
+          to="/#trip-form-title"
+          :prefetch="false"
+          class="navigation-action"
+          active-class=""
+          exact-active-class=""
+          aria-current-value="false"
+          aria-label="Logger un voyage"
+        >
+          <VIcon icon="mdi-plus" size="24" aria-hidden="true" />
+        </NuxtLink>
+      </template>
+    </VTooltip>
   </nav>
 </template>
 
@@ -47,6 +63,29 @@ const active = computed<NavigationId | null>(() =>
   font-size: 14px;
   font-weight: 500;
   transition: color 160ms ease;
+}
+.navigation-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  justify-self: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgb(var(--v-theme-outline));
+  border-radius: 10px;
+  background: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-primary));
+  text-decoration: none;
+}
+.navigation-action:hover {
+  background: rgb(var(--v-theme-ocean));
+  border-color: rgb(var(--v-theme-primary));
+}
+.navigation-action:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 3px;
 }
 .navigation-link::after {
   content: "";
@@ -84,7 +123,7 @@ const active = computed<NavigationId | null>(() =>
     z-index: 100;
     inset: auto 0 0;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 52px;
     gap: 0;
     padding: 0 8px env(safe-area-inset-bottom, 0px);
     background: rgb(var(--v-theme-surface));
