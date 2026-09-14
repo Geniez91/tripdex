@@ -48,6 +48,9 @@ test('personal map compiles and community remains separate', () => {
   assert.doesNotThrow(() => compileScript(descriptor, { id: 'personal', inlineTemplate: true }));
   const page = parse(readFileSync(new URL('../../app/pages/index.vue', import.meta.url), 'utf8')).descriptor;
   assert.doesNotThrow(() => compileScript(page, { id: 'page', inlineTemplate: true }));
-  assert.match(page.template.content, /<PersonalMap\s+v-else/);
+  const dashboard = parse(readFileSync(new URL('../../app/components/progression/ProgressionDashboard.vue', import.meta.url), 'utf8')).descriptor;
+  assert.doesNotThrow(() => compileScript(dashboard, { id: 'progression', inlineTemplate: true }));
+  assert.match(page.template.content, /<ProgressionDashboard\s+v-if="personalMap"/);
+  assert.match(dashboard.template.content, /<PersonalMap/);
   assert.match(descriptor.template.content, /:visited-iso3="visitedIso3"/);
 });
