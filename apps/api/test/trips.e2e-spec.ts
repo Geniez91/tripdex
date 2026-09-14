@@ -136,6 +136,7 @@ describe('Milestone HTTP contract', () => {
         unlocked: definition.code === 'PREMIER_VOYAGE',
         current: definition.code === 'PREMIER_VOYAGE' ? 1 : 0,
         target: definition.target,
+        community: { percentage: 50, rarity: 'COMMON' },
       })),
     });
   });
@@ -213,6 +214,7 @@ describe('Milestone HTTP contract', () => {
           code: 'PREMIER_VOYAGE', name: 'Premier voyage',
           description: 'Logger ton premier voyage.', category: 'JOURNAL',
           unlocked: true, current: 1, target: 1,
+          community: { percentage: 50, rarity: 'COMMON' },
         });
       });
     expect(achievementsForUser).toHaveBeenCalledWith('current-user');

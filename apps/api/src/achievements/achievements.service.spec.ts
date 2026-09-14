@@ -19,6 +19,7 @@ describe('AchievementsService', () => {
         { tripId: 'one', startDate: '2026-01-01T00:00:00.000Z', endDate: null, countryId: 'fr', arrivalDate: null },
       ])),
       communityCounts: jest.fn(async () => ({ voteCount: 0, winCount: 0 })),
+      communityStats: jest.fn(async () => ({ eligibleUserCount: 0, holderCounts: {} })),
     } as Pick<AchievementsRepository, 'snapshot' | 'communityCounts'>;
     const result = await new AchievementsService(repository as AchievementsRepository).forUser('traveler');
 
@@ -34,6 +35,7 @@ describe('AchievementsService', () => {
         { tripId: 'two', startDate: '2026-01-15T00:00:00.000Z', endDate: '2026-02-09T00:00:00.000Z', countryId: 'jp', arrivalDate: null },
       ])),
       communityCounts: jest.fn(async () => ({ voteCount: 1, winCount: 0 })),
+      communityStats: jest.fn(async () => ({ eligibleUserCount: 2, holderCounts: { PREMIER_VOYAGE: 2 } })),
     } as Pick<AchievementsRepository, 'snapshot' | 'communityCounts'>;
     const service = new AchievementsService(repository as AchievementsRepository);
 

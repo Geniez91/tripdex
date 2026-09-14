@@ -33,4 +33,42 @@ describe('AchievementsRepository', () => {
     expect(values).toEqual(['traveler', 'traveler']);
     expect(query).toHaveBeenCalledWith('community-counts');
   });
+
+  it('maps the fixed community aggregate without per-achievement queries', async () => {
+    const aggregate = {
+      eligibleUserCount: 2, premierVoyage: 2, premierPas: 2, globeTrotter: 1, grandExplorateur: 0,
+      premiersPasEurope: 1, premiersPasAfrique: 0, premiersPasAsie: 1, premiersPasAmeriqueNord: 0,
+      premiersPasAmeriqueSud: 0, premiersPasOceanie: 0, premiersPasAntarctique: 0,
+      nouveauContinent: 1, troisHorizons: 0, dejaVu: 1, cantStayAway: 1,
+      trenteJoursAilleurs: 1, centJoursSurLaRoute: 0, laVoixDuVoyageur: 1, photographeTripdex: 1,
+    };
+    const query = jest.fn(async function* () { yield aggregate; });
+    const sql = (strings: TemplateStringsArray) => {
+      const statement = strings.join('');
+      expect(statement).toContain('WITH eligible AS');
+      expect(statement).toContain('SELECT DISTINCT "userId" FROM public.trip');
+      expect(statement).toContain('previousEndDay');
+      expect(statement).toContain('public."photoContestVote"');
+      expect(statement).toContain('contest."winnerSubmissionId"');
+      return { returnsRow: () => ({ build: () => 'community-stats' }) };
+    };
+    const module = await Test.createTestingModule({
+      providers: [
+        AchievementsRepository,
+        { provide: ProgressionRepository, useValue: { snapshot: jest.fn() } },
+        { provide: DatabaseService, useValue: { client: { raw: { sql }, runtime: () => ({ query }) } } },
+      ],
+    }).compile();
+
+    const result = await module.get(AchievementsRepository).communityStats();
+
+    expect(result.eligibleUserCount).toBe(2);
+    expect(result.holderCounts).toMatchObject({
+      PREMIER_VOYAGE: 2, GLOBE_TROTTER: 1, PREMIERS_PAS_ASIE: 1,
+      DEJA_VU: 1, CANT_STAY_AWAY: 1, TRENTE_JOURS_AILLEURS: 1,
+      LA_VOIX_DU_VOYAGEUR: 1, PHOTOGRAPHE_TRIPDEX: 1,
+    });
+    expect(Object.keys(result.holderCounts)).toHaveLength(19);
+    expect(query).toHaveBeenCalledTimes(1);
+  });
 });

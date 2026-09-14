@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { calculateProgression } from '../trips/progression/progression-calculations.js';
 import type { ProgressionSnapshot } from '../trips/progression/progression-records.js';
 import { calculateAchievements, type AchievementFacts } from './achievement-calculations.js';
+import { withCommunityStats } from './achievement-community-stats.js';
 import { achievementDefinitions } from './achievement-definitions.js';
 import type { AchievementsResponseDto } from './dto/achievement-response.dto.js';
 import { AchievementsRepository, type CommunityAchievementCounts } from './achievements.repository.js';
@@ -32,10 +33,17 @@ export class AchievementsService {
   constructor(private readonly achievements: AchievementsRepository) {}
 
   async forUser(userId: string): Promise<AchievementsResponseDto> {
-    const [snapshot, community] = await Promise.all([
+    const [snapshot, community, stats] = await Promise.all([
       this.achievements.snapshot(userId),
       this.achievements.communityCounts(userId),
+      this.achievements.communityStats(),
     ]);
-    return { achievements: calculateAchievements(achievementDefinitions, factsFrom(snapshot, community)) };
+    return {
+      achievements: withCommunityStats(
+        calculateAchievements(achievementDefinitions, factsFrom(snapshot, community)),
+        stats.holderCounts,
+        stats.eligibleUserCount,
+      ),
+    };
   }
 }
