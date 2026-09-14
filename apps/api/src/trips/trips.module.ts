@@ -31,6 +31,6 @@ import { ProgressionService } from './progression/progression.service.js';
     ProgressionRepository,
     ProgressionService,
   ],
-  exports: [TripCoversService],
+  exports: [TripCoversService, ProgressionRepository],
 })
 export class TripsModule {}

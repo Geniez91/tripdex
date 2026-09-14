@@ -10,6 +10,8 @@ import { SupabaseAuthService } from '../src/auth/supabase-auth.service.js';
 import { UsersService } from '../src/users/users.service.js';
 import { TripsService } from '../src/trips/trips.service.js';
 import { ProgressionService } from '../src/trips/progression/progression.service.js';
+import { AchievementsService } from '../src/achievements/achievements.service.js';
+import { achievementDefinitions } from '../src/achievements/achievement-definitions.js';
 
 describe('Milestone HTTP contract', () => {
   let app: INestApplication<App>;
@@ -27,6 +29,7 @@ describe('Milestone HTTP contract', () => {
   const journal = jest.fn<TripsService['journal']>();
   const detail = jest.fn<TripsService['detail']>();
   const progressionForUser = jest.fn<ProgressionService['forUser']>();
+  const achievementsForUser = jest.fn<AchievementsService['forUser']>();
   const payload = {
     title: 'Japan 2026',
     startDate: '2026-04-01',
@@ -58,6 +61,8 @@ describe('Milestone HTTP contract', () => {
       .useValue({ create, visitedCountries: visited, journal, detail })
       .overrideProvider(ProgressionService)
       .useValue({ forUser: progressionForUser })
+      .overrideProvider(AchievementsService)
+      .useValue({ forUser: achievementsForUser })
       .compile();
     app = module.createNestApplication();
     await app.init();
@@ -122,6 +127,17 @@ describe('Milestone HTTP contract', () => {
         yearlyVisits: [{ year: 2026, newCountries: 1, revisits: 0 }],
       },
     });
+    achievementsForUser.mockResolvedValue({
+      achievements: achievementDefinitions.map((definition) => ({
+        code: definition.code,
+        name: definition.name,
+        description: definition.description,
+        category: definition.category,
+        unlocked: definition.code === 'PREMIER_VOYAGE',
+        current: definition.code === 'PREMIER_VOYAGE' ? 1 : 0,
+        target: definition.target,
+      })),
+    });
   });
   afterAll(async () => {
     await app.close();
@@ -183,6 +199,24 @@ describe('Milestone HTTP contract', () => {
       });
     expect(progressionForUser).toHaveBeenCalledWith('current-user');
   });
+  it('serves personal achievements only for the authenticated user', async () => {
+    await request(app.getHttpServer())
+      .get('/me/achievements')
+      .set('Authorization', 'Bearer test-token')
+      .expect('Cache-Control', 'private, no-store')
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.achievements).toHaveLength(19);
+        expect(response.body.achievements.map((item: { code: string }) => item.code))
+          .toEqual(achievementDefinitions.map((definition) => definition.code));
+        expect(response.body.achievements[0]).toEqual({
+          code: 'PREMIER_VOYAGE', name: 'Premier voyage',
+          description: 'Logger ton premier voyage.', category: 'JOURNAL',
+          unlocked: true, current: 1, target: 1,
+        });
+      });
+    expect(achievementsForUser).toHaveBeenCalledWith('current-user');
+  });
   it('serves the private journal and trip detail through the current identity', async () => {
     await request(app.getHttpServer())
       .get('/me/trips')
@@ -201,8 +235,10 @@ describe('Milestone HTTP contract', () => {
     await request(app.getHttpServer()).post('/trips').send(payload).expect(401);
     await request(app.getHttpServer()).get('/me/visited-countries').expect(401);
     await request(app.getHttpServer()).get('/me/progression').expect(401);
+    await request(app.getHttpServer()).get('/me/achievements').expect(401);
     expect(create).not.toHaveBeenCalled();
     expect(visited).not.toHaveBeenCalled();
     expect(progressionForUser).not.toHaveBeenCalled();
+    expect(achievementsForUser).not.toHaveBeenCalled();
   });
 });
