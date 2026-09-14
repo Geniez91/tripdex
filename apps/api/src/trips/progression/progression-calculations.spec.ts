@@ -88,6 +88,29 @@ describe('calculateProgression', () => {
     expect(result.summary.worldCompletionPercentage).toBe(25);
   });
 
+  it('accepts Postgres timestamptz-string dates returned by the progression query', () => {
+    // Arrange
+    const input = snapshot([
+      record(
+        'trip-1',
+        '2026-04-01 00:00:00+00',
+        '2026-04-03 00:00:00+00',
+        'jp',
+      ),
+    ]);
+
+    // Act
+    const result = calculateProgression(input, 2026);
+
+    // Assert
+    expect(result.summary.visitedCountries).toBe(1);
+    expect(result.summary.exploredContinents).toBe(1);
+    expect(result.summary.totalTravelDays).toBe(3);
+    expect(result.timeline.countries).toEqual([
+      { year: 2026, visitedCountries: 1 },
+    ]);
+  });
+
   it('counts distinct countries across multi-country trips and counts each trip once per country', () => {
     // Arrange
     const input = snapshot([
