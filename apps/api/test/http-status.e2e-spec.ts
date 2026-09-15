@@ -23,6 +23,7 @@ describe('HTTP status audit: cities and residence', () => {
   const update = jest.fn<ResidenceService['update']>();
   const getHello = jest.fn<AppService['getHello']>();
   let errorLogger: jest.SpiedFunction<Logger['error']>;
+  let timingLogger: jest.SpiedFunction<Logger['log']>;
   beforeAll(async () => {
     const module = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(AppService)
@@ -55,6 +56,9 @@ describe('HTTP status audit: cities and residence', () => {
     errorLogger = jest
       .spyOn(Logger.prototype, 'error')
       .mockImplementation(() => undefined);
+    timingLogger = jest
+      .spyOn(Logger.prototype, 'log')
+      .mockImplementation(() => undefined);
   });
   beforeEach(() => {
     jest.resetAllMocks();
@@ -65,6 +69,7 @@ describe('HTTP status audit: cities and residence', () => {
   });
   afterAll(async () => {
     errorLogger.mockRestore();
+    timingLogger.mockRestore();
     await app.close();
   });
 
@@ -77,6 +82,9 @@ describe('HTTP status audit: cities and residence', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
     expect(list).toHaveBeenCalledWith('fr', 'Paris');
+    expect(timingLogger).toHaveBeenCalledTimes(1);
+    expect(timingLogger.mock.calls[0]?.[0]).toMatch(/^GET \/cities 200 \d+ms$/);
+    expect(timingLogger.mock.calls[0]?.[0]).not.toContain('countryId');
   });
   it.each(['get', 'put'] as const)(
     '%s residence returns 200 with a representation',
@@ -141,6 +149,9 @@ describe('HTTP status audit: cities and residence', () => {
       expect(response.status).toBe(status);
       expect(response.body).toEqual(error.getResponse());
       expect(errorLogger).not.toHaveBeenCalled();
+      expect(timingLogger.mock.calls[0]?.[0]).toMatch(
+        new RegExp(`^${method.toUpperCase()} /me/residence ${status} \\d+ms$`),
+      );
     },
   );
 
@@ -173,6 +184,7 @@ describe('HTTP status audit: cities and residence', () => {
         `Unexpected HTTP error: GET / (${unexpected instanceof Error ? unexpected.name : 'non-Error'})`,
       );
       expect(errorLogger.mock.calls[0]?.[0]).not.toContain('access_token');
+      expect(timingLogger.mock.calls[0]?.[0]).toMatch(/^GET \/ 500 \d+ms$/);
     },
   );
 });
