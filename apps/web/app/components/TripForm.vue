@@ -2,6 +2,7 @@
 import type { City, Country, CreatedTrip } from "~/types/tripdex";
 import { toCreateTripInput } from "~/services/mappers/tripMapper";
 import { createTrip, updateTripCover } from "~/services/api/trips";
+import { getCities } from "~/services/api/cities";
 import { statusCodeFrom } from "~/services/errors";
 
 const props = defineProps<{ countries: Country[]; loading: boolean }>();
@@ -26,8 +27,8 @@ const error = ref("");
 const cover = ref<File | null>(null);
 const uploading = ref(false);
 const savedTrip = ref<CreatedTrip | null>(null);
-const { data: cities } = await useFetch<City[]>("/cities", {
-  baseURL: config.public.apiBase,
+const { data: cities } = await useAsyncData<City[]>("trip-form-cities", (_app, { signal }) =>
+  getCities(config.public.apiBase, signal), {
   server: false,
   default: () => [],
 });

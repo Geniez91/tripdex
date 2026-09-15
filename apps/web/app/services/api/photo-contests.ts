@@ -1,11 +1,12 @@
 import type { TripdexApi } from "~/types/interfaces/api";
 import type { CountryMemory, PhotoContest, PhotoContestParticipation } from "~/types/interfaces/photo-contests";
+import { apiUrl } from "./api-url";
 
 export function getPhotoContest(baseURL: string, id: string): Promise<PhotoContest> {
-  return $fetch(`/community/photo-contests/${encodeURIComponent(id)}`, { baseURL, retry: 0 });
+  return $fetch(apiUrl(baseURL, `/community/photo-contests/${encodeURIComponent(id)}`), { retry: 0 });
 }
 export function getCountryMemories(baseURL: string): Promise<CountryMemory[]> {
-  return $fetch("/community/memories", { baseURL, retry: 0 });
+  return $fetch(apiUrl(baseURL, "/community/memories"), { retry: 0 });
 }
 export function getContestParticipation(api: TripdexApi, id: string): Promise<PhotoContestParticipation> {
   return api.get(`/community/photo-contests/${encodeURIComponent(id)}/participation`);
