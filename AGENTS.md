@@ -124,6 +124,23 @@ Use the default dependency direction: HTTP -> Controller -> Request DTO -> Servi
 - Introduce repositories only when they provide a meaningful persistence boundary.
 - Do not add abstractions only to satisfy a pattern.
 
+## Backend Error Handling and Observability
+
+Use NestJS HTTP exceptions that match the established API contract: 400 for malformed or invalid domain input, 401 for missing or invalid authentication, 403 for insufficient permission, 404 for unavailable scoped resources, 409 for identifiable state or concurrency conflicts, and 422 for established semantically unprocessable metadata or domain input. Use 503 only for a concretely identifiable dependency or infrastructure availability failure.
+
+- Prefer direct NestJS `HttpException` subclasses. Keep client messages simple and safe; do not expose database, storage, or other internal details.
+- Preserve established domain-local machine-readable contracts, such as auth provisioning `{ code, message }`; do not introduce a global error-code system or custom exception wrappers without a concrete need.
+- Unexpected technical failures that cannot be meaningfully classified must propagate to `GlobalExceptionFilter`, which owns safe HTTP 500 handling and unexpected-error logging.
+- Catch locally only for recovery, compensation, reconciliation, cleanup, known technical-failure translation, or intentional fallback/suppression. Do not catch merely to log and rethrow, mechanically preserve an exception, or translate every unknown failure to 503 or another generic 500.
+- Expected 4xx outcomes are not automatically technical error logs. Avoid duplicate local error logs for failures that simply reach the global boundary; log locally only when recovery, compensation, reconciliation, suppression, or retry adds unique operational context.
+
+Backend runtime logger contexts are centralized in `apps/api/src/logger.constants.ts`. Reuse an existing context constant, add a new constant there for a new logger-owning runtime component, and never redeclare context strings locally. Keep context constants separate from log messages and unrelated constants.
+
+- Use `logger.log` for meaningful successful state changes or operational events, not routine reads, repository calls, or method entry/exit.
+- Use `logger.error` for meaningful technical failures, especially when the current layer performs recovery, compensation, or reconciliation.
+- Logs must not include tokens, credentials, authorization headers, cookies, passwords/secrets, signed URLs, request bodies, upload contents, arbitrary serialized request objects, or unnecessary storage paths and user/trip/contest identifiers. Prefer event-oriented messages.
+- Normal HTTP execution timing belongs only in the global request-timing interceptor. Do not manually time ordinary controller or service methods; timing logs use method, query-free path, resolved status, and duration, and do not replace exception diagnostics from `GlobalExceptionFilter`.
+
 ## Frontend Architecture
 
 - Keep business API calls in `apps/web/app/services/api`; do not fetch business APIs directly in views when a service belongs there.
