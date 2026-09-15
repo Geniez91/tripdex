@@ -7,6 +7,7 @@ import WorldProgressDoughnut from "./WorldProgressDoughnut.vue";
 import ContinentProgressDoughnut from "./ContinentProgressDoughnut.vue";
 import CountriesTimelineChart from "./CountriesTimelineChart.vue";
 import TravelDaysChart from "./TravelDaysChart.vue";
+import AchievementGallery from "./AchievementGallery.vue";
 
 const props = defineProps<{
   countries: Country[];
@@ -227,6 +228,14 @@ function metricRows(data: PersonalProgression) {
           </div>
         </div>
       </section>
+
+    </template>
+
+    <AchievementGallery />
+
+    <template
+      v-if="progressionData && progressionData.summary.visitedCountries > 0"
+    >
 
       <section class="timeline-section" aria-labelledby="timeline-heading">
         <header class="section-heading">

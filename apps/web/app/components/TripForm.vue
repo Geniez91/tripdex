@@ -10,6 +10,7 @@ const api = useTripdexApi();
 const communityActivity = useCommunityActivity();
 const tripsCache = useTrips();
 const progression = useProgression();
+const achievements = useAchievements();
 const config = useRuntimeConfig();
 const title = ref("");
 const startDate = ref("");
@@ -74,6 +75,7 @@ async function submit(): Promise<void> {
     if (!savedTrip.value) {
       tripsCache.invalidate();
       progression.invalidate();
+      achievements.invalidate();
       if (trip.visibility === "public") communityActivity.invalidate();
     }
     savedTrip.value = trip;

@@ -104,6 +104,19 @@ test("continent collection uses centered responsive rows and contained silhouett
   assert.deepEqual(Object.keys(continentVisuals), ["AF", "AS", "EU", "NA", "SA", "OC", "AN"]);
 });
 
+test("achievement gallery follows world completion and continents before temporal charts", () => {
+  const worldCompletion = dashboard.indexOf("<WorldProgressDoughnut");
+  const continents = dashboard.indexOf('<section class="continent-section"');
+  const badges = dashboard.indexOf("<AchievementGallery />");
+  const timeline = dashboard.indexOf('<section class="timeline-section"');
+
+  assert.ok(worldCompletion >= 0);
+  assert.ok(worldCompletion < continents);
+  assert.ok(continents < badges);
+  assert.ok(badges < timeline);
+  assert.equal([...dashboard.matchAll(/<AchievementGallery\s*\/>/g)].length, 1);
+});
+
 test("locked continent palette matches asset fills and both donut arcs", () => {
   const { continentVisuals } = loadPresentationModule("continentVisuals");
   const palette = {
