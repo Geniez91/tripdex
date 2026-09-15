@@ -1,8 +1,9 @@
 import {
+  ConflictException,
   HttpException,
-  HttpStatus,
   ServiceUnavailableException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { UserProvisioningError } from '../users/user-provisioning.error.js';
 import { AuthVerificationError } from './auth.error.js';
@@ -23,23 +24,20 @@ export function authHttpError(error: unknown): HttpException {
     switch (error.code) {
       case 'USERNAME_REQUIRED':
       case 'USERNAME_INVALID':
-        return new HttpException(
-          { code: error.code, message: 'Choose a valid username.' },
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
+        return new UnprocessableEntityException({
+          code: error.code,
+          message: 'Choose a valid username.',
+        });
       case 'USERNAME_TAKEN':
-        return new HttpException(
-          { code: error.code, message: 'Choose another username.' },
-          HttpStatus.CONFLICT,
-        );
+        return new ConflictException({
+          code: error.code,
+          message: 'Choose another username.',
+        });
       case 'ACCOUNT_LINK_CONFLICT':
-        return new HttpException(
-          {
-            code: error.code,
-            message: 'Account provisioning requires assistance.',
-          },
-          HttpStatus.CONFLICT,
-        );
+        return new ConflictException({
+          code: error.code,
+          message: 'Account provisioning requires assistance.',
+        });
       case 'USER_PROVISIONING_UNAVAILABLE':
         return new ServiceUnavailableException({
           code: error.code,

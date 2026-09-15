@@ -178,16 +178,29 @@ describe('GET /me authenticated chain', () => {
 
       // Assert
       expect(response.status).toBe(422);
-      expect(response.body).toMatchObject({ code });
+      expect(response.body).toEqual({
+        code,
+        message: 'Choose a valid username.',
+      });
       expect(create).not.toHaveBeenCalled();
     },
   );
 
   it.each([
-    ['USERNAME_TAKEN', 409],
-    ['ACCOUNT_LINK_CONFLICT', 409],
-    ['USER_PROVISIONING_UNAVAILABLE', 503],
-  ] as const)('translates provisioning error %s', async (code, status) => {
+    ['USERNAME_TAKEN', 409, 'Choose another username.'],
+    [
+      'ACCOUNT_LINK_CONFLICT',
+      409,
+      'Account provisioning requires assistance.',
+    ],
+    [
+      'USER_PROVISIONING_UNAVAILABLE',
+      503,
+      'Account provisioning temporarily unavailable.',
+    ],
+  ] as const)(
+    'translates provisioning error %s',
+    async (code, status, message) => {
     // Arrange
     create.mockRejectedValue(new UserProvisioningError(code));
 
@@ -198,7 +211,8 @@ describe('GET /me authenticated chain', () => {
 
     // Assert
     expect(response.status).toBe(status);
-    expect(response.body).toMatchObject({ code });
+    expect(response.body).toEqual({ code, message });
     expect(response.body).not.toHaveProperty('supabaseAuthId');
-  });
+    },
+  );
 });
