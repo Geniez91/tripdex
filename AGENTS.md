@@ -157,6 +157,8 @@ Backend runtime logger contexts are centralized in `apps/api/src/logger.constant
 - Search for an existing pattern before creating a new one. Avoid unnecessary factories, strategies, wrappers, or classes.
 - Avoid `any`, `as any`, unsafe double assertions, and TypeScript suppressions unless an unavoidable reason is documented.
 - Do not split cohesive logic into trivial one-line helpers merely to shorten functions.
+- Keep service implementation files focused on orchestration and behavior. Put exported or reusable domain contracts in grouped, domain-appropriate type modules; keep deterministic standalone transformations, comparators, normalizers, and calculations in focused helper modules rather than generic `utils.ts` files.
+- Keep service-specific orchestration as private methods when that is clearer; do not extract trivial helpers or create one file per type merely for file length.
 - Avoid unrelated refactors.
 
 ## Change Scope

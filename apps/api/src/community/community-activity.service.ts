@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { compareActivityRecords, encodeActivityCursor } from './community-activity.helpers.js';
 import type { CommunityActivityQueryDto } from './dto/community-activity-query.dto.js';
 import { CommunityActivityMapper } from './mappers/community-activity.mapper.js';
 import { CommunityActivityRepository } from './repositories/community-activity.repository.js';
@@ -7,46 +8,10 @@ import { PhotoContestRepository } from './photo-contests/photo-contest.repositor
 import { PhotoContestService, PhotoContestClock } from './photo-contests/photo-contest.service.js';
 import { PhotoContestMapper } from './photo-contests/photo-contest.mapper.js';
 import type {
-  CommunityActivityItemDto,
   CommunityActivityResponseDto,
   PhotoContestActivityItemDto,
 } from './dto/community-activity-response.dto.js';
-
-
-function encodeCursor(cursor: ActivityCursor): string {
-  return Buffer.from(JSON.stringify(cursor)).toString('base64url');
-}
-
-interface ActivityCursor {
-  createdAt: string;
-  id: string;
-}
-
-interface ActivityRecord {
-  item: CommunityActivityItemDto;
-  cursor: ActivityCursor;
-}
-
-function activityDateKey(value: string): string {
-      // Keep PostgreSQL microseconds in the ordering and cursor, not only JS milliseconds.
-  return (
-    new Date(value).toISOString().slice(0, 19) +
-    (value.match(/\.(\d+)/)?.[1] ?? '').padEnd(6, '0')
-  );
-}
-
-function compareActivityRecords(
-  left: ActivityRecord,
-  right: ActivityRecord,
-): number {
-  const leftKey =
-    `${activityDateKey(left.cursor.createdAt)}:${left.cursor.id}`;
-
-  const rightKey =
-    `${activityDateKey(right.cursor.createdAt)}:${right.cursor.id}`;
-
-  return leftKey < rightKey ? 1 : leftKey > rightKey ? -1 : 0;
-}
+import type { ActivityRecord } from './types/community-activity.types.js';
 
 @Injectable()
 export class CommunityActivityService {
@@ -111,7 +76,7 @@ export class CommunityActivityService {
       return null;
     }
 
-    return encodeCursor(page[page.length - 1].cursor);
+    return encodeActivityCursor(page[page.length - 1].cursor);
   }
 
   private async currentOpenContest(
