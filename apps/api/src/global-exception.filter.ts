@@ -7,11 +7,12 @@ import {
   Logger,
 } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
+import { LOGGER_CONTEXT } from './logger.constants.js';
 
 @Catch()
 @Injectable()
 export class GlobalExceptionFilter extends BaseExceptionFilter {
-  private readonly logger = new Logger(GlobalExceptionFilter.name);
+  private readonly logger = new Logger(LOGGER_CONTEXT.GLOBAL_EXCEPTION_FILTER);
 
   constructor(private readonly adapterHost: HttpAdapterHost) {
     super(adapterHost.httpAdapter);

@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 import {
   BadRequestException,
   ConflictException,
+  Logger,
   NotFoundException,
   PayloadTooLargeException,
   ServiceUnavailableException,
@@ -373,5 +374,30 @@ describe('Trip cover ownership and lifecycle', () => {
     // Assert
     expect(result.cleanupPending).toBe(true);
     expect(path).toBeNull();
+  });
+  it('logs reconciliation failures without the storage path', async () => {
+    // Arrange
+    path = oldPath;
+    const errorLogger = jest
+      .spyOn(Logger.prototype, 'error')
+      .mockImplementation(() => undefined);
+    update.mockRejectedValue(new Error('DB failed'));
+    findOwned
+      .mockImplementationOnce(() =>
+        Promise.resolve({ id: 'trip', coverStoragePath: oldPath }),
+      )
+      .mockRejectedValueOnce(new Error('reconciliation failed'));
+
+    try {
+      // Act
+      const replacement = service.replace('owner', 'trip', file);
+
+      // Assert
+      await expect(replacement).rejects.toThrow('DB failed');
+      expect(errorLogger).toHaveBeenCalledWith('Cover reconciliation required.');
+      expect(JSON.stringify(errorLogger.mock.calls)).not.toContain(oldPath);
+    } finally {
+      errorLogger.mockRestore();
+    }
   });
 });

@@ -4,13 +4,14 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { StorageClient } from '@supabase/storage-js';
+import { LOGGER_CONTEXT } from '../logger.constants.js';
 import type { CoverFile } from './cover-file.js';
 
 export const COVER_URL_TTL = 15 * 60;
 
 @Injectable()
 export class CoverStorageService {
-  private readonly logger = new Logger(CoverStorageService.name);
+  private readonly logger = new Logger(LOGGER_CONTEXT.COVER_STORAGE_SERVICE);
 
   private storage() {
     const url = process.env.SUPABASE_URL;
@@ -80,7 +81,7 @@ export class CoverStorageService {
     }
   }
 
-  // Best effort compensation. Log only the generated path, never keys or signed URLs.
+  // Best effort compensation. Never log storage paths, keys, or signed URLs.
   async cleanup(path: string): Promise<boolean> {
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
@@ -90,7 +91,7 @@ export class CoverStorageService {
         /* Retry transient Storage failures. */
       }
     }
-    this.logger.error(`Cover cleanup required: ${path}`);
+    this.logger.error('Cover cleanup required.');
     return false;
   }
 }

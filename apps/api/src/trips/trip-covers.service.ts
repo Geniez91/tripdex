@@ -6,6 +6,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { LOGGER_CONTEXT } from '../logger.constants.js';
 import { CoverStorageService } from './cover-storage.service.js';
 import { coverPrefix, ownsCoverPath, validateCover } from './cover-file.js';
 import type { CoverFile } from './cover-file.js';
@@ -15,7 +16,7 @@ import type { OwnedTripCoverRecord } from './types/trip-cover-record.js';
 
 @Injectable()
 export class TripCoversService {
-  private readonly logger = new Logger(TripCoversService.name);
+  private readonly logger = new Logger(LOGGER_CONTEXT.TRIP_COVERS_SERVICE);
 
   constructor(
     private readonly trips: TripCoversRepository,
@@ -139,7 +140,7 @@ export class TripCoversService {
 
       return null;
     } catch {
-      this.logger.error(`Cover reconciliation required: ${newPath}`);
+      this.logger.error('Cover reconciliation required.');
 
       return null;
     }
@@ -171,19 +172,22 @@ export class TripCoversService {
       );
 
       if (reconciled) {
+        this.logger.log('Trip cover replaced.');
         return reconciled;
       }
 
       throw error;
     }
 
-    return this.completeReplacement(
+    const replacement = await this.completeReplacement(
       userId,
       tripId,
       trip.coverStoragePath,
       path,
       coverUrl,
     );
+    this.logger.log('Trip cover replaced.');
+    return replacement;
   }
 
   private async removeCoverPath(
@@ -231,9 +235,7 @@ export class TripCoversService {
 
       return null;
     } catch {
-      this.logger.error(
-        `Cover reconciliation required: ${previousPath}`,
-      );
+      this.logger.error('Cover reconciliation required.');
 
       return null;
     }
@@ -288,17 +290,20 @@ export class TripCoversService {
       );
 
       if (reconciled) {
+        this.logger.log('Trip cover removed.');
         return reconciled;
       }
 
       throw error;
     }
 
-    return this.completeRemoval(
+    const removal = await this.completeRemoval(
       userId,
       tripId,
       trip.coverStoragePath,
     );
+    this.logger.log('Trip cover removed.');
+    return removal;
   }
 
   private async cleanupOld(

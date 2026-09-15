@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import type { CreateTripDto } from './dto/create-trip.dto.js';
@@ -12,9 +13,12 @@ import { TripMapper } from './mappers/trip.mapper.js';
 import { TripRepository } from './repositories/trip.repository.js';
 import type { TripRecord } from './types/trip-records.js';
 import { TripCoversService } from './trip-covers.service.js';
+import { LOGGER_CONTEXT } from '../logger.constants.js';
 
 @Injectable()
 export class TripsService {
+  private readonly logger = new Logger(LOGGER_CONTEXT.TRIPS_SERVICE);
+
   constructor(
     private readonly trips: TripRepository,
     private readonly covers: TripCoversService,
@@ -37,6 +41,7 @@ export class TripsService {
     }
 
     const trip = await this.trips.create(userId, input);
+    this.logger.log('Trip created.');
     return this.toResponse(userId, trip, true);
   }
 
