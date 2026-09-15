@@ -6,6 +6,7 @@ import { CountriesModule } from './countries/countries.module.js';
 import { TripsModule } from './trips/trips.module.js';
 import { CitiesModule } from './cities/cities.module.js';
 import { CommunityModule } from './community/community.module.js';
+import { AchievementsModule } from './achievements/achievements.module.js';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CommunityModule } from './community/community.module.js';
     TripsModule,
     CitiesModule,
     CommunityModule,
+    AchievementsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

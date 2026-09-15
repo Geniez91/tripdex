@@ -9,6 +9,9 @@ import { TripCoversService } from './trip-covers.service.js';
 import { TripCoversController } from './trip-covers.controller.js';
 import { TripRepository } from './repositories/trip.repository.js';
 import { TripCoversRepository } from './repositories/trip-covers.repository.js';
+import { ProgressionController } from './progression/progression.controller.js';
+import { ProgressionRepository } from './progression/progression.repository.js';
+import { ProgressionService } from './progression/progression.service.js';
 
 @Module({
   imports: [AuthModule],
@@ -17,6 +20,7 @@ import { TripCoversRepository } from './repositories/trip-covers.repository.js';
     VisitedCountriesController,
     TripsJournalController,
     TripCoversController,
+    ProgressionController,
   ],
   providers: [
     TripsService,
@@ -24,7 +28,9 @@ import { TripCoversRepository } from './repositories/trip-covers.repository.js';
     CoverStorageService,
     TripCoversService,
     TripCoversRepository,
+    ProgressionRepository,
+    ProgressionService,
   ],
-  exports: [TripCoversService],
+  exports: [TripCoversService, ProgressionRepository],
 })
 export class TripsModule {}

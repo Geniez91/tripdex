@@ -4,7 +4,7 @@ import { getVisitedCountries } from "~/services/api/profile";
 import CommunityExplorer from "~/components/community/CommunityExplorer.vue";
 import CommunityActivityFeed from "~/components/community/CommunityActivityFeed.vue";
 import { getCountries } from "~/services/api/countries";
-import PersonalMap from "~/components/profile/PersonalMap.vue";
+import ProgressionDashboard from "~/components/progression/ProgressionDashboard.vue";
 
 const config = useRuntimeConfig();
 const route = useRoute();
@@ -53,20 +53,20 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
       <div>
         <span class="eyebrow"
           ><span class="tiny-dot" />{{
-            personalMap ? "MA CARTE" : "EXPLORER LE MONDE"
+            personalMap ? "MA PROGRESSION" : "EXPLORER LE MONDE"
           }}</span
         >
         <h1 id="page-title">
           {{
             personalMap
-              ? "Le monde, voyage après voyage."
+              ? "Ton monde, voyage après voyage."
               : "Chaque pays cache une histoire."
           }}
         </h1>
         <p>
           {{
             personalMap
-              ? "Gardez vos souvenirs. Retrouvez les traces de vos voyages."
+              ? "Un atlas personnel, construit au fil de tes voyages."
               : "Voir où voyage la communauté TripDex."
           }}
         </p>
@@ -87,8 +87,19 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
             : "Votre carte est à jour."
       }}
     </div>
-    <div class="explorer-layout">
-      <section class="map-panel" aria-labelledby="map-title">
+    <div class="explorer-layout" :class="{ 'is-personal': personalMap }">
+      <ProgressionDashboard
+        v-if="personalMap"
+        :countries="countries"
+        :visited-iso3="visitedIso3"
+        :map-loading="visitedStatus === 'pending' || visitedStatus === 'idle'"
+        :map-available="visitedStatus === 'success'"
+        :map-error="
+          visitedError ? 'Impossible de récupérer vos pays visités.' : null
+        "
+        @retry-map="refreshVisited()"
+      />
+      <section v-if="!personalMap" class="map-panel" aria-labelledby="map-title">
         <div class="map-heading">
           <div>
             <span class="eyebrow">{{
@@ -109,30 +120,13 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
             ><span>pays {{ visited.length > 1 ? "visités" : "visité" }}</span>
           </div>
         </div>
-        <div
-          v-if="personalMap && visitedError"
-          class="feedback error"
-          role="alert"
-        >
-          Impossible de récupérer vos pays visités.
-          <button class="text-button" @click="refreshVisited()">
-            Réessayer
-          </button>
-        </div>
         <CommunityExplorer
           v-if="!personalMap"
           :countries="countries"
           :revision="communityRevision"
         />
-        <PersonalMap
-          v-else
-          :visited-iso3="visitedIso3"
-          :loading="visitedStatus === 'pending' || visitedStatus === 'idle'"
-          :available="visitedStatus === 'success'"
-          :countries="countries"
-        />
         <div class="map-footer">
-          <template v-if="!personalMap">
+          <template>
             <span class="footer-symbol" aria-hidden="true"
               ><VIcon icon="mdi-map-marker-outline" size="22"
             /></span>
@@ -148,29 +142,6 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
               <VIcon icon="mdi-arrow-down" size="16" aria-hidden="true"
             /></a>
           </template>
-          <template v-else-if="visitedStatus === 'success' && !visited.length"
-            ><span class="footer-symbol" aria-hidden="true">↗</span>
-            <div>
-              <strong>Votre histoire commence ici.</strong>
-              <p>
-                Loggez votre premier voyage : ses pays prendront couleur sur la
-                carte.
-              </p>
-            </div></template
-          ><template v-else-if="visitedStatus === 'success'"
-            ><span class="footer-symbol" aria-hidden="true">✓</span>
-            <div>
-              <strong>Votre carnet prend vie.</strong>
-              <p>{{ visited.map((country) => country.name).join(" · ") }}</p>
-            </div></template
-          >
-          <p v-else class="muted">
-            {{
-              visitedError
-                ? "Vos voyages restent enregistrés. Réessayez de charger la carte."
-                : "Chargement de votre carnet…"
-            }}
-          </p>
         </div>
       </section>
       <section class="explorer-log" aria-label="Votre carnet de voyage">
@@ -256,6 +227,10 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
 .explorer-layout {
   display: grid;
   gap: 48px;
+}
+.explorer-layout.is-personal {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
 }
 .map-panel {
   border-color: rgb(var(--v-theme-outline));

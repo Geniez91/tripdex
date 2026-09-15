@@ -259,16 +259,21 @@ test('Community Explorer and WorldMap compile as Vue components', () => {
 test('API service calls only the existing community endpoint with an encoded country code', async () => {
   let request;
   const source = readFileSync(new URL('../../app/services/api/community.ts', import.meta.url), 'utf8');
+  const urlSource = readFileSync(new URL('../../app/services/api/api-url.ts', import.meta.url), 'utf8');
   const module = { exports: {} };
+  const urlModule = { exports: {} };
+  vm.runInNewContext(ts.transpileModule(urlSource, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
+    module: urlModule, exports: urlModule.exports, URL,
+  });
   vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
     module, exports: module.exports,
+    require: (name) => name === './api-url' ? urlModule.exports : {},
     $fetch: async (...args) => { request = args; return detail; },
   });
   const controller = new AbortController();
   const result = await module.exports.getCommunityCountryExplorer('https://api.test', 'JPN/x', controller.signal);
   assert.equal(result, detail);
-  assert.equal(request[0], '/community/countries/JPN%2Fx');
-  assert.equal(request[1].baseURL, 'https://api.test');
+  assert.equal(request[0], 'https://api.test/community/countries/JPN%2Fx');
   assert.equal(request[1].signal, controller.signal);
   assert.equal(request[1].retry, 0);
 });
