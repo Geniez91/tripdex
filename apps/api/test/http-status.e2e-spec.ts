@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 import { Test } from '@nestjs/testing';
 import {
   BadRequestException,
+  Logger,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
@@ -9,6 +10,7 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { App } from 'supertest/types.js';
 import { AppModule } from '../src/app.module.js';
+import { AppService } from '../src/app.service.js';
 import { CitiesService } from '../src/cities/cities.service.js';
 import { ResidenceService } from '../src/users/residence.service.js';
 import { SupabaseAuthService } from '../src/auth/supabase-auth.service.js';
@@ -19,8 +21,12 @@ describe('HTTP status audit: cities and residence', () => {
   const list = jest.fn<CitiesService['list']>();
   const get = jest.fn<ResidenceService['get']>();
   const update = jest.fn<ResidenceService['update']>();
+  const getHello = jest.fn<AppService['getHello']>();
+  let errorLogger: jest.SpiedFunction<Logger['error']>;
   beforeAll(async () => {
     const module = await Test.createTestingModule({ imports: [AppModule] })
+      .overrideProvider(AppService)
+      .useValue({ getHello })
       .overrideProvider(CitiesService)
       .useValue({ list })
       .overrideProvider(ResidenceService)
@@ -46,14 +52,21 @@ describe('HTTP status audit: cities and residence', () => {
       .compile();
     app = module.createNestApplication();
     await app.init();
+    errorLogger = jest
+      .spyOn(Logger.prototype, 'error')
+      .mockImplementation(() => undefined);
   });
   beforeEach(() => {
     jest.resetAllMocks();
     list.mockResolvedValue([]);
     get.mockResolvedValue({ residenceCountry: null });
     update.mockResolvedValue({ residenceCountry: null });
+    getHello.mockReturnValue('Hello World!');
   });
-  afterAll(() => app.close());
+  afterAll(async () => {
+    errorLogger.mockRestore();
+    await app.close();
+  });
 
   it('GET cities returns 200 and a JSON array without authentication', async () => {
     // Arrange
@@ -126,6 +139,40 @@ describe('HTTP status audit: cities and residence', () => {
         .send(method === 'put' ? { residenceCountryId: null } : undefined);
       // Assert
       expect(response.status).toBe(status);
+      expect(response.body).toEqual(error.getResponse());
+      expect(errorLogger).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
+    [new Error('Internal PostgreSQL failure.'), 'PostgreSQL'],
+    ['Internal filesystem failure.', 'filesystem'],
+    [{ detail: 'Internal storage failure.' }, 'storage'],
+  ])(
+    'maps an unexpected thrown value to a safe 500 response',
+    async (unexpected, hiddenDetail) => {
+      // Arrange
+      getHello.mockImplementationOnce(() => {
+        throw unexpected;
+      });
+
+      // Act
+      const response = await request(app.getHttpServer()).get(
+        '/?access_token=must-not-log',
+      );
+
+      // Assert
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({
+        statusCode: 500,
+        message: 'Internal server error',
+      });
+      expect(JSON.stringify(response.body)).not.toContain(hiddenDetail);
+      expect(errorLogger).toHaveBeenCalledTimes(1);
+      expect(errorLogger.mock.calls[0]?.[0]).toBe(
+        `Unexpected HTTP error: GET / (${unexpected instanceof Error ? unexpected.name : 'non-Error'})`,
+      );
+      expect(errorLogger.mock.calls[0]?.[0]).not.toContain('access_token');
     },
   );
 });
