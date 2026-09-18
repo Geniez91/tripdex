@@ -1,27 +1,7 @@
-import type { AchievementCategory, AchievementDefinition } from './achievement-definitions.js';
+import type { IAchievementDefinition } from './achievement-definitions.js';
+import type { IAchievementFacts, IAchievementProgress } from './achievement.types.js';
 
-export interface AchievementFacts {
-  tripCount: number;
-  visitedCountryCount: number;
-  exploredContinentCodes: ReadonlySet<string>;
-  totalRevisits: number;
-  maxTripsInSameCountry: number;
-  totalTravelDays: number;
-  communityVoteCount: number;
-  communityWinCount: number;
-}
-
-export interface AchievementProgress {
-  code: string;
-  name: string;
-  description: string;
-  category: AchievementCategory;
-  unlocked: boolean;
-  current: number;
-  target: number;
-}
-
-function currentValue(definition: AchievementDefinition, facts: AchievementFacts): number {
+function currentValue(definition: IAchievementDefinition, facts: IAchievementFacts): number {
   switch (definition.metric) {
     case 'TRIP_COUNT': return facts.tripCount;
     case 'VISITED_COUNTRY_COUNT': return facts.visitedCountryCount;
@@ -37,9 +17,9 @@ function currentValue(definition: AchievementDefinition, facts: AchievementFacts
 }
 
 export function calculateAchievements(
-  definitions: readonly AchievementDefinition[],
-  facts: AchievementFacts,
-): AchievementProgress[] {
+  definitions: readonly IAchievementDefinition[],
+  facts: IAchievementFacts,
+): IAchievementProgress[] {
   return definitions.map((definition) => {
     const current = currentValue(definition, facts);
     return {

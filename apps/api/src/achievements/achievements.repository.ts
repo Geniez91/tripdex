@@ -1,16 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../prisma/database.service.js';
 import { ProgressionRepository } from '../trips/progression/progression.repository.js';
-
-export interface CommunityAchievementCounts {
-  voteCount: number;
-  winCount: number;
-}
-
-export interface CommunityAchievementStats {
-  eligibleUserCount: number;
-  holderCounts: Record<string, number>;
-}
+import type {
+  ICommunityAchievementCounts,
+  ICommunityAchievementStats,
+} from './achievement.types.js';
 
 @Injectable()
 export class AchievementsRepository {
@@ -23,7 +17,7 @@ export class AchievementsRepository {
     return this.progression.snapshot(userId);
   }
 
-  async communityCounts(userId: string): Promise<CommunityAchievementCounts> {
+  async communityCounts(userId: string): Promise<ICommunityAchievementCounts> {
     const plan = this.database.client.raw.sql`
       SELECT
         (SELECT COUNT(*) FROM public."photoContestVote" WHERE "userId" = ${userId}) AS "voteCount",
@@ -39,12 +33,14 @@ export class AchievementsRepository {
     return { voteCount: 0, winCount: 0 };
   }
 
-  async communityStats(): Promise<CommunityAchievementStats> {
-    const plan = this.database.client.raw.sql`
-      WITH eligible AS (
-        SELECT DISTINCT "userId" FROM public.trip
+   private buildCommunityStatsPlan() {
+    return this.database.client.raw.sql`
+      WITH trip_facts AS (
+        SELECT "userId", COUNT(*) AS "tripCount"
+        FROM public.trip
+        GROUP BY "userId"
       ), country_trips AS (
-        SELECT t."userId", tc."countryId", COUNT(DISTINCT t.id) AS "tripCount"
+        SELECT t."userId", tc."countryId", COUNT(*) AS "tripCount"
         FROM public.trip t
         JOIN public."tripCountry" tc ON tc."tripId" = t.id
         GROUP BY t."userId", tc."countryId"
@@ -54,7 +50,7 @@ export class AchievementsRepository {
           MAX("tripCount") AS "maxTripsInSameCountry"
         FROM country_trips GROUP BY "userId"
       ), continent_facts AS (
-        SELECT t."userId", COUNT(DISTINCT c."continentCode") AS "exploredContinentCount",
+        SELECT country_trips."userId", COUNT(DISTINCT c."continentCode") AS "exploredContinentCount",
           COUNT(*) FILTER (WHERE c."continentCode" = 'AF') AS af,
           COUNT(*) FILTER (WHERE c."continentCode" = 'AS') AS asia,
           COUNT(*) FILTER (WHERE c."continentCode" = 'EU') AS eu,
@@ -62,10 +58,9 @@ export class AchievementsRepository {
           COUNT(*) FILTER (WHERE c."continentCode" = 'SA') AS sa,
           COUNT(*) FILTER (WHERE c."continentCode" = 'OC') AS oc,
           COUNT(*) FILTER (WHERE c."continentCode" = 'AN') AS an
-        FROM public.trip t
-        JOIN public."tripCountry" tc ON tc."tripId" = t.id
-        JOIN public.country c ON c.id = tc."countryId"
-        GROUP BY t."userId"
+        FROM country_trips
+        JOIN public.country c ON c.id = country_trips."countryId"
+        GROUP BY country_trips."userId"
       ), ordered_periods AS (
         SELECT t."userId", t.id, t."startDate"::date AS "startDay",
           COALESCE(t."endDate", t."startDate")::date AS "endDay",
@@ -98,7 +93,7 @@ export class AchievementsRepository {
         WHERE contest.status = 'CLOSED'
         GROUP BY submission."userId"
       ), facts AS (
-        SELECT eligible."userId", COUNT(t.id) AS "tripCount",
+        SELECT trip_facts."userId", trip_facts."tripCount",
           COALESCE(country_facts."visitedCountryCount", 0) AS "visitedCountryCount",
           COALESCE(country_facts."totalRevisits", 0) AS "totalRevisits",
           COALESCE(country_facts."maxTripsInSameCountry", 0) AS "maxTripsInSameCountry",
@@ -109,17 +104,12 @@ export class AchievementsRepository {
           COALESCE(continent_facts.an, 0) AS an,
           COALESCE(travel_days."totalTravelDays", 0) AS "totalTravelDays",
           COALESCE(voters."voteCount", 0) AS "voteCount", COALESCE(winners."winCount", 0) AS "winCount"
-        FROM eligible
-        JOIN public.trip t ON t."userId" = eligible."userId"
-        LEFT JOIN country_facts ON country_facts."userId" = eligible."userId"
-        LEFT JOIN continent_facts ON continent_facts."userId" = eligible."userId"
-        LEFT JOIN travel_days ON travel_days."userId" = eligible."userId"
-        LEFT JOIN voters ON voters."userId" = eligible."userId"
-        LEFT JOIN winners ON winners."userId" = eligible."userId"
-        GROUP BY eligible."userId", country_facts."visitedCountryCount", country_facts."totalRevisits",
-          country_facts."maxTripsInSameCountry", continent_facts."exploredContinentCount",
-          continent_facts.af, continent_facts.asia, continent_facts.eu, continent_facts.na, continent_facts.sa,
-          continent_facts.oc, continent_facts.an, travel_days."totalTravelDays", voters."voteCount", winners."winCount"
+        FROM trip_facts
+        LEFT JOIN country_facts ON country_facts."userId" = trip_facts."userId"
+        LEFT JOIN continent_facts ON continent_facts."userId" = trip_facts."userId"
+        LEFT JOIN travel_days ON travel_days."userId" = trip_facts."userId"
+        LEFT JOIN voters ON voters."userId" = trip_facts."userId"
+        LEFT JOIN winners ON winners."userId" = trip_facts."userId"
       )
       SELECT COUNT(*) AS "eligibleUserCount",
         COUNT(*) FILTER (WHERE "tripCount" >= 1) AS "premierVoyage",
@@ -150,20 +140,33 @@ export class AchievementsRepository {
         laVoixDuVoyageur: 'pg/int8number@1', photographeTripdex: 'pg/int8number@1',
       })
       .build();
+  }
+
+  async communityStats(): Promise<ICommunityAchievementStats> {
+    const plan = this.buildCommunityStatsPlan();
     for await (const row of this.database.client.runtime().query(plan)) {
       const { eligibleUserCount, ...holderCounts } = row;
       return {
         eligibleUserCount,
         holderCounts: {
-          PREMIER_VOYAGE: holderCounts.premierVoyage, PREMIER_PAS: holderCounts.premierPas,
-          GLOBE_TROTTER: holderCounts.globeTrotter, GRAND_EXPLORATEUR: holderCounts.grandExplorateur,
-          PREMIERS_PAS_EUROPE: holderCounts.premiersPasEurope, PREMIERS_PAS_AFRIQUE: holderCounts.premiersPasAfrique,
-          PREMIERS_PAS_ASIE: holderCounts.premiersPasAsie, PREMIERS_PAS_AMERIQUE_NORD: holderCounts.premiersPasAmeriqueNord,
-          PREMIERS_PAS_AMERIQUE_SUD: holderCounts.premiersPasAmeriqueSud, PREMIERS_PAS_OCEANIE: holderCounts.premiersPasOceanie,
-          PREMIERS_PAS_ANTARCTIQUE: holderCounts.premiersPasAntarctique, NOUVEAU_CONTINENT: holderCounts.nouveauContinent,
-          TROIS_HORIZONS: holderCounts.troisHorizons, DEJA_VU: holderCounts.dejaVu,
-          CANT_STAY_AWAY: holderCounts.cantStayAway, TRENTE_JOURS_AILLEURS: holderCounts.trenteJoursAilleurs,
-          CENT_JOURS_SUR_LA_ROUTE: holderCounts.centJoursSurLaRoute, LA_VOIX_DU_VOYAGEUR: holderCounts.laVoixDuVoyageur,
+          PREMIER_VOYAGE: holderCounts.premierVoyage,
+          PREMIER_PAS: holderCounts.premierPas,
+          GLOBE_TROTTER: holderCounts.globeTrotter,
+          GRAND_EXPLORATEUR: holderCounts.grandExplorateur,
+          PREMIERS_PAS_EUROPE: holderCounts.premiersPasEurope,
+          PREMIERS_PAS_AFRIQUE: holderCounts.premiersPasAfrique,
+          PREMIERS_PAS_ASIE: holderCounts.premiersPasAsie,
+          PREMIERS_PAS_AMERIQUE_NORD: holderCounts.premiersPasAmeriqueNord,
+          PREMIERS_PAS_AMERIQUE_SUD: holderCounts.premiersPasAmeriqueSud,
+          PREMIERS_PAS_OCEANIE: holderCounts.premiersPasOceanie,
+          PREMIERS_PAS_ANTARCTIQUE: holderCounts.premiersPasAntarctique,
+          NOUVEAU_CONTINENT: holderCounts.nouveauContinent,
+          TROIS_HORIZONS: holderCounts.troisHorizons,
+          DEJA_VU: holderCounts.dejaVu,
+          CANT_STAY_AWAY: holderCounts.cantStayAway,
+          TRENTE_JOURS_AILLEURS: holderCounts.trenteJoursAilleurs,
+          CENT_JOURS_SUR_LA_ROUTE: holderCounts.centJoursSurLaRoute,
+          LA_VOIX_DU_VOYAGEUR: holderCounts.laVoixDuVoyageur,
           PHOTOGRAPHE_TRIPDEX: holderCounts.photographeTripdex,
         },
       };

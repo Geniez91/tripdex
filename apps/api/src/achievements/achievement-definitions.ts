@@ -7,9 +7,9 @@ export const achievementCategories = [
   'COMMUNITY',
 ] as const;
 
-export type AchievementCategory = (typeof achievementCategories)[number];
+export type TAchievementCategory = (typeof achievementCategories)[number];
 
-export type AchievementMetric =
+export type TAchievementMetric =
   | 'TRIP_COUNT'
   | 'VISITED_COUNTRY_COUNT'
   | 'EXPLORED_CONTINENT_COUNT'
@@ -20,17 +20,17 @@ export type AchievementMetric =
   | 'COMMUNITY_WIN_COUNT'
   | 'CONTINENT_VISITED';
 
-export interface AchievementDefinition {
+export interface IAchievementDefinition {
   code: string;
   name: string;
   description: string;
-  category: AchievementCategory;
-  metric: AchievementMetric;
+  category: TAchievementCategory;
+  metric: TAchievementMetric;
   target: number;
   continentCode?: string;
 }
 
-export const achievementDefinitions: readonly AchievementDefinition[] = [
+export const achievementDefinitions: readonly IAchievementDefinition[] = [
   { code: 'PREMIER_VOYAGE', name: 'Premier voyage', description: 'Logger ton premier voyage.', category: 'JOURNAL', metric: 'TRIP_COUNT', target: 1 },
   { code: 'PREMIER_PAS', name: 'Premier pas', description: 'Explorer ton premier pays.', category: 'EXPLORATION', metric: 'VISITED_COUNTRY_COUNT', target: 1 },
   { code: 'GLOBE_TROTTER', name: 'Globe Trotter', description: 'Explorer 10 pays.', category: 'EXPLORATION', metric: 'VISITED_COUNTRY_COUNT', target: 10 },

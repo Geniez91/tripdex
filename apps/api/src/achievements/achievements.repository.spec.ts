@@ -45,8 +45,9 @@ describe('AchievementsRepository', () => {
     const query = jest.fn(async function* () { yield aggregate; });
     const sql = (strings: TemplateStringsArray) => {
       const statement = strings.join('');
-      expect(statement).toContain('WITH eligible AS');
-      expect(statement).toContain('SELECT DISTINCT "userId" FROM public.trip');
+      expect(statement).toContain('WITH trip_facts AS');
+      expect(statement).toContain('COUNT(*) AS "tripCount"');
+      expect(statement).toContain('FROM country_trips');
       expect(statement).toContain('previousEndDay');
       expect(statement).toContain('public."photoContestVote"');
       expect(statement).toContain('contest."winnerSubmissionId"');

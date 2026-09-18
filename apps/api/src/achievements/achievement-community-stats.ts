@@ -1,4 +1,8 @@
-import type { AchievementProgress } from './achievement-calculations.js';
+import type {
+  IAchievementCommunityStat,
+  IAchievementProgress,
+  TAchievementRarity,
+} from './achievement.types.js';
 
 export const achievementRarities = [
   'COMMON',
@@ -7,13 +11,6 @@ export const achievementRarities = [
   'VERY_RARE',
   'LEGENDARY',
 ] as const;
-
-export type AchievementRarity = (typeof achievementRarities)[number];
-
-export interface AchievementCommunityStat {
-  percentage: number;
-  rarity: AchievementRarity | null;
-}
 
 export function achievementPercentage(holderCount: number, eligibleUserCount: number): number {
   if (eligibleUserCount === 0) return 0;
@@ -27,7 +24,7 @@ export function displayPercentage(percentage: number): number {
 export function achievementRarity(
   percentage: number,
   eligibleUserCount: number,
-): AchievementRarity | null {
+): TAchievementRarity | null {
   if (eligibleUserCount === 0) return null;
   if (percentage >= 50) return 'COMMON';
   if (percentage >= 20) return 'UNCOMMON';
@@ -39,7 +36,7 @@ export function achievementRarity(
 export function communityStat(
   holderCount: number,
   eligibleUserCount: number,
-): AchievementCommunityStat {
+): IAchievementCommunityStat {
   const percentage = achievementPercentage(holderCount, eligibleUserCount);
   return {
     percentage: displayPercentage(percentage),
@@ -48,7 +45,7 @@ export function communityStat(
 }
 
 export function withCommunityStats(
-  achievements: AchievementProgress[],
+  achievements: IAchievementProgress[],
   holderCounts: Readonly<Record<string, number>>,
   eligibleUserCount: number,
 ) {

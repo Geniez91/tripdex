@@ -1,22 +1,22 @@
-import type { AchievementCategory } from '../achievement-definitions.js';
-import type { AchievementRarity } from '../achievement-community-stats.js';
+import type { TAchievementCategory } from '../achievement-definitions.js';
+import type { TAchievementRarity } from '../achievement.types.js';
 
-export interface AchievementCommunityResponseDto {
+export interface IAchievementCommunityResponseDto {
   percentage: number;
-  rarity: AchievementRarity | null;
+  rarity: TAchievementRarity | null;
 }
 
-export interface AchievementResponseDto {
+export interface IAchievementResponseDto {
   code: string;
   name: string;
   description: string;
-  category: AchievementCategory;
+  category: TAchievementCategory;
   unlocked: boolean;
   current: number;
   target: number;
-  community: AchievementCommunityResponseDto;
+  community: IAchievementCommunityResponseDto;
 }
 
-export interface AchievementsResponseDto {
-  achievements: AchievementResponseDto[];
+export interface IAchievementsResponseDto {
+  achievements: IAchievementResponseDto[];
 }

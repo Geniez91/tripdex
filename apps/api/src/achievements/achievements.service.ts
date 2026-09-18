@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { calculateProgression } from '../trips/progression/progression-calculations.js';
-import type { ProgressionSnapshot } from '../trips/progression/progression-records.js';
-import { calculateAchievements, type AchievementFacts } from './achievement-calculations.js';
-import { withCommunityStats } from './achievement-community-stats.js';
+import type { IProgressionSnapshot } from '../trips/progression/progression-records.js';
+import { calculateAchievements } from './achievement-calculations.js';
+import {
+  withCommunityStats,
+} from './achievement-community-stats.js';
 import { achievementDefinitions } from './achievement-definitions.js';
-import type { AchievementsResponseDto } from './dto/achievement-response.dto.js';
-import { AchievementsRepository, type CommunityAchievementCounts } from './achievements.repository.js';
+import type {
+  IAchievementFacts,
+  ICommunityAchievementCounts,
+} from './achievement.types.js';
+import type { IAchievementsResponseDto } from './dto/achievement-response.dto.js';
+import { AchievementsRepository } from './achievements.repository.js';
 
-function factsFrom(snapshot: ProgressionSnapshot, community: CommunityAchievementCounts): AchievementFacts {
+function factsFrom(snapshot: IProgressionSnapshot, community: ICommunityAchievementCounts): IAchievementFacts {
   const progression = calculateProgression(snapshot, new Date().getUTCFullYear());
   return {
     tripCount: new Set(snapshot.tripCountries.map((row) => row.tripId)).size,
@@ -32,7 +38,7 @@ function factsFrom(snapshot: ProgressionSnapshot, community: CommunityAchievemen
 export class AchievementsService {
   constructor(private readonly achievements: AchievementsRepository) {}
 
-  async forUser(userId: string): Promise<AchievementsResponseDto> {
+  async forUser(userId: string): Promise<IAchievementsResponseDto> {
     const [snapshot, community, stats] = await Promise.all([
       this.achievements.snapshot(userId),
       this.achievements.communityCounts(userId),

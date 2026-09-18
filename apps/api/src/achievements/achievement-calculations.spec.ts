@@ -1,7 +1,8 @@
 import { calculateAchievements } from './achievement-calculations.js';
 import { achievementDefinitions } from './achievement-definitions.js';
+import type { IAchievementFacts } from './achievement.types.js';
 
-function facts(overrides: Partial<Parameters<typeof calculateAchievements>[1]> = {}) {
+function facts(overrides: Partial<IAchievementFacts> = {}): IAchievementFacts {
   return {
     tripCount: 0,
     visitedCountryCount: 0,
