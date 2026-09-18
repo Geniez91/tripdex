@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { StorageClient } from '@supabase/storage-js';
 import { LOGGER_CONTEXT } from '../logger.constants.js';
-import type { CoverFile } from './cover-file.js';
+import type { ICoverFile } from './types/cover-format.js';
 
 export const COVER_URL_TTL = 15 * 60;
 
@@ -55,7 +55,7 @@ export class CoverStorageService {
     };
   }
 
-  async upload(path: string, file: CoverFile): Promise<void> {
+  async upload(path: string, file: ICoverFile): Promise<void> {
     await this.checkConfiguration();
     const { files } = this.storage();
     const { error } = await files.upload(path, file.buffer, {

@@ -1,13 +1,13 @@
 import type {
-  CityResponseDto,
-  CountryResponseDto,
-  TripResponseDto,
+  ICityResponseDto,
+  ICountryResponseDto,
+  ITripResponseDto,
 } from '../dto/trip-response.dto.js';
-import type { CityRecord, CountryRecord } from '../types/trip-records.js';
-import type { TripResponseParts } from '../types/trip-response-parts.js';
+import type { ICityRecord, ICountryRecord } from '../types/trip-records.js';
+import type { ITripResponseParts } from '../types/trip-response-parts.js';
 
 export class TripMapper {
-  static toCountryDto(country: CountryRecord): CountryResponseDto {
+  static toCountryDto(country: ICountryRecord): ICountryResponseDto {
     return {
       id: country.id,
       iso2: country.iso2,
@@ -18,7 +18,7 @@ export class TripMapper {
     };
   }
 
-  static toCityDto(city: CityRecord): CityResponseDto {
+  static toCityDto(city: ICityRecord): ICityResponseDto {
     return {
       id: city.id,
       countryId: city.countryId,
@@ -29,8 +29,8 @@ export class TripMapper {
     };
   }
 
-  static toResponse(parts: TripResponseParts): TripResponseDto {
-    const response: TripResponseDto = {
+  static toResponse(parts: ITripResponseParts): ITripResponseDto {
+    const response: ITripResponseDto = {
       id: parts.trip.id,
       title: parts.trip.title,
       startDate: parts.trip.startDate,

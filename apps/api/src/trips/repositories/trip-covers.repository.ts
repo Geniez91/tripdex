@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { OwnedTripCoverRecord } from '../types/trip-cover-record.js';
+import type { IOwnedTripCoverRecord } from '../types/trip-cover-record.js';
 
 @Injectable()
 export class TripCoversRepository {
@@ -13,7 +13,7 @@ export class TripCoversRepository {
   findOwned(
     userId: string,
     tripId: string,
-  ): Promise<OwnedTripCoverRecord | null> {
+  ): Promise<IOwnedTripCoverRecord | null> {
     return this.database.client.orm.public.Trip.where({
       id: tripId,
       userId,

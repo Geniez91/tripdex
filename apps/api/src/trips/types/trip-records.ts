@@ -1,4 +1,4 @@
-export interface TripRecord {
+export interface ITripRecord {
   id: string;
   title: string;
   startDate: string;
@@ -9,7 +9,7 @@ export interface TripRecord {
   visibility: 'public' | 'private';
 }
 
-export interface CountryRecord {
+export interface ICountryRecord {
   id: string;
   iso2: string;
   iso3: string;
@@ -18,7 +18,7 @@ export interface CountryRecord {
   continentCode: string;
 }
 
-export interface CityRecord {
+export interface ICityRecord {
   id: string;
   countryId: string;
   name: string;
@@ -27,12 +27,12 @@ export interface CityRecord {
   longitude: number;
 }
 
-export interface TripCountryLink {
+export interface ITripCountryLink {
   countryId: string;
   tripId: string;
 }
 
-export interface TripOwnershipRecord {
+export interface ITripOwnershipRecord {
   id: string;
   userId: string;
   startDate: string;

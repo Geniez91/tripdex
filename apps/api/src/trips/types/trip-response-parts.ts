@@ -1,9 +1,9 @@
-import type { CityRecord, CountryRecord, TripRecord } from './trip-records.js';
+import type { ICityRecord, ICountryRecord, ITripRecord } from './trip-records.js';
 
-export interface TripResponseParts {
-  trip: TripRecord;
-  countries: CountryRecord[];
-  cities?: CityRecord[];
+export interface ITripResponseParts {
+  trip: ITripRecord;
+  countries: ICountryRecord[];
+  cities?: ICityRecord[];
   coverUrl: string | null;
   isRevisit: boolean;
   revisitedCountryIds: string[];

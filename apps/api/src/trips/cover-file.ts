@@ -1,5 +1,5 @@
 import { BadRequestException, PayloadTooLargeException } from '@nestjs/common';
-import { CoverFormat } from './types/cover-format.js';
+import { ECoverFormat, type ICoverFile } from './types/cover-format.js';
 
 export const MAX_COVER_BYTES = 5 * 1024 * 1024;
 export const COVER_MIME_TYPES = [
@@ -8,13 +8,7 @@ export const COVER_MIME_TYPES = [
   'image/webp',
 ] as const;
 
-export interface CoverFile {
-  buffer: Buffer;
-  mimetype: string;
-  size: number;
-}
-
-export function validateCover(file: CoverFile | undefined): CoverFormat {
+export function validateCover(file: ICoverFile | undefined): ECoverFormat {
   if (!file || !file.buffer.length) {
     throw new BadRequestException('Sélectionnez une image.');
   }
@@ -22,20 +16,20 @@ export function validateCover(file: CoverFile | undefined): CoverFormat {
     throw new PayloadTooLargeException('La cover doit faire au maximum 5 Mio.');
   }
   const bytes = file.buffer;
-  const extension: CoverFormat | null = bytes
+  const extension: ECoverFormat | null = bytes
     .subarray(0, 3)
     .equals(Buffer.from([0xff, 0xd8, 0xff]))
-    ? CoverFormat.Jpeg
+    ? ECoverFormat.Jpeg
     : bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))
-      ? CoverFormat.Png
+      ? ECoverFormat.Png
       : bytes.toString('ascii', 0, 4) === 'RIFF' &&
           bytes.toString('ascii', 8, 12) === 'WEBP'
-        ? CoverFormat.Webp
+        ? ECoverFormat.Webp
         : null;
-  const mime: Record<CoverFormat, (typeof COVER_MIME_TYPES)[number]> = {
-    [CoverFormat.Jpeg]: 'image/jpeg',
-    [CoverFormat.Png]: 'image/png',
-    [CoverFormat.Webp]: 'image/webp',
+  const mime: Record<ECoverFormat, (typeof COVER_MIME_TYPES)[number]> = {
+    [ECoverFormat.Jpeg]: 'image/jpeg',
+    [ECoverFormat.Png]: 'image/png',
+    [ECoverFormat.Webp]: 'image/webp',
   };
   if (!extension || mime[extension] !== file.mimetype) {
     throw new BadRequestException(

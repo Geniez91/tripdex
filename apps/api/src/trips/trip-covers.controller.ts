@@ -15,10 +15,10 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../auth/guards/auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import type { TripDexUser } from '../users/types/tripdex-user.js';
+import type { ITripDexUser } from '../users/types/tripdex-user.js';
 import { MAX_COVER_BYTES } from './cover-file.js';
-import type { CoverFile } from './cover-file.js';
-import type { TripCoverResponseDto } from './dto/trip-cover-response.dto.js';
+import type { ICoverFile } from './types/cover-format.js';
+import type { ITripCoverResponseDto } from './dto/trip-cover-response.dto.js';
 import { TripCoversService } from './trip-covers.service.js';
 
 @Controller('me/trips/:id/cover')
@@ -36,10 +36,10 @@ export class TripCoversController {
   )
   async replace(
     @Param('id') id: string,
-    @UploadedFile() file: CoverFile | undefined,
+    @UploadedFile() file: ICoverFile | undefined,
     @Body() body: Record<string, unknown> | undefined,
-    @CurrentUser() user: TripDexUser,
-  ): Promise<TripCoverResponseDto> {
+    @CurrentUser() user: ITripDexUser,
+  ): Promise<ITripCoverResponseDto> {
     if (body && Object.keys(body).length)
       throw new BadRequestException('Seul le fichier cover est accepté.');
     return this.covers.replace(user.id, id, file);
@@ -50,8 +50,8 @@ export class TripCoversController {
   @HttpCode(HttpStatus.OK)
   async remove(
     @Param('id') id: string,
-    @CurrentUser() user: TripDexUser,
-  ): Promise<TripCoverResponseDto> {
+    @CurrentUser() user: ITripDexUser,
+  ): Promise<ITripCoverResponseDto> {
     return this.covers.remove(user.id, id);
   }
 }

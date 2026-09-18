@@ -1,4 +1,4 @@
-export interface CountryResponseDto {
+export interface ICountryResponseDto {
   id: string;
   iso2: string;
   iso3: string;
@@ -7,7 +7,7 @@ export interface CountryResponseDto {
   continentCode: string;
 }
 
-export interface CityResponseDto {
+export interface ICityResponseDto {
   id: string;
   countryId: string;
   name: string;
@@ -16,7 +16,7 @@ export interface CityResponseDto {
   longitude: number;
 }
 
-export interface TripResponseDto {
+export interface ITripResponseDto {
   id: string;
   title: string;
   startDate: string;
@@ -26,8 +26,8 @@ export interface TripResponseDto {
   coverStoragePath: string | null;
   coverUrl: string | null;
   visibility: 'public' | 'private';
-  countries: CountryResponseDto[];
-  cities?: CityResponseDto[];
+  countries: ICountryResponseDto[];
+  cities?: ICityResponseDto[];
   isRevisit: boolean;
   revisitedCountryIds: string[];
 }

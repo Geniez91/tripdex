@@ -4,14 +4,14 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import type { CreateTripDto } from './dto/create-trip.dto.js';
+import type { ICreateTripDto } from './dto/create-trip.dto.js';
 import type {
-  CountryResponseDto,
-  TripResponseDto,
+  ICountryResponseDto,
+  ITripResponseDto,
 } from './dto/trip-response.dto.js';
 import { TripMapper } from './mappers/trip.mapper.js';
 import { TripRepository } from './repositories/trip.repository.js';
-import type { TripRecord } from './types/trip-records.js';
+import type { ITripRecord } from './types/trip-records.js';
 import { TripCoversService } from './trip-covers.service.js';
 import { LOGGER_CONTEXT } from '../logger.constants.js';
 
@@ -24,7 +24,7 @@ export class TripsService {
     private readonly covers: TripCoversService,
   ) {}
 
-  async create(userId: string, input: CreateTripDto): Promise<TripResponseDto> {
+  async create(userId: string, input: ICreateTripDto): Promise<ITripResponseDto> {
     const countries = await this.trips.findCountries(input.countryIds);
     if (countries.length !== input.countryIds.length) {
       throw new BadRequestException('One or more countries do not exist.');
@@ -45,29 +45,29 @@ export class TripsService {
     return this.toResponse(userId, trip, true);
   }
 
-  async journal(userId: string): Promise<TripResponseDto[]> {
+  async journal(userId: string): Promise<ITripResponseDto[]> {
     const trips = await this.trips.listByUser(userId);
     return Promise.all(
       trips.map((trip) => this.toResponse(userId, trip, false)),
     );
   }
 
-  async detail(userId: string, tripId: string): Promise<TripResponseDto> {
+  async detail(userId: string, tripId: string): Promise<ITripResponseDto> {
     const trip = await this.trips.findOwned(userId, tripId);
     if (!trip) throw new NotFoundException('Trip not found.');
     return this.toResponse(userId, trip, true);
   }
 
-  async visitedCountries(userId: string): Promise<CountryResponseDto[]> {
+  async visitedCountries(userId: string): Promise<ICountryResponseDto[]> {
     const countries = await this.trips.findVisitedCountries(userId);
     return countries.map((country) => TripMapper.toCountryDto(country));
   }
 
   private async toResponse(
     userId: string,
-    trip: TripRecord,
+    trip: ITripRecord,
     includeCities: boolean,
-  ): Promise<TripResponseDto> {
+  ): Promise<ITripResponseDto> {
     const countryLinks = await this.trips.findCountryLinks(trip.id);
     const countryIds = countryLinks.map((link) => link.countryId);
     const countries = await this.trips.findCountries(countryIds);

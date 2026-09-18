@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { PipeTransform } from '@nestjs/common';
-import type { CreateTripDto } from './dto/create-trip.dto.js';
+import type { ICreateTripDto } from './dto/create-trip.dto.js';
 
 function parseDate(value: unknown, field: string): string {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
@@ -19,8 +19,8 @@ function parseDate(value: unknown, field: string): string {
 }
 
 @Injectable()
-export class CreateTripPipe implements PipeTransform<unknown, CreateTripDto> {
-  transform(value: unknown): CreateTripDto {
+export class CreateTripPipe implements PipeTransform<unknown, ICreateTripDto> {
+  transform(value: unknown): ICreateTripDto {
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
       throw new BadRequestException('A JSON object is required.');
     }

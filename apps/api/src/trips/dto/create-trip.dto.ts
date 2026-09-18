@@ -1,4 +1,4 @@
-export interface CreateTripDto {
+export interface ICreateTripDto {
   title: string;
   startDate: string;
   endDate: string | null;

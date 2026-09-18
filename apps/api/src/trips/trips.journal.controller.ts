@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import type { TripDexUser } from '../users/types/tripdex-user.js';
-import type { TripResponseDto } from './dto/trip-response.dto.js';
+import type { ITripDexUser } from '../users/types/tripdex-user.js';
+import type { ITripResponseDto } from './dto/trip-response.dto.js';
 import { TripsService } from './trips.service.js';
 
 @Controller('me/trips')
@@ -21,7 +21,7 @@ export class TripsJournalController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'private, no-store')
-  async list(@CurrentUser() user: TripDexUser): Promise<TripResponseDto[]> {
+  async list(@CurrentUser() user: ITripDexUser): Promise<ITripResponseDto[]> {
     return this.trips.journal(user.id);
   }
 
@@ -30,8 +30,8 @@ export class TripsJournalController {
   @Header('Cache-Control', 'private, no-store')
   async detail(
     @Param('id') id: string,
-    @CurrentUser() user: TripDexUser,
-  ): Promise<TripResponseDto> {
+    @CurrentUser() user: ITripDexUser,
+  ): Promise<ITripResponseDto> {
     return this.trips.detail(user.id, id);
   }
 }

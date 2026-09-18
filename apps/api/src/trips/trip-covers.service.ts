@@ -9,10 +9,10 @@ import { randomUUID } from 'node:crypto';
 import { LOGGER_CONTEXT } from '../logger.constants.js';
 import { CoverStorageService } from './cover-storage.service.js';
 import { coverPrefix, ownsCoverPath, validateCover } from './cover-file.js';
-import type { CoverFile } from './cover-file.js';
-import type { TripCoverResponseDto } from './dto/trip-cover-response.dto.js';
+import type { ICoverFile } from './types/cover-format.js';
+import type { ITripCoverResponseDto } from './dto/trip-cover-response.dto.js';
 import { TripCoversRepository } from './repositories/trip-covers.repository.js';
-import type { OwnedTripCoverRecord } from './types/trip-cover-record.js';
+import type { IOwnedTripCoverRecord } from './types/trip-cover-record.js';
 
 @Injectable()
 export class TripCoversService {
@@ -26,7 +26,7 @@ export class TripCoversService {
   private async owned(
     userId: string,
     tripId: string,
-  ): Promise<OwnedTripCoverRecord> {
+  ): Promise<IOwnedTripCoverRecord> {
     coverPrefix(userId, tripId);
     const trip = await this.trips.findOwned(userId, tripId);
     if (!trip) throw new NotFoundException('Voyage introuvable.');
@@ -45,7 +45,7 @@ export class TripCoversService {
   private createCoverPath(
     userId: string,
     tripId: string,
-    file: CoverFile | undefined,
+    file: ICoverFile | undefined,
   ): string {
     const extension = validateCover(file);
     return `${coverPrefix(userId, tripId)}${randomUUID()}.${extension}`;
@@ -53,7 +53,7 @@ export class TripCoversService {
 
   private async uploadCover(
     path: string,
-    file: CoverFile,
+    file: ICoverFile,
   ): Promise<string> {
     try {
       await this.storage.upload(path, file);
@@ -102,7 +102,7 @@ export class TripCoversService {
     previousPath: string | null,
     newPath: string,
     coverUrl: string,
-  ): Promise<TripCoverResponseDto> {
+  ): Promise<ITripCoverResponseDto> {
     const cleanupPending = await this.cleanupOld(
       userId,
       tripId,
@@ -122,7 +122,7 @@ export class TripCoversService {
     previousPath: string | null,
     newPath: string,
     coverUrl: string,
-  ): Promise<TripCoverResponseDto | null> {
+  ): Promise<ITripCoverResponseDto | null> {
     try {
       const current = await this.owned(userId, tripId);
 
@@ -149,8 +149,8 @@ export class TripCoversService {
   async replace(
     userId: string,
     tripId: string,
-    file: CoverFile | undefined,
-  ): Promise<TripCoverResponseDto> {
+    file: ICoverFile | undefined,
+  ): Promise<ITripCoverResponseDto> {
     const trip = await this.owned(userId, tripId);
     const path = this.createCoverPath(userId, tripId, file);
     const coverUrl = await this.uploadCover(path, file!);
@@ -213,7 +213,7 @@ export class TripCoversService {
     userId: string,
     tripId: string,
     previousPath: string,
-  ): Promise<TripCoverResponseDto | null> {
+  ): Promise<ITripCoverResponseDto | null> {
     try {
       const current = await this.owned(userId, tripId);
 
@@ -245,7 +245,7 @@ export class TripCoversService {
     userId: string,
     tripId: string,
     previousPath: string,
-  ): Promise<TripCoverResponseDto> {
+  ): Promise<ITripCoverResponseDto> {
     const cleanupPending = await this.cleanupOld(
       userId,
       tripId,
@@ -259,7 +259,7 @@ export class TripCoversService {
     };
   }
 
-  private emptyCoverResponse(): TripCoverResponseDto {
+  private emptyCoverResponse(): ITripCoverResponseDto {
     return {
       coverStoragePath: null,
       coverUrl: null,
@@ -270,7 +270,7 @@ export class TripCoversService {
   async remove(
     userId: string,
     tripId: string,
-  ): Promise<TripCoverResponseDto> {
+  ): Promise<ITripCoverResponseDto> {
     const trip = await this.owned(userId, tripId);
     if (!trip.coverStoragePath) {
       return this.emptyCoverResponse();

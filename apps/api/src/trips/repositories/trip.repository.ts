@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { CreateTripDto } from '../dto/create-trip.dto.js';
+import type { ICreateTripDto } from '../dto/create-trip.dto.js';
 import type {
-  CityRecord,
-  CountryRecord,
-  TripCountryLink,
-  TripRecord,
+  ICityRecord,
+  ICountryRecord,
+  ITripCountryLink,
+  ITripRecord,
 } from '../types/trip-records.js';
 
 @Injectable()
 export class TripRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  async findCountries(ids: string[]): Promise<CountryRecord[]> {
+  async findCountries(ids: string[]): Promise<ICountryRecord[]> {
     return this.database.client.orm.public.Country.where((country) =>
       country.id.in(ids),
     )
@@ -20,14 +20,14 @@ export class TripRepository {
       .all();
   }
 
-  async findCities(ids: string[]): Promise<CityRecord[]> {
+  async findCities(ids: string[]): Promise<ICityRecord[]> {
     if (!ids.length) return [];
     return this.database.client.orm.public.City.where((city) => city.id.in(ids))
       .select('id', 'countryId', 'name', 'slug', 'latitude', 'longitude')
       .all();
   }
 
-  async create(userId: string, input: CreateTripDto): Promise<TripRecord> {
+  async create(userId: string, input: ICreateTripDto): Promise<ITripRecord> {
     return this.database.client.transaction(async (tx) => {
       const trip = await tx.orm.public.Trip.create({
         userId,
@@ -61,7 +61,7 @@ export class TripRepository {
     });
   }
 
-  async listByUser(userId: string): Promise<TripRecord[]> {
+  async listByUser(userId: string): Promise<ITripRecord[]> {
     return this.database.client.orm.public.Trip.where({ userId })
       .select(
         'id',
@@ -77,7 +77,7 @@ export class TripRepository {
       .all();
   }
 
-  async findOwned(userId: string, tripId: string): Promise<TripRecord | null> {
+  async findOwned(userId: string, tripId: string): Promise<ITripRecord | null> {
     return this.database.client.orm.public.Trip.where({
       id: tripId,
       userId,
@@ -95,7 +95,7 @@ export class TripRepository {
       .first();
   }
 
-  async findCountryLinks(tripId: string): Promise<TripCountryLink[]> {
+  async findCountryLinks(tripId: string): Promise<ITripCountryLink[]> {
     return this.database.client.orm.public.TripCountry.where({ tripId })
       .select('countryId', 'tripId')
       .all();
@@ -132,7 +132,7 @@ export class TripRepository {
     return links.map((link) => link.cityId);
   }
 
-  async findVisitedCountries(userId: string): Promise<CountryRecord[]> {
+  async findVisitedCountries(userId: string): Promise<ICountryRecord[]> {
     return this.database.client.orm.public.Country.where((country) =>
       country.tripCountries.some((link) =>
         link.trip.some((trip) => trip.userId.eq(userId)),
