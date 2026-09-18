@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { ProgressionResponseDto } from './dto/progression-response.dto.js';
+import type { IProgressionResponseDto } from './dto/progression-response.dto.js';
 import { calculateProgression } from './progression-calculations.js';
 import { ProgressionRepository } from './progression.repository.js';
 
@@ -7,7 +7,7 @@ import { ProgressionRepository } from './progression.repository.js';
 export class ProgressionService {
   constructor(private readonly progression: ProgressionRepository) {}
 
-  async forUser(userId: string): Promise<ProgressionResponseDto> {
+  async forUser(userId: string): Promise<IProgressionResponseDto> {
     const snapshot = await this.progression.snapshot(userId);
     return calculateProgression(snapshot, new Date().getUTCFullYear());
   }

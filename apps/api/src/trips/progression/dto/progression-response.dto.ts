@@ -1,32 +1,52 @@
-import type { CountryResponseDto } from '../../dto/trip-response.dto.js';
+import type { ICountryResponseDto } from '../../dto/trip-response.dto.js';
 
-export interface ProgressionResponseDto {
-  summary: {
-    visitedCountries: number;
-    totalCountries: number;
-    worldCompletionPercentage: number;
-    exploredContinents: number;
-    revisitedCountries: number;
-    totalRevisits: number;
-    totalTravelDays: number;
-  };
-  continents: Array<{
-    continentCode: string;
-    visitedCountries: number;
-    totalCountries: number;
-    completionPercentage: number;
-  }>;
-  revisits: Array<{
-    country: CountryResponseDto;
-    tripCount: number;
-  }>;
-  timeline: {
-    countries: Array<{ year: number; visitedCountries: number }>;
-    travelDays: Array<{ year: number; travelDays: number }>;
-    yearlyVisits: Array<{
-      year: number;
-      newCountries: number;
-      revisits: number;
-    }>;
-  };
+export interface IProgressionSummaryDto {
+  visitedCountries: number;
+  totalCountries: number;
+  worldCompletionPercentage: number;
+  exploredContinents: number;
+  revisitedCountries: number;
+  totalRevisits: number;
+  totalTravelDays: number;
+}
+
+export interface IProgressionContinentDto {
+  continentCode: string;
+  visitedCountries: number;
+  totalCountries: number;
+  completionPercentage: number;
+}
+
+export interface IProgressionRevisitDto {
+  country: ICountryResponseDto;
+  tripCount: number;
+}
+
+export interface IProgressionYearlyCountriesDto {
+  year: number;
+  visitedCountries: number;
+}
+
+export interface IProgressionYearlyTravelDaysDto {
+  year: number;
+  travelDays: number;
+}
+
+export interface IProgressionYearlyVisitsDto {
+  year: number;
+  newCountries: number;
+  revisits: number;
+}
+
+export interface IProgressionTimelineDto {
+  countries: IProgressionYearlyCountriesDto[];
+  travelDays: IProgressionYearlyTravelDaysDto[];
+  yearlyVisits: IProgressionYearlyVisitsDto[];
+}
+
+export interface IProgressionResponseDto {
+  summary: IProgressionSummaryDto;
+  continents: IProgressionContinentDto[];
+  revisits: IProgressionRevisitDto[];
+  timeline: IProgressionTimelineDto;
 }

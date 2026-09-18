@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '../../auth/guards/auth.guard.js';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator.js';
-import type { TripDexUser } from '../../users/types/tripdex-user.js';
-import type { ProgressionResponseDto } from './dto/progression-response.dto.js';
+import type { ITripDexUser } from '../../users/types/tripdex-user.js';
+import type { IProgressionResponseDto } from './dto/progression-response.dto.js';
 import { ProgressionService } from './progression.service.js';
 
 @Controller('me/progression')
@@ -20,7 +20,7 @@ export class ProgressionController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'private, no-store')
-  async get(@CurrentUser() user: TripDexUser): Promise<ProgressionResponseDto> {
+  async get(@CurrentUser() user: ITripDexUser): Promise<IProgressionResponseDto> {
     return this.progression.forUser(user.id);
   }
 }

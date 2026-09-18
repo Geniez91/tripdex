@@ -1,5 +1,5 @@
 import { calculateProgression } from './progression-calculations.js';
-import type { ProgressionSnapshot } from './progression-records.js';
+import type { IProgressionSnapshot } from './progression-records.js';
 
 const countries = [
   {
@@ -47,9 +47,9 @@ function record(
 }
 
 function snapshot(
-  tripCountries: ProgressionSnapshot['tripCountries'] = [],
-  countryRecords: ProgressionSnapshot['countries'] = countries,
-): ProgressionSnapshot {
+  tripCountries: IProgressionSnapshot['tripCountries'] = [],
+  countryRecords: IProgressionSnapshot['countries'] = countries,
+): IProgressionSnapshot {
   return { countries: countryRecords, tripCountries };
 }
 
@@ -165,6 +165,22 @@ describe('calculateProgression', () => {
     // Assert
     expect(result.summary.revisitedCountries).toBe(2);
     expect(result.summary.totalRevisits).toBe(3);
+  });
+
+  it('sorts revisit results by country name independently of input order', () => {
+    // Arrange
+    const input = snapshot([
+      record('jp-1', '2020-01-01T00:00:00.000Z', null, 'jp'),
+      record('jp-2', '2021-01-01T00:00:00.000Z', null, 'jp'),
+      record('fr-1', '2020-01-01T00:00:00.000Z', null, 'fr'),
+      record('fr-2', '2021-01-01T00:00:00.000Z', null, 'fr'),
+    ]);
+
+    // Act
+    const result = calculateProgression(input, 2026);
+
+    // Assert
+    expect(result.revisits.map((revisit) => revisit.country.id)).toEqual(['fr', 'jp']);
   });
 
   it('does not infer a visit from an unlinked residence country', () => {

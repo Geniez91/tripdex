@@ -1,6 +1,6 @@
-import type { CountryRecord } from '../types/trip-records.js';
+import type { ICountryRecord } from '../types/trip-records.js';
 
-export interface ProgressionTripCountryRow {
+export interface IProgressionTripCountryRow {
   tripId: string;
   startDate: string;
   endDate: string | null;
@@ -8,7 +8,7 @@ export interface ProgressionTripCountryRow {
   arrivalDate: string | null;
 }
 
-export interface ProgressionSnapshot {
-  countries: CountryRecord[];
-  tripCountries: ProgressionTripCountryRow[];
+export interface IProgressionSnapshot {
+  countries: ICountryRecord[];
+  tripCountries: IProgressionTripCountryRow[];
 }

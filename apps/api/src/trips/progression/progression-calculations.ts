@@ -1,29 +1,47 @@
 import { TripMapper } from '../mappers/trip.mapper.js';
-import type { CountryRecord } from '../types/trip-records.js';
-import type { ProgressionResponseDto } from './dto/progression-response.dto.js';
+import type { ICountryRecord } from '../types/trip-records.js';
 import type {
-  ProgressionSnapshot,
-  ProgressionTripCountryRow,
+  IProgressionContinentDto,
+  IProgressionResponseDto,
+  IProgressionRevisitDto,
+  IProgressionSummaryDto,
+  IProgressionYearlyCountriesDto,
+  IProgressionYearlyTravelDaysDto,
+  IProgressionYearlyVisitsDto,
+} from './dto/progression-response.dto.js';
+import type {
+  IProgressionSnapshot,
+  IProgressionTripCountryRow,
 } from './progression-records.js';
 
 const MILLISECONDS_PER_DAY = 86_400_000;
 
-interface CivilDate {
+interface ICivilDate {
   day: number;
   year: number;
 }
 
-interface TripPeriod {
+interface ITripPeriod {
   startDay: number;
   endDay: number;
 }
 
-interface CountryTrip {
+interface ICountryTrip {
   tripId: string;
-  visitDate: CivilDate;
+  visitDate: ICivilDate;
 }
 
-function civilDate(value: string): CivilDate | null {
+interface IRevisitProgress {
+  revisits: IProgressionRevisitDto[];
+  totalRevisits: number;
+}
+
+interface ITimelineRange {
+  firstYear: number | null;
+  lastYear: number | null;
+}
+
+function civilDate(value: string): ICivilDate | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})(?:$|[T ])/.exec(value);
   if (!match) return null;
 
@@ -48,12 +66,12 @@ function civilDate(value: string): CivilDate | null {
 }
 
 function countryEntryDateFromArrivalOrTripStart(
-  row: ProgressionTripCountryRow,
-): CivilDate | null {
+  row: IProgressionTripCountryRow,
+): ICivilDate | null {
   return civilDate(row.arrivalDate ?? row.startDate);
 }
 
-function tripPeriod(row: ProgressionTripCountryRow): TripPeriod | null {
+function tripPeriod(row: IProgressionTripCountryRow): ITripPeriod | null {
   const start = civilDate(row.startDate);
   const end = civilDate(row.endDate ?? row.startDate);
   if (!start || !end || end.day < start.day) return null;
@@ -66,20 +84,20 @@ function completionPercentage(visited: number, total: number): number {
 }
 
 function uniqueTripsById(
-  rows: ProgressionTripCountryRow[],
-): Map<string, ProgressionTripCountryRow> {
-  const trips = new Map<string, ProgressionTripCountryRow>();
+  rows: IProgressionTripCountryRow[],
+): Map<string, IProgressionTripCountryRow> {
+  const trips = new Map<string, IProgressionTripCountryRow>();
   for (const row of rows) {
     if (!trips.has(row.tripId)) trips.set(row.tripId, row);
   }
   return trips;
 }
 
-function mergePeriods(periods: TripPeriod[]): TripPeriod[] {
+function mergePeriods(periods: ITripPeriod[]): ITripPeriod[] {
   const ordered = [...periods].sort(
     (left, right) => left.startDay - right.startDay || left.endDay - right.endDay,
   );
-  const merged: TripPeriod[] = [];
+  const merged: ITripPeriod[] = [];
 
   for (const period of ordered) {
     const previous = merged.at(-1);
@@ -104,7 +122,7 @@ function yearForDay(day: number): number {
   return new Date(day * MILLISECONDS_PER_DAY).getUTCFullYear();
 }
 
-function mergedTravelDaysByYear(periods: TripPeriod[]): Map<number, number> {
+function mergedTravelDaysByYear(periods: ITripPeriod[]): Map<number, number> {
   const days = new Map<number, number>();
   for (const period of mergePeriods(periods)) {
     let firstYear = yearForDay(period.startDay);
@@ -125,15 +143,15 @@ function mergedTravelDaysByYear(periods: TripPeriod[]): Map<number, number> {
   return days;
 }
 
-function countriesById(countries: CountryRecord[]): Map<string, CountryRecord> {
+function countriesById(countries: ICountryRecord[]): Map<string, ICountryRecord> {
   return new Map(countries.map((country) => [country.id, country]));
 }
 
 function countryTripsById(
-  rows: ProgressionTripCountryRow[],
+  rows: IProgressionTripCountryRow[],
   validCountryIds: Set<string>,
-): Map<string, CountryTrip[]> {
-  const trips = new Map<string, CountryTrip[]>();
+): Map<string, ICountryTrip[]> {
+  const trips = new Map<string, ICountryTrip[]>();
   const seen = new Set<string>();
 
   for (const row of rows) {
@@ -161,10 +179,10 @@ function countryTripsById(
 }
 
 function yearlyVisitCounts(
-  countryTrips: Map<string, CountryTrip[]>,
+  countryTrips: Map<string, ICountryTrip[]>,
   firstYear: number | null,
   lastYear: number | null,
-): ProgressionResponseDto['timeline']['yearlyVisits'] {
+): IProgressionYearlyVisitsDto[] {
   if (firstYear === null || lastYear === null) return [];
   const counts = new Map<number, { newCountries: number; revisits: number }>();
 
@@ -180,7 +198,7 @@ function yearlyVisitCounts(
     });
   }
 
-  const result: ProgressionResponseDto['timeline']['yearlyVisits'] = [];
+  const result: IProgressionYearlyVisitsDto[] = [];
   for (let year = firstYear; year <= lastYear; year += 1) {
     const current = counts.get(year) ?? { newCountries: 0, revisits: 0 };
     result.push({ year, ...current });
@@ -189,10 +207,10 @@ function yearlyVisitCounts(
 }
 
 function countryTimeline(
-  countryTrips: Map<string, CountryTrip[]>,
+  countryTrips: Map<string, ICountryTrip[]>,
   firstYear: number | null,
   lastYear: number | null,
-): ProgressionResponseDto['timeline']['countries'] {
+): IProgressionYearlyCountriesDto[] {
   if (firstYear === null || lastYear === null) return [];
   const countriesPerYear = new Map<number, number>();
   for (const trips of countryTrips.values()) {
@@ -205,7 +223,7 @@ function countryTimeline(
     }
   }
 
-  const result: ProgressionResponseDto['timeline']['countries'] = [];
+  const result: IProgressionYearlyCountriesDto[] = [];
   let visitedCountries = 0;
   for (let year = firstYear; year <= lastYear; year += 1) {
     visitedCountries += countriesPerYear.get(year) ?? 0;
@@ -215,9 +233,9 @@ function countryTimeline(
 }
 
 function continentProgress(
-  countries: CountryRecord[],
+  countries: ICountryRecord[],
   visitedCountryIds: Set<string>,
-): ProgressionResponseDto['continents'] {
+): IProgressionContinentDto[] {
   const totals = new Map<string, { totalCountries: number; visitedCountries: number }>();
   for (const country of countries) {
     const counts = totals.get(country.continentCode) ?? {
@@ -241,25 +259,22 @@ function continentProgress(
     }));
 }
 
-export function calculateProgression(
-  snapshot: ProgressionSnapshot,
-  asOfYear: number,
-): ProgressionResponseDto {
-  const countriesByCountryId = countriesById(snapshot.countries);
-  const countryTrips = countryTripsById(
-    snapshot.tripCountries,
-    new Set(countriesByCountryId.keys()),
-  );
-  const visitedCountryIds = new Set(countryTrips.keys());
-  const tripRows = uniqueTripsById(snapshot.tripCountries);
-  const travelDaysByYear = mergedTravelDaysByYear(
-    [...tripRows.values()].flatMap((row) => {
+function travelDaysByYearForTrips(
+  rows: IProgressionTripCountryRow[],
+): Map<number, number> {
+  return mergedTravelDaysByYear(
+    [...uniqueTripsById(rows).values()].flatMap((row) => {
       const period = tripPeriod(row);
       return period ? [period] : [];
     }),
   );
+}
 
-  const revisits: ProgressionResponseDto['revisits'] = [];
+function revisitProgress(
+  countryTrips: Map<string, ICountryTrip[]>,
+  countriesByCountryId: Map<string, ICountryRecord>,
+): IRevisitProgress {
+  const revisits: IProgressionRevisitDto[] = [];
   for (const [countryId, trips] of countryTrips.entries()) {
     const country = countriesByCountryId.get(countryId);
     if (country && trips.length >= 2) {
@@ -270,62 +285,117 @@ export function calculateProgression(
     }
   }
   revisits.sort(
-      (left, right) =>
-        left.country.name.localeCompare(right.country.name) ||
-        left.country.id.localeCompare(right.country.id),
+    (left, right) =>
+      left.country.name.localeCompare(right.country.name) ||
+      left.country.id.localeCompare(right.country.id),
   );
-  const totalRevisits = revisits.reduce(
-    (total, revisit) => total + revisit.tripCount - 1,
-    0,
-  );
-  const continents = continentProgress(snapshot.countries, visitedCountryIds);
-  const exploredContinents = continents.filter(
-    (continent) => continent.visitedCountries > 0,
-  ).length;
+
+  return {
+    revisits,
+    totalRevisits: revisits.reduce(
+      (total, revisit) => total + revisit.tripCount - 1,
+      0,
+    ),
+  };
+}
+
+function timelineRange(
+  countryTrips: Map<string, ICountryTrip[]>,
+  travelDaysByYear: Map<number, number>,
+  asOfYear: number,
+): ITimelineRange {
   const allVisitYears = [...countryTrips.values()].flatMap((trips) =>
     trips.map((trip) => trip.visitDate.year),
   );
-  const allPeriodYears = [...travelDaysByYear.keys()];
-  const firstYearCandidates = [...allVisitYears, ...allPeriodYears];
-  const firstYear = firstYearCandidates.reduce<number | null>(
+  const allYears = [...allVisitYears, ...travelDaysByYear.keys()];
+  const firstYear = allYears.reduce<number | null>(
     (first, year) => (first === null ? year : Math.min(first, year)),
     null,
   );
-  const lastYear =
-    firstYear === null
-      ? null
-      : [...allVisitYears, ...allPeriodYears].reduce(
-          (last, year) => Math.max(last, year),
-          asOfYear,
-        );
 
   return {
-    summary: {
-      visitedCountries: visitedCountryIds.size,
-      totalCountries: snapshot.countries.length,
-      worldCompletionPercentage: completionPercentage(
-        visitedCountryIds.size,
-        snapshot.countries.length,
-      ),
-      exploredContinents,
-      revisitedCountries: revisits.length,
+    firstYear,
+    lastYear: firstYear === null
+      ? null
+      : allYears.reduce((last, year) => Math.max(last, year), asOfYear),
+  };
+}
+
+function travelDayTimeline(
+  travelDaysByYear: Map<number, number>,
+  { firstYear, lastYear }: ITimelineRange,
+): IProgressionYearlyTravelDaysDto[] {
+  if (firstYear === null || lastYear === null) return [];
+  return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => {
+    const year = firstYear + index;
+    return { year, travelDays: travelDaysByYear.get(year) ?? 0 };
+  });
+}
+
+function progressionSummary(
+  visitedCountryIds: Set<string>,
+  totalCountries: number,
+  continents: IProgressionContinentDto[],
+  revisits: IProgressionRevisitDto[],
+  totalRevisits: number,
+  travelDaysByYear: Map<number, number>,
+): IProgressionSummaryDto {
+  return {
+    visitedCountries: visitedCountryIds.size,
+    totalCountries,
+    worldCompletionPercentage: completionPercentage(
+      visitedCountryIds.size,
+      totalCountries,
+    ),
+    exploredContinents: continents.filter(
+      (continent) => continent.visitedCountries > 0,
+    ).length,
+    revisitedCountries: revisits.length,
+    totalRevisits,
+    totalTravelDays: [...travelDaysByYear.values()].reduce(
+      (total, days) => total + days,
+      0,
+    ),
+  };
+}
+
+export function calculateProgression(
+  snapshot: IProgressionSnapshot,
+  asOfYear: number,
+): IProgressionResponseDto {
+  const countriesByCountryId = countriesById(snapshot.countries);
+  const countryTrips = countryTripsById(
+    snapshot.tripCountries,
+    new Set(countriesByCountryId.keys()),
+  );
+  const visitedCountryIds = new Set(countryTrips.keys());
+  const travelDaysByYear = travelDaysByYearForTrips(snapshot.tripCountries);
+  const { revisits, totalRevisits } = revisitProgress(
+    countryTrips,
+    countriesByCountryId,
+  );
+  const continents = continentProgress(snapshot.countries, visitedCountryIds);
+  const range = timelineRange(countryTrips, travelDaysByYear, asOfYear);
+
+  return {
+    summary: progressionSummary(
+      visitedCountryIds,
+      snapshot.countries.length,
+      continents,
+      revisits,
       totalRevisits,
-      totalTravelDays: [...travelDaysByYear.values()].reduce(
-        (total, days) => total + days,
-        0,
-      ),
-    },
+      travelDaysByYear,
+    ),
     continents,
     revisits,
     timeline: {
-      countries: countryTimeline(countryTrips, firstYear, lastYear),
-      travelDays: firstYear === null || lastYear === null
-        ? []
-        : Array.from({ length: lastYear - firstYear + 1 }, (_, index) => {
-            const year = firstYear + index;
-            return { year, travelDays: travelDaysByYear.get(year) ?? 0 };
-          }),
-      yearlyVisits: yearlyVisitCounts(countryTrips, firstYear, lastYear),
+      countries: countryTimeline(countryTrips, range.firstYear, range.lastYear),
+      travelDays: travelDayTimeline(travelDaysByYear, range),
+      yearlyVisits: yearlyVisitCounts(
+        countryTrips,
+        range.firstYear,
+        range.lastYear,
+      ),
     },
   };
 }

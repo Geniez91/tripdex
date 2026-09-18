@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { CountryRecord } from '../types/trip-records.js';
+import type { ICountryRecord } from '../types/trip-records.js';
 import type {
-  ProgressionSnapshot,
-  ProgressionTripCountryRow,
+  IProgressionSnapshot,
+  IProgressionTripCountryRow,
 } from './progression-records.js';
 
 @Injectable()
 export class ProgressionRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  async snapshot(userId: string): Promise<ProgressionSnapshot> {
+  async snapshot(userId: string): Promise<IProgressionSnapshot> {
     const [countries, tripCountries] = await Promise.all([
       this.countries(),
       this.tripCountries(userId),
@@ -19,7 +19,7 @@ export class ProgressionRepository {
     return { countries, tripCountries };
   }
 
-  private async countries(): Promise<CountryRecord[]> {
+  private async countries(): Promise<ICountryRecord[]> {
     return this.database.client.orm.public.Country.select(
       'id',
       'iso2',
@@ -34,7 +34,7 @@ export class ProgressionRepository {
 
   private async tripCountries(
     userId: string,
-  ): Promise<ProgressionTripCountryRow[]> {
+  ): Promise<IProgressionTripCountryRow[]> {
     const plan = this.database.client.raw.sql`
       SELECT
         t.id AS "tripId",
@@ -58,7 +58,7 @@ export class ProgressionRepository {
         },
       })
       .build();
-    const rows: ProgressionTripCountryRow[] = [];
+    const rows: IProgressionTripCountryRow[] = [];
 
     for await (const row of this.database.client.runtime().query(plan)) {
       rows.push(row);
