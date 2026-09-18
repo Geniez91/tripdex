@@ -2,13 +2,13 @@ import { jest } from '@jest/globals';
 import { Test } from '@nestjs/testing';
 import { UserRepository } from './repositories/user.repository.js';
 import { UsersService } from './users.service.js';
-import type { VerifiedAuthIdentity } from './types/tripdex-user.js';
+import type { IVerifiedAuthIdentity } from './types/tripdex-user.js';
 import {
   UserIdentityConflictError,
   UserProvisioningError,
 } from './user-provisioning.error.js';
 
-const identity: VerifiedAuthIdentity = {
+const identity: IVerifiedAuthIdentity = {
   supabaseAuthId: '11111111-1111-4111-8111-111111111111',
   email: 'alice@example.invalid',
   requestedUsername: '  Alice_Paris  ',

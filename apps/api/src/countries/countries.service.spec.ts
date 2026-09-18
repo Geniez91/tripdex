@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { CountriesService } from './countries.service.js';
-import type { CountryRepositoryPort } from './types/country-repository.port.js';
+import type { ICountryRepositoryPort } from './types/country-repository.port.js';
 
 describe('CountriesService', () => {
   it('maps repository records to country response DTOs', async () => {
@@ -15,7 +15,7 @@ describe('CountriesService', () => {
         continentCode: 'AS',
       },
     ];
-    const findAll = jest.fn<CountryRepositoryPort['findAll']>();
+    const findAll = jest.fn<ICountryRepositoryPort['findAll']>();
     findAll.mockResolvedValue(countries);
     const service = new CountriesService({ findAll });
 

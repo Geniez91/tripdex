@@ -1,8 +1,8 @@
-import type { CountryResponseDto } from '../dto/country-response.dto.js';
-import type { CountryRecord } from '../types/country-record.js';
+import type { ICountryResponseDto } from '../dto/country-response.dto.js';
+import type { ICountryRecord } from '../types/country-record.js';
 
 export class CountryMapper {
-  static toResponse(country: CountryRecord): CountryResponseDto {
+  static toResponse(country: ICountryRecord): ICountryResponseDto {
     return {
       id: country.id,
       iso2: country.iso2,

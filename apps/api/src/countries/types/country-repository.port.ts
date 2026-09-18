@@ -1,7 +1,7 @@
-import type { CountryRecord } from './country-record.js';
+import type { ICountryRecord } from './country-record.js';
 
 export const COUNTRY_REPOSITORY = Symbol('COUNTRY_REPOSITORY');
 
-export interface CountryRepositoryPort {
-  findAll(): Promise<CountryRecord[]>;
+export interface ICountryRepositoryPort {
+  findAll(): Promise<ICountryRecord[]>;
 }

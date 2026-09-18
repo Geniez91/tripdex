@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { CountryRecord } from '../types/country-record.js';
-import type { CountryRepositoryPort } from '../types/country-repository.port.js';
+import type { ICountryRecord } from '../types/country-record.js';
+import type { ICountryRepositoryPort } from '../types/country-repository.port.js';
 
 @Injectable()
-export class CountryRepository implements CountryRepositoryPort {
+export class CountryRepository implements ICountryRepositoryPort {
   constructor(private readonly database: DatabaseService) {}
 
-  async findAll(): Promise<CountryRecord[]> {
+  async findAll(): Promise<ICountryRecord[]> {
     return await this.database.client.orm.public.Country.select(
       'id',
       'iso2',

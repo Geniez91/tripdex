@@ -1,4 +1,4 @@
-export interface CityListQueryDto {
+export interface ICityListQueryDto {
   countryId?: string;
   q?: string;
 }

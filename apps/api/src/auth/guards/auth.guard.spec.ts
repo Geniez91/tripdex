@@ -6,7 +6,7 @@ import { AuthGuard } from './auth.guard.js';
 import { SupabaseAuthService } from '../supabase-auth.service.js';
 import { AuthVerificationError } from '../auth.error.js';
 import { authenticatedUser } from '../auth-request.js';
-import type { AuthRequest } from '../auth-request.js';
+import type { IAuthRequest } from '../auth-request.js';
 
 async function setup(authorization?: string | string[]) {
   const verifyAccessToken = jest.fn<SupabaseAuthService['verifyAccessToken']>();
@@ -18,7 +18,7 @@ async function setup(authorization?: string | string[]) {
       { provide: UsersService, useValue: { resolveOrCreateUser } },
     ],
   }).compile();
-  const request: AuthRequest = { headers: { authorization } };
+  const request: IAuthRequest = { headers: { authorization } };
   return {
     guard: module.get(AuthGuard),
     request,

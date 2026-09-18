@@ -5,13 +5,13 @@ import {
 } from '@nestjs/common';
 import { CountryMapper } from '../countries/mappers/country.mapper.js';
 import { ResidenceRepository } from './repositories/residence.repository.js';
-import type { ResidenceResponseDto } from './dto/residence.dto.js';
+import type { IResidenceResponseDto } from './dto/residence.dto.js';
 
 @Injectable()
 export class ResidenceService {
   constructor(private readonly repository: ResidenceRepository) {}
 
-  async get(userId: string): Promise<ResidenceResponseDto> {
+  async get(userId: string): Promise<IResidenceResponseDto> {
     const user = await this.repository.findUser(userId);
     if (!user) throw new NotFoundException('Profile not found.');
     const country =
@@ -26,7 +26,7 @@ export class ResidenceService {
   async update(
     userId: string,
     countryId: string | null,
-  ): Promise<ResidenceResponseDto> {
+  ): Promise<IResidenceResponseDto> {
     const country =
       countryId === null
         ? null

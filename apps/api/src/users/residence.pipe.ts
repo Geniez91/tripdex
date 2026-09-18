@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { PipeTransform } from '@nestjs/common';
-import type { UpdateResidenceDto } from './dto/residence.dto.js';
+import type { IUpdateResidenceDto } from './dto/residence.dto.js';
 
 @Injectable()
 export class ResidencePipe implements PipeTransform<
   unknown,
-  UpdateResidenceDto
+  IUpdateResidenceDto
 > {
-  transform(value: unknown): UpdateResidenceDto {
+  transform(value: unknown): IUpdateResidenceDto {
     if (
       !value ||
       typeof value !== 'object' ||

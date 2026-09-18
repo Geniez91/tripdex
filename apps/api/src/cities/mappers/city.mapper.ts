@@ -1,8 +1,8 @@
-import type { CityResponseDto } from '../dto/city-response.dto.js';
-import type { CityRecord } from '../types/city-record.js';
+import type { ICityResponseDto } from '../dto/city-response.dto.js';
+import type { ICityRecord } from '../types/city-record.js';
 
 export class CityMapper {
-  static toResponse(city: CityRecord): CityResponseDto {
+  static toResponse(city: ICityRecord): ICityResponseDto {
     return {
       id: city.id,
       countryId: city.countryId,

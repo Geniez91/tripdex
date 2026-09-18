@@ -1,9 +1,9 @@
-import type { CountryResponseDto } from '../../countries/dto/country-response.dto.js';
+import type { ICountryResponseDto } from '../../countries/dto/country-response.dto.js';
 
-export interface UpdateResidenceDto {
+export interface IUpdateResidenceDto {
   residenceCountryId: string | null;
 }
 
-export interface ResidenceResponseDto {
-  residenceCountry: CountryResponseDto | null;
+export interface IResidenceResponseDto {
+  residenceCountry: ICountryResponseDto | null;
 }

@@ -1,4 +1,4 @@
-export interface CityRecord {
+export interface ICityRecord {
   id: string;
   countryId: string;
   name: string;

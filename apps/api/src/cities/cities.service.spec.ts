@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { CitiesService } from './cities.service.js';
-import type { CityRepositoryPort } from './types/city-repository.port.js';
+import type { ICityRepositoryPort } from './types/city-repository.port.js';
 
 describe('CitiesService', () => {
   it('trims the search query before querying and maps city records', async () => {
@@ -15,7 +15,7 @@ describe('CitiesService', () => {
         longitude: 139.6503,
       },
     ];
-    const findAll = jest.fn<CityRepositoryPort['findAll']>();
+    const findAll = jest.fn<ICityRepositoryPort['findAll']>();
     findAll.mockResolvedValue(cities);
     const service = new CitiesService({ findAll });
 
@@ -29,7 +29,7 @@ describe('CitiesService', () => {
 
   it('passes an absent query as undefined', async () => {
     // Arrange
-    const findAll = jest.fn<CityRepositoryPort['findAll']>();
+    const findAll = jest.fn<ICityRepositoryPort['findAll']>();
     findAll.mockResolvedValue([]);
     const service = new CitiesService({ findAll });
 

@@ -1,4 +1,4 @@
-export interface CityResponseDto {
+export interface ICityResponseDto {
   id: string;
   countryId: string;
   name: string;

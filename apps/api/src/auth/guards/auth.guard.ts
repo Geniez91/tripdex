@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import { UsersService } from '../../users/users.service.js';
 import { authenticatedUser } from '../auth-request.js';
-import type { AuthRequest } from '../auth-request.js';
+import type { IAuthRequest } from '../auth-request.js';
 import { authHttpError } from '../auth-http-error.js';
 import { SupabaseAuthService } from '../supabase-auth.service.js';
 
@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<AuthRequest>();
+    const request = context.switchToHttp().getRequest<IAuthRequest>();
     delete request[authenticatedUser];
     const authorization = request.headers.authorization;
     const match =

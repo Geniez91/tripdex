@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository.js';
 import type {
-  TripDexUser,
-  VerifiedAuthIdentity,
+  ITripDexUser,
+  IVerifiedAuthIdentity,
 } from './types/tripdex-user.js';
 import { parseRequestedUsername } from './username.js';
 import {
@@ -15,8 +15,8 @@ export class UsersService {
   constructor(private readonly users: UserRepository) {}
 
   async resolveOrCreateUser(
-    identity: VerifiedAuthIdentity,
-  ): Promise<TripDexUser> {
+    identity: IVerifiedAuthIdentity,
+  ): Promise<ITripDexUser> {
     const existing = await this.users.findBySupabaseAuthId(
       identity.supabaseAuthId,
     );

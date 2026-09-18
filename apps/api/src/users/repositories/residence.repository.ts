@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { CountryRecord } from '../../countries/types/country-record.js';
+import type { ICountryRecord } from '../../countries/types/country-record.js';
 
 @Injectable()
 export class ResidenceRepository {
@@ -14,7 +14,7 @@ export class ResidenceRepository {
       .first();
   }
 
-  async findCountry(id: string): Promise<CountryRecord | null> {
+  async findCountry(id: string): Promise<ICountryRecord | null> {
     return this.database.client.orm.public.Country.where({ id })
       .select('id', 'iso2', 'iso3', 'name', 'slug', 'continentCode')
       .first();

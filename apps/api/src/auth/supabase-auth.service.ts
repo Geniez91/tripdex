@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AuthClient } from '@supabase/auth-js';
-import type { VerifiedAuthIdentity } from '../users/types/tripdex-user.js';
+import type { IVerifiedAuthIdentity } from '../users/types/tripdex-user.js';
 import { AuthVerificationError } from './auth.error.js';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class SupabaseAuthService {
     return this.client;
   }
 
-  async verifyAccessToken(accessToken: string): Promise<VerifiedAuthIdentity> {
+  async verifyAccessToken(accessToken: string): Promise<IVerifiedAuthIdentity> {
     try {
       const { data, error } = await this.getClient().getUser(accessToken);
       if (error) {

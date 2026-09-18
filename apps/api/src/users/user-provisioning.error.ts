@@ -1,4 +1,4 @@
-export type UserProvisioningCode =
+export type TUserProvisioningCode =
   | 'USERNAME_REQUIRED'
   | 'USERNAME_INVALID'
   | 'USERNAME_TAKEN'
@@ -6,7 +6,7 @@ export type UserProvisioningCode =
   | 'USER_PROVISIONING_UNAVAILABLE';
 
 export class UserProvisioningError extends Error {
-  constructor(readonly code: UserProvisioningCode) {
+  constructor(readonly code: TUserProvisioningCode) {
     super(code);
     this.name = 'UserProvisioningError';
   }

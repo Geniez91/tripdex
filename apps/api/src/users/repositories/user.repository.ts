@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { NewTripDexUser, TripDexUser } from '../types/tripdex-user.js';
+import type { INewTripDexUser, ITripDexUser } from '../types/tripdex-user.js';
 import {
   UserIdentityConflictError,
   UserProvisioningError,
@@ -34,7 +34,7 @@ export class UserRepository {
 
   async findBySupabaseAuthId(
     supabaseAuthId: string,
-  ): Promise<TripDexUser | null> {
+  ): Promise<ITripDexUser | null> {
     try {
       return await this.database.client.orm.public.User.where({
         supabaseAuthId,
@@ -46,7 +46,7 @@ export class UserRepository {
     }
   }
 
-  async create(input: NewTripDexUser): Promise<TripDexUser> {
+  async create(input: INewTripDexUser): Promise<ITripDexUser> {
     try {
       const user = await this.database.client.orm.public.User.create({
         supabaseAuthId: input.supabaseAuthId,

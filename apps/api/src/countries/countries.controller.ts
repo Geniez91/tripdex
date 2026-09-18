@@ -1,5 +1,5 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import type { CountryResponseDto } from './dto/country-response.dto.js';
+import type { ICountryResponseDto } from './dto/country-response.dto.js';
 import { CountriesService } from './countries.service.js';
 
 @Controller('countries')
@@ -8,7 +8,7 @@ export class CountriesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  list(): Promise<CountryResponseDto[]> {
+  list(): Promise<ICountryResponseDto[]> {
     return this.countries.list();
   }
 }
