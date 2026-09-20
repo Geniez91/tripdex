@@ -1,5 +1,5 @@
 /** Decoded SQL projection, including nullable columns from the origin LEFT JOIN. */
-export interface CommunityStatisticsRow {
+export interface ICommunityStatisticsRow {
   id: string;
   iso2: string;
   iso3: string;

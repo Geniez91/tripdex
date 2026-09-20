@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { compareActivityRecords, encodeActivityCursor } from './community-activity.helpers.js';
-import type { CommunityActivityQueryDto } from './dto/community-activity-query.dto.js';
+import type { ICommunityActivityQueryDto } from './dto/community-activity-query.dto.js';
 import { CommunityActivityMapper } from './mappers/community-activity.mapper.js';
 import { CommunityActivityRepository } from './repositories/community-activity.repository.js';
 import { TripCoversService } from '../trips/trip-covers.service.js';
@@ -8,10 +8,13 @@ import { PhotoContestRepository } from './photo-contests/photo-contest.repositor
 import { PhotoContestService, PhotoContestClock } from './photo-contests/photo-contest.service.js';
 import { PhotoContestMapper } from './photo-contests/photo-contest.mapper.js';
 import type {
-  CommunityActivityResponseDto,
-  PhotoContestActivityItemDto,
+  ICommunityActivityResponseDto,
+  IPhotoContestActivityItemDto,
 } from './dto/community-activity-response.dto.js';
-import type { ActivityRecord } from './types/community-activity.types.js';
+import type {
+  IActivityRecord,
+  ICommunityActivityRecord,
+} from './types/community-activity.types.js';
 
 @Injectable()
 export class CommunityActivityService {
@@ -24,8 +27,8 @@ export class CommunityActivityService {
   ) {}
 
   private async enrichTripCover(
-    record: ReturnType<typeof CommunityActivityMapper.group>[number],
-  ): Promise<ActivityRecord> {
+    record: ICommunityActivityRecord,
+  ): Promise<IActivityRecord> {
     record.item.trip.coverUrl = await this.covers.readUrl(
       record.userId,
       record.item.trip.id,
@@ -39,7 +42,7 @@ export class CommunityActivityService {
     contest: Awaited<
       ReturnType<PhotoContestRepository['opened']>
     >[number],
-  ): Promise<ActivityRecord> {
+  ): Promise<IActivityRecord> {
     const detail = await this.contestService.detail(contest.id);
 
     return {
@@ -52,10 +55,10 @@ export class CommunityActivityService {
   }
 
   private paginate(
-    records: ActivityRecord[],
+    records: IActivityRecord[],
     limit: number,
   ): {
-    page: ActivityRecord[];
+    page: IActivityRecord[];
     hasNextPage: boolean;
   } {
     const hasNextPage = records.length > limit;
@@ -69,7 +72,7 @@ export class CommunityActivityService {
   }
 
   private nextCursor(
-    page: ActivityRecord[],
+    page: IActivityRecord[],
     hasNextPage: boolean,
   ): string | null {
     if (!hasNextPage || page.length === 0) {
@@ -80,8 +83,8 @@ export class CommunityActivityService {
   }
 
   private async currentOpenContest(
-    cursor: CommunityActivityQueryDto['cursor'],
-  ): Promise<PhotoContestActivityItemDto | null> {
+    cursor: ICommunityActivityQueryDto['cursor'],
+  ): Promise<IPhotoContestActivityItemDto | null> {
     if (cursor) {
       return null;
     }
@@ -100,8 +103,8 @@ export class CommunityActivityService {
   }
 
   async list(
-    query: CommunityActivityQueryDto,
-  ): Promise<CommunityActivityResponseDto> {
+    query: ICommunityActivityQueryDto,
+  ): Promise<ICommunityActivityResponseDto> {
     const rows = await this.activities.list(
       query.limit,
       query.cursor,
@@ -115,7 +118,7 @@ export class CommunityActivityService {
       this.clock.now().toISOString(),
     );
 
-    const records: ActivityRecord[] = [];
+    const records: IActivityRecord[] = [];
 
     for (const record of tripRecords) {
       records.push(await this.enrichTripCover(record));

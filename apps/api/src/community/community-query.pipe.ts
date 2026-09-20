@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { PipeTransform } from '@nestjs/common';
-import type { CommunityQueryDto } from './dto/community-query.dto.js';
+import type { ICommunityQueryDto } from './dto/community-query.dto.js';
 
 @Injectable()
 export class CommunityQueryPipe implements PipeTransform<
   unknown,
-  CommunityQueryDto
+  ICommunityQueryDto
 > {
-  transform(value: unknown): CommunityQueryDto {
+  transform(value: unknown): ICommunityQueryDto {
     if (
       !value ||
       typeof value !== 'object' ||

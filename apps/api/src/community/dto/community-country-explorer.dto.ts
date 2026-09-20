@@ -1,7 +1,18 @@
-import type { CommunityCountryDto } from './community-response.dto.js';
-import type { CountryMemoryDto } from '../photo-contests/photo-contest.dto.js';
+import type { TCommunityCountryDto } from './community-response.dto.js';
+import type { ICountryMemoryDto } from '../photo-contests/photo-contest.dto.js';
 
-export interface CommunityCountryExplorerTripDto {
+export interface ICommunityCountryExplorerStatsDto {
+  travelers: number;
+  travelersNow: number;
+  averageRating: number | null;
+  ratingCount: number;
+}
+
+export interface ICommunityCountryExplorerTripUserDto {
+  username: string;
+}
+
+export interface ICommunityCountryExplorerTripDto {
   id: string;
   title: string;
   createdAt: string;
@@ -10,17 +21,12 @@ export interface CommunityCountryExplorerTripDto {
   rating: number | null;
   review: string | null;
   coverUrl: string | null;
-  user: { username: string };
+  user: ICommunityCountryExplorerTripUserDto;
 }
 
-export interface CommunityCountryExplorerDto {
-  country: CommunityCountryDto;
-  stats: {
-    travelers: number;
-    travelersNow: number;
-    averageRating: number | null;
-    ratingCount: number;
-  };
-  recentTrips: CommunityCountryExplorerTripDto[];
-  memory: CountryMemoryDto | null;
+export interface ICommunityCountryExplorerDto {
+  country: TCommunityCountryDto;
+  stats: ICommunityCountryExplorerStatsDto;
+  recentTrips: ICommunityCountryExplorerTripDto[];
+  memory: ICountryMemoryDto | null;
 }

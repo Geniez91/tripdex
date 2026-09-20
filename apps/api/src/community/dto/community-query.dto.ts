@@ -1,3 +1,3 @@
-export interface CommunityQueryDto {
+export interface ICommunityQueryDto {
   year: number;
 }

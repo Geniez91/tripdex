@@ -1,9 +1,9 @@
-export interface CommunityActivityCursor {
+export interface ICommunityActivityCursor {
   createdAt: string;
   id: string;
 }
 
-export interface CommunityActivityQueryDto {
+export interface ICommunityActivityQueryDto {
   limit: number;
-  cursor: CommunityActivityCursor | null;
+  cursor: ICommunityActivityCursor | null;
 }

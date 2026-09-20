@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { CommunityCountryExplorerRecord } from '../types/community-country-explorer-record.js';
+import type { ICommunityCountryExplorerRecord } from '../types/community-country-explorer-record.js';
 
 @Injectable()
 export class CommunityCountryExplorerRepository {
@@ -9,7 +9,7 @@ export class CommunityCountryExplorerRepository {
   async detail(
     countryCode: string,
     today: string,
-  ): Promise<CommunityCountryExplorerRecord[]> {
+  ): Promise<ICommunityCountryExplorerRecord[]> {
     const plan = this.database.client.raw.sql`
       WITH target AS (
         SELECT id, iso2, iso3, name
@@ -70,7 +70,7 @@ export class CommunityCountryExplorerRepository {
         tripUserId: { codecId: 'pg/text@1', nullable: true },
       })
       .build();
-    const records: CommunityCountryExplorerRecord[] = [];
+    const records: ICommunityCountryExplorerRecord[] = [];
     for await (const row of this.database.client.runtime().query(plan)) {
       records.push(row);
     }

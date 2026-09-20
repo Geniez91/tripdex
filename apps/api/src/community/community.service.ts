@@ -6,7 +6,7 @@ import {
   COMMUNITY_TRENDING_THRESHOLD,
 } from './community.rules.js';
 import { mapCommunityStatistics } from './mappers/community.mapper.js';
-import type { CommunityStatisticsResponseDto } from './dto/community-response.dto.js';
+import type { ICommunityStatisticsResponseDto } from './dto/community-response.dto.js';
 
 @Injectable()
 export class CommunityService {
@@ -15,7 +15,7 @@ export class CommunityService {
     private readonly clock: CommunityClock,
   ) {}
 
-  async statistics(year: number): Promise<CommunityStatisticsResponseDto> {
+  async statistics(year: number): Promise<ICommunityStatisticsResponseDto> {
     const asOfDate = this.clock.today();
     const rows = await this.repository.statistics(
       {

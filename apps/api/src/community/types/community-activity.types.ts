@@ -1,11 +1,21 @@
-import type { CommunityActivityItemDto } from '../dto/community-activity-response.dto.js';
+import type {
+  ITripActivityItemDto,
+  TCommunityActivityItemDto,
+} from '../dto/community-activity-response.dto.js';
 
-export interface ActivityCursor {
+export interface IActivityCursor {
   createdAt: string;
   id: string;
 }
 
-export interface ActivityRecord {
-  item: CommunityActivityItemDto;
-  cursor: ActivityCursor;
+export interface IActivityRecord {
+  item: TCommunityActivityItemDto;
+  cursor: IActivityCursor;
+}
+
+export interface ICommunityActivityRecord {
+  item: ITripActivityItemDto;
+  cursor: IActivityCursor;
+  coverPath: string | null;
+  userId: string;
 }

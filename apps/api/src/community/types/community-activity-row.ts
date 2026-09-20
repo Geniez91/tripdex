@@ -1,4 +1,4 @@
-export interface CommunityActivityRow {
+export interface ICommunityActivityRow {
   tripId: string;
   activityDate: string;
   userId: string;

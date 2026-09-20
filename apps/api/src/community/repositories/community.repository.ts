@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CommunityRecordMapper } from '../mappers/community-record.mapper.js';
 import { DatabaseService } from '../../prisma/database.service.js';
 import type {
-  CommunityPeriod,
-  CommunityRecord,
+  ICommunityPeriod,
+  ICommunityRecord,
 } from '../types/community-record.js';
 
 @Injectable()
@@ -11,9 +11,9 @@ export class CommunityRepository {
   constructor(private readonly database: DatabaseService) {}
 
   async statistics(
-    period: CommunityPeriod,
+    period: ICommunityPeriod,
     originsLimit: number,
-  ): Promise<CommunityRecord[]> {
+  ): Promise<ICommunityRecord[]> {
     // One statement / snapshot for the whole world. FILTER DISTINCT and window
     // ranking keep individual users in PostgreSQL; no trip/user rows leave it.
     const plan = this.database.client.raw.sql`
@@ -65,7 +65,7 @@ export class CommunityRepository {
         originTravelers: { codecId: 'pg/int8number@1', nullable: true },
       })
       .build();
-    const records: CommunityRecord[] = [];
+    const records: ICommunityRecord[] = [];
     for await (const row of this.database.client.runtime().query(plan))
       records.push(CommunityRecordMapper.fromPersistence(row));
     return records;

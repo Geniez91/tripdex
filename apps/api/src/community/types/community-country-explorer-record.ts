@@ -1,4 +1,4 @@
-export interface CommunityCountryExplorerRecord {
+export interface ICommunityCountryExplorerRecord {
   countryId: string;
   iso2: string;
   iso3: string;
@@ -18,3 +18,13 @@ export interface CommunityCountryExplorerRecord {
   username: string | null;
   tripUserId: string | null;
 }
+
+export type TCommunityCountryExplorerRecentTripRecord =
+  ICommunityCountryExplorerRecord & {
+    tripId: string;
+    tripTitle: string;
+    tripCreatedAt: string;
+    tripStartDate: string;
+    username: string;
+    tripUserId: string;
+  };

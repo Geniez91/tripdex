@@ -1,11 +1,11 @@
-import type { CommunityCountryStatisticsDto } from '../dto/community-response.dto.js';
-import type { CommunityRecord } from '../types/community-record.js';
+import type { ICommunityCountryStatisticsDto } from '../dto/community-response.dto.js';
+import type { ICommunityRecord } from '../types/community-record.js';
 
 export function mapCommunityStatistics(
-  rows: readonly CommunityRecord[],
+  rows: readonly ICommunityRecord[],
   trendingThreshold: number,
-): CommunityCountryStatisticsDto[] {
-  const countries = new Map<string, CommunityCountryStatisticsDto>();
+): ICommunityCountryStatisticsDto[] {
+  const countries = new Map<string, ICommunityCountryStatisticsDto>();
   for (const row of rows) {
     let statistics = countries.get(row.id);
     if (!statistics) {

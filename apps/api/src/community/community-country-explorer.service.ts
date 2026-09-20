@@ -7,8 +7,12 @@ import { TripCoversService } from '../trips/trip-covers.service.js';
 import { PhotoContestService } from './photo-contests/photo-contest.service.js';
 import { CommunityCountryExplorerRepository } from './repositories/community-country-explorer.repository.js';
 import { CommunityClock } from './community-clock.js';
-import type { CommunityCountryExplorerDto } from './dto/community-country-explorer.dto.js';
-import type { CommunityCountryExplorerRecord } from './types/community-country-explorer-record.js';
+import { isCommunityCountryExplorerRecentTripRecord } from './community-country-explorer.helpers.js';
+import type {
+  ICommunityCountryExplorerDto,
+  ICommunityCountryExplorerTripDto,
+} from './dto/community-country-explorer.dto.js';
+import type { TCommunityCountryExplorerRecentTripRecord } from './types/community-country-explorer-record.js';
 
 function isoDate(value: string): string {
   return new Date(value).toISOString();
@@ -23,43 +27,21 @@ export class CommunityCountryExplorerService {
     private readonly clock: CommunityClock,
   ) {}
 
-  async detail(countryCode: string): Promise<CommunityCountryExplorerDto> {
+  async detail(countryCode: string): Promise<ICommunityCountryExplorerDto> {
     if (!/^[A-Za-z]{3}$/.test(countryCode)) {
       throw new BadRequestException('countryCode must be an ISO 3166-1 alpha-3 code.');
     }
     const code = countryCode.toUpperCase();
     const rows = await this.repository.detail(code, this.clock.today());
     const first = rows[0];
-    if (!first) throw new NotFoundException('Country not found.');
+    if (!first) {
+      throw new NotFoundException('Country not found.');
+    }
 
     const recentTrips = await Promise.all(
       rows
-        .filter((row): row is CommunityCountryExplorerRecord & {
-          tripId: string;
-          tripTitle: string;
-          tripCreatedAt: string;
-          tripStartDate: string;
-          username: string;
-          tripUserId: string;
-        } => Boolean(
-          row.tripId && row.tripTitle && row.tripCreatedAt &&
-          row.tripStartDate && row.username && row.tripUserId,
-        ))
-        .map(async row => ({
-          id: row.tripId,
-          title: row.tripTitle,
-          createdAt: isoDate(row.tripCreatedAt),
-          startDate: isoDate(row.tripStartDate),
-          endDate: row.tripEndDate ? isoDate(row.tripEndDate) : null,
-          rating: row.tripRating,
-          review: row.tripReview,
-          coverUrl: await this.covers.readUrl(
-            row.tripUserId,
-            row.tripId,
-            row.coverStoragePath,
-          ),
-          user: { username: row.username },
-        })),
+        .filter(isCommunityCountryExplorerRecentTripRecord)
+        .map(row => this.toRecentTrip(row)),
     );
     const [memory] = await this.contests.memories(code);
 
@@ -78,6 +60,26 @@ export class CommunityCountryExplorerService {
       },
       recentTrips,
       memory: memory ?? null,
+    };
+  }
+
+  private async toRecentTrip(
+    row: TCommunityCountryExplorerRecentTripRecord,
+  ): Promise<ICommunityCountryExplorerTripDto> {
+    return {
+      id: row.tripId,
+      title: row.tripTitle,
+      createdAt: isoDate(row.tripCreatedAt),
+      startDate: isoDate(row.tripStartDate),
+      endDate: row.tripEndDate ? isoDate(row.tripEndDate) : null,
+      rating: row.tripRating,
+      review: row.tripReview,
+      coverUrl: await this.covers.readUrl(
+        row.tripUserId,
+        row.tripId,
+        row.coverStoragePath,
+      ),
+      user: { username: row.username },
     };
   }
 }

@@ -1,17 +1,11 @@
-import type { TripActivityItemDto as CommunityActivityItemDto } from '../dto/community-activity-response.dto.js';
-import type { CommunityActivityRow } from '../types/community-activity-row.js';
+import type { ITripActivityItemDto } from '../dto/community-activity-response.dto.js';
+import type { ICommunityActivityRow } from '../types/community-activity-row.js';
+import type { ICommunityActivityRecord } from '../types/community-activity.types.js';
 
-interface ActivityParts {
-  row: CommunityActivityRow;
-  countries: CommunityActivityItemDto['trip']['countries'];
-  cities: CommunityActivityItemDto['trip']['cities'];
-}
-
-export interface CommunityActivityRecord {
-  item: CommunityActivityItemDto;
-  cursor: { createdAt: string; id: string };
-  coverPath: string | null;
-  userId: string;
+interface IActivityParts {
+  row: ICommunityActivityRow;
+  countries: ITripActivityItemDto['trip']['countries'];
+  cities: ITripActivityItemDto['trip']['cities'];
 }
 
 function durationDays(
@@ -25,15 +19,15 @@ function durationDays(
 }
 
 export class CommunityActivityMapper {
-  static group(rows: CommunityActivityRow[]): CommunityActivityRecord[] {
-    const grouped = new Map<string, ActivityParts>();
+  static group(rows: ICommunityActivityRow[]): ICommunityActivityRecord[] {
+    const grouped = new Map<string, IActivityParts>();
     for (const row of rows) {
       const existing = grouped.get(row.tripId);
       if (existing) {
         this.addRelations(existing, row);
         continue;
       }
-      const parts: ActivityParts = { row, countries: [], cities: [] };
+      const parts: IActivityParts = { row, countries: [], cities: [] };
       this.addRelations(parts, row);
       grouped.set(row.tripId, parts);
     }
@@ -41,8 +35,8 @@ export class CommunityActivityMapper {
   }
 
   private static addRelations(
-    parts: ActivityParts,
-    row: CommunityActivityRow,
+    parts: IActivityParts,
+    row: ICommunityActivityRow,
   ): void {
     if (!parts.countries.some((country) => country.id === row.countryId)) {
       parts.countries.push({
@@ -61,7 +55,7 @@ export class CommunityActivityMapper {
     }
   }
 
-  private static toRecord(parts: ActivityParts): CommunityActivityRecord {
+  private static toRecord(parts: IActivityParts): ICommunityActivityRecord {
     const { row } = parts;
     return {
       item: {

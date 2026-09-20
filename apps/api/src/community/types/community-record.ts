@@ -1,4 +1,4 @@
-export interface CommunityRecord {
+export interface ICommunityRecord {
   id: string;
   iso2: string;
   iso3: string;
@@ -12,7 +12,7 @@ export interface CommunityRecord {
   originTravelers: number | null;
 }
 
-export interface CommunityPeriod {
+export interface ICommunityPeriod {
   start: string;
   next: string;
   today: string;

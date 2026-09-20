@@ -1,7 +1,7 @@
 import { CommunityActivityMapper } from './community-activity.mapper.js';
-import type { CommunityActivityRow } from '../types/community-activity-row.js';
+import type { ICommunityActivityRow } from '../types/community-activity-row.js';
 
-const row: CommunityActivityRow = {
+const row: ICommunityActivityRow = {
   tripId: 'own-public', userId: 'current-user', username: 'traveler',
   activityDate: '2026-09-11 18:25:45.818582+00',
   startDate: '2026-09-01 00:00:00+00', endDate: '2026-09-03 00:00:00+00',

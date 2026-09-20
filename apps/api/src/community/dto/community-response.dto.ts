@@ -1,25 +1,25 @@
-import type { CountryResponseDto } from '../../countries/dto/country-response.dto.js';
+import type { ICountryResponseDto } from '../../countries/dto/country-response.dto.js';
 
-export type CommunityCountryDto = Pick<
-  CountryResponseDto,
+export type TCommunityCountryDto = Pick<
+  ICountryResponseDto,
   'id' | 'iso2' | 'iso3' | 'name'
 >;
 
-export interface CommunityOriginDto {
-  country: CommunityCountryDto;
+export interface ICommunityOriginDto {
+  country: TCommunityCountryDto;
   travelers: number;
 }
 
-export interface CommunityCountryStatisticsDto {
-  country: CommunityCountryDto;
+export interface ICommunityCountryStatisticsDto {
+  country: TCommunityCountryDto;
   travelers: number;
   travelersNow: number;
   trending: boolean;
-  topOrigins: CommunityOriginDto[];
+  topOrigins: ICommunityOriginDto[];
 }
 
-export interface CommunityStatisticsResponseDto {
+export interface ICommunityStatisticsResponseDto {
   year: number;
   asOfDate: string;
-  countries: CommunityCountryStatisticsDto[];
+  countries: ICommunityCountryStatisticsDto[];
 }

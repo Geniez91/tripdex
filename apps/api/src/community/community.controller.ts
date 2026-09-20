@@ -9,15 +9,15 @@ import {
 } from '@nestjs/common';
 import { CommunityService } from './community.service.js';
 import { CommunityQueryPipe } from './community-query.pipe.js';
-import type { CommunityQueryDto } from './dto/community-query.dto.js';
-import type { CommunityStatisticsResponseDto } from './dto/community-response.dto.js';
+import type { ICommunityQueryDto } from './dto/community-query.dto.js';
+import type { ICommunityStatisticsResponseDto } from './dto/community-response.dto.js';
 
 import { CommunityActivityQueryPipe } from './community-activity-query.pipe.js';
 import { CommunityActivityService } from './community-activity.service.js';
-import type { CommunityActivityQueryDto } from './dto/community-activity-query.dto.js';
-import type { CommunityActivityResponseDto } from './dto/community-activity-response.dto.js';
+import type { ICommunityActivityQueryDto } from './dto/community-activity-query.dto.js';
+import type { ICommunityActivityResponseDto } from './dto/community-activity-response.dto.js';
 import { CommunityCountryExplorerService } from './community-country-explorer.service.js';
-import type { CommunityCountryExplorerDto } from './dto/community-country-explorer.dto.js';
+import type { ICommunityCountryExplorerDto } from './dto/community-country-explorer.dto.js';
 @Controller('community')
 export class CommunityController {
   constructor(
@@ -30,8 +30,8 @@ export class CommunityController {
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   activityFeed(
-    @Query(CommunityActivityQueryPipe) query: CommunityActivityQueryDto,
-  ): Promise<CommunityActivityResponseDto> {
+    @Query(CommunityActivityQueryPipe) query: ICommunityActivityQueryDto,
+  ): Promise<ICommunityActivityResponseDto> {
     return this.activity.list(query);
   }
 
@@ -39,8 +39,8 @@ export class CommunityController {
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   statistics(
-    @Query(CommunityQueryPipe) query: CommunityQueryDto,
-  ): Promise<CommunityStatisticsResponseDto> {
+    @Query(CommunityQueryPipe) query: ICommunityQueryDto,
+  ): Promise<ICommunityStatisticsResponseDto> {
     return this.community.statistics(query.year);
   }
 
@@ -49,7 +49,7 @@ export class CommunityController {
   @Header('Cache-Control', 'no-store')
   countryExplorer(
     @Param('countryCode') countryCode: string,
-  ): Promise<CommunityCountryExplorerDto> {
+  ): Promise<ICommunityCountryExplorerDto> {
     return this.countries.detail(countryCode);
   }
 }

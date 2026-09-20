@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { CommunityActivityCursor } from '../dto/community-activity-query.dto.js';
-import type { CommunityActivityRow } from '../types/community-activity-row.js';
+import type { ICommunityActivityCursor } from '../dto/community-activity-query.dto.js';
+import type { ICommunityActivityRow } from '../types/community-activity-row.js';
 
 @Injectable()
 export class CommunityActivityRepository {
@@ -9,8 +9,8 @@ export class CommunityActivityRepository {
 
   async list(
     limit: number,
-    cursor: CommunityActivityCursor | null,
-  ): Promise<CommunityActivityRow[]> {
+    cursor: ICommunityActivityCursor | null,
+  ): Promise<ICommunityActivityRow[]> {
     const cursorCreatedAt = cursor?.createdAt ?? '9999-12-31T23:59:59.999Z';
     const cursorId = cursor?.id ?? '';
     const plan = this.database.client.raw.sql`
@@ -60,7 +60,7 @@ export class CommunityActivityRepository {
         cityName: { codecId: 'pg/text@1', nullable: true },
       })
       .build();
-    const rows: CommunityActivityRow[] = [];
+    const rows: ICommunityActivityRow[] = [];
     for await (const row of this.database.client.runtime().query(plan)) {
       rows.push(row);
     }

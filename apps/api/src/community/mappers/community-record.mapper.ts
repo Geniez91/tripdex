@@ -1,8 +1,8 @@
-import type { CommunityStatisticsRow } from '../repositories/community-statistics.row.js';
-import type { CommunityRecord } from '../types/community-record.js';
+import type { ICommunityStatisticsRow } from '../repositories/community-statistics.row.js';
+import type { ICommunityRecord } from '../types/community-record.js';
 
 export class CommunityRecordMapper {
-  static fromPersistence(row: CommunityStatisticsRow): CommunityRecord {
+  static fromPersistence(row: ICommunityStatisticsRow): ICommunityRecord {
     return {
       id: row.id,
       iso2: row.iso2,

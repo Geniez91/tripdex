@@ -3,10 +3,10 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CommunityController } from './community.controller.js';
 import { CommunityModule } from './community.module.js';
 import { CommunityCountryExplorerService } from './community-country-explorer.service.js';
-import type { CommunityCountryExplorerRecord } from './types/community-country-explorer-record.js';
+import type { ICommunityCountryExplorerRecord } from './types/community-country-explorer-record.js';
 
 describe('Community country explorer', () => {
-  const record: CommunityCountryExplorerRecord = {
+  const record: ICommunityCountryExplorerRecord = {
     countryId: 'japan-id', iso2: 'JP', iso3: 'JPN', name: 'Japan',
     travelers: 12, travelersNow: 2, averageRating: 4.5, ratingCount: 4,
     tripId: 'trip-id', tripTitle: 'Tokyo spring',
@@ -17,7 +17,7 @@ describe('Community country explorer', () => {
     username: 'traveler', tripUserId: 'user-id',
   };
 
-  function setup(rows: CommunityCountryExplorerRecord[]) {
+  function setup(rows: ICommunityCountryExplorerRecord[]) {
     const repository = { detail: jest.fn(async () => rows) };
     const covers = { readUrl: jest.fn(async () => 'https://signed.test/cover') };
     const memory = {
@@ -55,7 +55,7 @@ describe('Community country explorer', () => {
 
   it('returns no recent trips and a null memory when neither exists', async () => {
     // Arrange
-    const empty: CommunityCountryExplorerRecord = {
+    const empty: ICommunityCountryExplorerRecord = {
       ...record, travelers: 0, travelersNow: 0, averageRating: null, ratingCount: 0,
       tripId: null, tripTitle: null, tripCreatedAt: null, tripStartDate: null,
       tripEndDate: null, tripRating: null, tripReview: null, coverStoragePath: null,

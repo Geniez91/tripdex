@@ -1,8 +1,8 @@
 import { CommunityRecordMapper } from './community-record.mapper.js';
 import { mapCommunityStatistics } from './community.mapper.js';
-import type { CommunityStatisticsRow } from '../repositories/community-statistics.row.js';
+import type { ICommunityStatisticsRow } from '../repositories/community-statistics.row.js';
 
-const rowWithOrigin: CommunityStatisticsRow = {
+const rowWithOrigin: ICommunityStatisticsRow = {
   id: 'jp',
   iso2: 'JP',
   iso3: 'JPN',
@@ -29,7 +29,7 @@ describe('CommunityRecordMapper', () => {
   });
   it('preserves an absent origin and zero counts', () => {
     // Arrange
-    const row: CommunityStatisticsRow = {
+    const row: ICommunityStatisticsRow = {
       ...rowWithOrigin,
       travelers: 0,
       travelersNow: 0,
@@ -52,7 +52,7 @@ describe('CommunityRecordMapper', () => {
     'originTravelers',
   ] as const)('preserves independent nullability of %s', (field) => {
     // Arrange
-    const row: CommunityStatisticsRow = { ...rowWithOrigin, [field]: null };
+    const row: ICommunityStatisticsRow = { ...rowWithOrigin, [field]: null };
     // Act
     const record = CommunityRecordMapper.fromPersistence(row);
     // Assert
@@ -61,7 +61,7 @@ describe('CommunityRecordMapper', () => {
   });
   it('keeps response grouping, origin order and totals unchanged across the new boundary', () => {
     // Arrange
-    const rows: CommunityStatisticsRow[] = [
+    const rows: ICommunityStatisticsRow[] = [
       rowWithOrigin,
       {
         ...rowWithOrigin,
