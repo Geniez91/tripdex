@@ -1,15 +1,39 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { jest } from '@jest/globals';
+import { Test } from '@nestjs/testing';
+import type { ICountryRecord } from '../countries/types/country-record.js';
 import { ResidenceRepository } from './repositories/residence.repository.js';
 import { ResidenceService } from './residence.service.js';
+
+const country: ICountryRecord = {
+  id: 'country',
+  iso2: 'FR',
+  iso3: 'FRA',
+  name: 'France',
+  slug: 'france',
+  continentCode: 'EU',
+};
 
 describe('ResidenceService error ownership', () => {
   const findUser = jest.fn<ResidenceRepository['findUser']>();
   const findCountry = jest.fn<ResidenceRepository['findCountry']>();
   const update = jest.fn<ResidenceRepository['update']>();
-  const service = new ResidenceService(
-    { findUser, findCountry, update } as unknown as ResidenceRepository,
-  );
+  const repository = {
+    findUser,
+    findCountry,
+    update,
+  } satisfies Pick<ResidenceRepository, 'findUser' | 'findCountry' | 'update'>;
+  let service: ResidenceService;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [ResidenceService, ResidenceRepository],
+    })
+      .overrideProvider(ResidenceRepository)
+      .useValue(repository)
+      .compile();
+    service = module.get(ResidenceService);
+  });
 
   beforeEach(() => jest.resetAllMocks());
 
@@ -32,7 +56,7 @@ describe('ResidenceService error ownership', () => {
     ['update', () => update.mockRejectedValue(new Error('database failed'))],
   ])('propagates unexpected repository errors from %s', async (_, arrange) => {
     arrange();
-    if (_ === 'update') findCountry.mockResolvedValue({} as never);
+    if (_ === 'update') findCountry.mockResolvedValue(country);
 
     await expect(
       _ === 'get' ? service.get('user') : service.update('user', 'country'),

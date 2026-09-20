@@ -1,4 +1,5 @@
 import { jest } from '@jest/globals';
+import { Test } from '@nestjs/testing';
 import { CommunityClock } from './community-clock.js';
 import { COMMUNITY_TOP_ORIGINS_LIMIT } from './community.rules.js';
 import { CommunityRepository } from './repositories/community.repository.js';
@@ -7,10 +8,21 @@ import { CommunityService } from './community.service.js';
 describe('CommunityService statistics error ownership', () => {
   const statistics = jest.fn<CommunityRepository['statistics']>();
   const today = jest.fn<CommunityClock['today']>();
-  const service = new CommunityService(
-    { statistics } as unknown as CommunityRepository,
-    { today } as unknown as CommunityClock,
-  );
+  const repository = { statistics } satisfies Pick<CommunityRepository, 'statistics'>;
+  const clock = { today } satisfies Pick<CommunityClock, 'today'>;
+  let service: CommunityService;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [CommunityService, CommunityRepository, CommunityClock],
+    })
+      .overrideProvider(CommunityRepository)
+      .useValue(repository)
+      .overrideProvider(CommunityClock)
+      .useValue(clock)
+      .compile();
+    service = module.get(CommunityService);
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

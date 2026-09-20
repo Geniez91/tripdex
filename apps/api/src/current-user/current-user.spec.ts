@@ -11,6 +11,8 @@ describe('CurrentUserService', () => {
   };
   const first = jest.fn<() => Promise<{ id: string } | null>>();
   const where = jest.fn(() => ({ first }));
+  // DatabaseService exposes the complete generated ORM client. Introducing a
+  // production port solely for this nested lookup would not improve its boundary.
   const service = new CurrentUserService({
     client: { orm: { public: { User: { where } } } },
   } as unknown as DatabaseService);

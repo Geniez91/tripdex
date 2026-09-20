@@ -1,4 +1,5 @@
 import { jest } from '@jest/globals';
+import { Test } from '@nestjs/testing';
 import {
   BadRequestException,
   ConflictException,
@@ -7,10 +8,10 @@ import {
   PayloadTooLargeException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import type { CoverStorageService } from './cover-storage.service.js';
+import { CoverStorageService } from './cover-storage.service.js';
 import { TripCoversService } from './trip-covers.service.js';
 import { MAX_COVER_BYTES } from './cover-file.js';
-import type { TripCoversRepository } from './repositories/trip-covers.repository.js';
+import { TripCoversRepository } from './repositories/trip-covers.repository.js';
 
 const oldPath =
   'users/owner/trips/trip/cover/00000000-0000-4000-8000-000000000001.png';
@@ -47,10 +48,29 @@ describe('Trip cover ownership and lifecycle', () => {
   const signedUrl = jest.fn<CoverStorageService['signedUrl']>();
   const cleanup = jest.fn<CoverStorageService['cleanup']>();
   const isSubmitted = jest.fn<TripCoversRepository['isSubmitted']>();
-  const service = new TripCoversService(
-    { findOwned, updatePath, isSubmitted } as unknown as TripCoversRepository,
-    { upload, signedUrl, cleanup } as unknown as CoverStorageService,
-  );
+  const repository = {
+    findOwned,
+    updatePath,
+    isSubmitted,
+  } satisfies Pick<TripCoversRepository, 'findOwned' | 'updatePath' | 'isSubmitted'>;
+  const storage = {
+    upload,
+    signedUrl,
+    cleanup,
+  } satisfies Pick<CoverStorageService, 'upload' | 'signedUrl' | 'cleanup'>;
+  let service: TripCoversService;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [TripCoversService, TripCoversRepository, CoverStorageService],
+    })
+      .overrideProvider(TripCoversRepository)
+      .useValue(repository)
+      .overrideProvider(CoverStorageService)
+      .useValue(storage)
+      .compile();
+    service = module.get(TripCoversService);
+  });
   beforeEach(() => {
     jest.clearAllMocks();
     update.mockReset();
