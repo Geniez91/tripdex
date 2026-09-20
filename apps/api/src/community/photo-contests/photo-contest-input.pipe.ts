@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { PipeTransform } from '@nestjs/common';
-import type { SubmissionInput, VoteInput } from './photo-contest.dto.js';
+import type { ISubmissionInput, IVoteInput } from './photo-contest.dto.js';
 
 function identifier(value: unknown, field: string): string {
   if (!value || typeof value !== 'object' || Array.isArray(value) ||
@@ -10,10 +10,10 @@ function identifier(value: unknown, field: string): string {
   return id.trim();
 }
 @Injectable()
-export class SubmissionPipe implements PipeTransform<unknown, SubmissionInput> {
-  transform(value: unknown): SubmissionInput { return { tripId: identifier(value, 'tripId') }; }
+export class SubmissionPipe implements PipeTransform<unknown, ISubmissionInput> {
+  transform(value: unknown): ISubmissionInput { return { tripId: identifier(value, 'tripId') }; }
 }
 @Injectable()
-export class VotePipe implements PipeTransform<unknown, VoteInput> {
-  transform(value: unknown): VoteInput { return { submissionId: identifier(value, 'submissionId') }; }
+export class VotePipe implements PipeTransform<unknown, IVoteInput> {
+  transform(value: unknown): IVoteInput { return { submissionId: identifier(value, 'submissionId') }; }
 }

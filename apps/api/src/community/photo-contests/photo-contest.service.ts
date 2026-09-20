@@ -3,8 +3,8 @@ import { TripCoversService } from '../../trips/trip-covers.service.js';
 import { PhotoContestRepository } from './photo-contest.repository.js';
 import { PhotoContestMapper } from './photo-contest.mapper.js';
 import { assertOpen, assertPeriod, assertSubmission, selectWinner } from './photo-contest.rules.js';
-import type { PhotoContestParticipationDto } from './photo-contest.dto.js';
-import type { PhotoContestCreation, ContestRecord } from './photo-contest.types.js';
+import type { IPhotoContestParticipationDto } from './photo-contest.dto.js';
+import type { IPhotoContestCreation, IContestRecord } from './photo-contest.types.js';
 
 @Injectable()
 export class PhotoContestClock { now(): Date { return new Date(); } }
@@ -15,7 +15,7 @@ export class PhotoContestService {
     private readonly covers: TripCoversService, private readonly clock: PhotoContestClock) {}
 
   // Scheduling and closure are internal operations, deliberately not HTTP routes.
-  async create(countryId: string, startsAt: string, endsAt: string, persistence: PhotoContestCreation = this.repository): Promise<ContestRecord> {
+  async create(countryId: string, startsAt: string, endsAt: string, persistence: IPhotoContestCreation = this.repository): Promise<IContestRecord> {
     assertPeriod(startsAt, endsAt);
     if (!await persistence.eligibleCountry(countryId)) throw new BadRequestException('Ce pays ne possède aucun voyage PUBLIC.');
     return persistence.create(countryId, startsAt, endsAt);
@@ -50,7 +50,7 @@ export class PhotoContestService {
       await tx.close(selectWinner(await tx.candidates()));
     });
   }
-  async participation(id: string, userId: string): Promise<PhotoContestParticipationDto> {
+  async participation(id: string, userId: string): Promise<IPhotoContestParticipationDto> {
     const { contest } = await this.repository.detail(id);
     const result = await this.repository.participation(id, contest.countryId, userId);
     return { votedSubmissionId: result.votedSubmissionId, ownSubmissionId: result.ownSubmissionId,

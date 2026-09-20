@@ -1,11 +1,7 @@
 import { ownsCoverPath } from '../../trips/cover-file.js';
+import type { IWeeklyCandidate, IWeeklyPeriod } from './photo-contest.types.js';
 
-export interface WeeklyCandidate {
-  countryId: string; countryCode: string; countryName: string;
-  tripId: string; userId: string; visibility: string;
-  coverStoragePath: string | null; createdAt: string;
-}
-export function weeklyPeriod(now: Date): { key: string; start: string; end: string } {
+export function weeklyPeriod(now: Date): IWeeklyPeriod {
   const start = new Date(now);
   start.setUTCHours(0, 0, 0, 0);
   start.setUTCDate(start.getUTCDate() - (start.getUTCDay() + 6) % 7);
@@ -16,7 +12,7 @@ function timestamp(value: string): bigint {
   const fraction = (value.match(/\.(\d+)/)?.[1] ?? '').padEnd(6, '0');
   return BigInt(Date.parse(value)) * 1000n + BigInt(fraction.slice(3, 6));
 }
-export function rankWeeklyCandidates(candidates: WeeklyCandidate[], previousCountryId: string | null): WeeklyCandidate[] {
+export function rankWeeklyCandidates(candidates: IWeeklyCandidate[], previousCountryId: string | null): IWeeklyCandidate[] {
   return candidates.filter(candidate => {
     if (candidate.countryId === previousCountryId || candidate.visibility !== 'public' ||
       !candidate.coverStoragePath || !candidate.userId || !Number.isFinite(Date.parse(candidate.createdAt))) return false;

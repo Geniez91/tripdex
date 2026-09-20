@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { TripCoversService } from '../../trips/trip-covers.service.js';
 import { PhotoContestService, PhotoContestClock } from './photo-contest.service.js';
-import { WeeklyPhotoContestRepository, WeeklySelectionContext } from './weekly-photo-contest.repository.js';
-import { rankWeeklyCandidates, WeeklyCandidate, weeklyPeriod } from './weekly-photo-contest.rules.js';
-import type { ContestRecord } from './photo-contest.types.js';
+import { WeeklyPhotoContestRepository } from './weekly-photo-contest.repository.js';
+import { rankWeeklyCandidates, weeklyPeriod } from './weekly-photo-contest.rules.js';
+import type {
+  IWeeklyCandidate,
+  IWeeklySelectionContext,
+  IWeeklySelectionResult,
+} from './photo-contest.types.js';
 import { addDays } from './photo-contest-helper.js';
 
-export interface WeeklySelectionResult {
-  outcome: 'created' | 'existing' | 'active' | 'no-candidate';
-  contest: ContestRecord | null;
-  countryName: string | null;
-}
 const CONTEST_DURATION_DAYS = 7;
 
 @Injectable()
@@ -22,7 +21,7 @@ export class WeeklyPhotoContestSelectionService {
     private readonly clock: PhotoContestClock,
   ) {}
 
-  async run(): Promise<WeeklySelectionResult> {
+  async run(): Promise<IWeeklySelectionResult> {
     const now = this.clock.now();
 
     await this.closeExpiredContests(now);
@@ -43,9 +42,9 @@ export class WeeklyPhotoContestSelectionService {
   }
 
   private async selectContest(
-    context: WeeklySelectionContext,
+    context: IWeeklySelectionContext,
     now: Date,
-  ): Promise<WeeklySelectionResult> {
+  ): Promise<IWeeklySelectionResult> {
     if (context.existing) {
       return {
         outcome: 'existing',
@@ -66,9 +65,9 @@ export class WeeklyPhotoContestSelectionService {
   }
 
   private async createContestFromBestCandidate(
-    context: WeeklySelectionContext,
+    context: IWeeklySelectionContext,
     now: Date,
-  ): Promise<WeeklySelectionResult> {
+  ): Promise<IWeeklySelectionResult> {
     const candidate = await this.findEligibleCandidate(context);
 
     if (!candidate) {
@@ -94,8 +93,8 @@ export class WeeklyPhotoContestSelectionService {
   }
 
   private async findEligibleCandidate(
-    context: WeeklySelectionContext,
-  ): Promise<WeeklyCandidate | null> {
+    context: IWeeklySelectionContext,
+  ): Promise<IWeeklyCandidate | null> {
     const candidates = rankWeeklyCandidates(
       await context.candidates(),
       context.previous?.countryId ?? null,
@@ -111,7 +110,7 @@ export class WeeklyPhotoContestSelectionService {
   }
 
   private async hasUsableCover(
-    candidate: WeeklyCandidate,
+    candidate: IWeeklyCandidate,
   ): Promise<boolean> {
     return Boolean(
       await this.covers.readUrl(

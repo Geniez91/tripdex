@@ -1,16 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
-import type { CandidateRecord, ContestDetailRecord, ContestTransaction, MemoryRecord } from './photo-contest.types.js';
-import type { CommunityActivityCursor } from '../dto/community-activity-query.dto.js';
+import type { ICandidateRecord, IContestDetailRecord, IContestTransaction, IMemoryRecord } from './photo-contest.types.js';
+import type { ICommunityActivityCursor } from '../dto/community-activity-query.dto.js';
 import { currentWinnerContest } from './photo-contest.rules.js';
 
-type Transaction = Parameters<Parameters<DatabaseService['client']['transaction']>[0]>[0];
+type TTransaction = Parameters<Parameters<DatabaseService['client']['transaction']>[0]>[0];
+
+type TParticipationTripRow = {
+  id: string;
+  title: string;
+  coverStoragePath: string;
+};
 
 @Injectable()
 export class PhotoContestRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  async eligibleCountry(countryId: string, transaction?: Transaction): Promise<boolean> {
+  async eligibleCountry(countryId: string, transaction?: TTransaction): Promise<boolean> {
     const plan = this.database.client.raw.sql`
       SELECT t.id FROM public.trip t
       JOIN public."tripCountry" tc ON tc."tripId" = t.id
@@ -20,22 +26,57 @@ export class PhotoContestRepository {
     for await (const row of transaction ? transaction.query(plan) : this.database.client.runtime().query(plan)) { if (row.id) return true; }
     return false;
   }
-  create(countryId: string, startsAt: string, endsAt: string, weeklyPeriod: string | null = null, transaction?: Transaction) {
+  create(countryId: string, startsAt: string, endsAt: string, weeklyPeriod: string | null = null, transaction?: TTransaction) {
     return (transaction?.orm ?? this.database.client.orm).public.PhotoContest.create({ countryId, startsAt, endsAt, weeklyPeriod });
   }
 
-  private async candidates(tx: Transaction, contestId: string): Promise<CandidateRecord[]> {
-    const submissions = await tx.orm.public.PhotoContestSubmission.where({ contestId }).orderBy(s => s.createdAt.asc()).all();
-    const votes = await tx.orm.public.PhotoContestVote.where({ contestId }).all();
-    return Promise.all(submissions.map(async submission => {
-      const user = await tx.orm.public.User.where({ id: submission.userId }).select('username', 'avatarUrl').first();
-      const trip = await tx.orm.public.Trip.where({ id: submission.tripId }).select('title').first();
-      return { ...submission, username: user!.username, avatarUrl: user!.avatarUrl, tripTitle: trip!.title,
-        votes: votes.filter(vote => vote.submissionId === submission.id).length };
-    }));
+  private buildCandidatesQuery(contestId: string) {
+    return this.database.client.raw.sql`
+      SELECT
+        submission.id,
+        submission."contestId",
+        submission."userId",
+        submission."tripId",
+        submission."coverStoragePath",
+        submission."createdAt",
+        traveler.username,
+        traveler."avatarUrl",
+        trip.title AS "tripTitle",
+        COUNT(vote.id) AS votes
+      FROM public."photoContestSubmission" submission
+      JOIN public."user" traveler ON traveler.id = submission."userId"
+      JOIN public.trip trip ON trip.id = submission."tripId"
+      LEFT JOIN public."photoContestVote" vote
+        ON vote."contestId" = submission."contestId"
+        AND vote."submissionId" = submission.id
+      WHERE submission."contestId" = ${contestId}
+      GROUP BY submission.id, submission."contestId", submission."userId", submission."tripId",
+        submission."coverStoragePath", submission."createdAt", traveler.username, traveler."avatarUrl", trip.title
+      ORDER BY submission."createdAt" ASC
+    `
+      .returnsRow({
+        id: 'pg/text@1',
+        contestId: 'pg/text@1',
+        userId: 'pg/text@1',
+        tripId: 'pg/text@1',
+        coverStoragePath: 'pg/text@1',
+        createdAt: 'pg/timestamptz-string@1',
+        username: 'pg/text@1',
+        avatarUrl: { codecId: 'pg/text@1', nullable: true },
+        tripTitle: 'pg/text@1',
+        votes: 'pg/int8number@1',
+      })
+      .build();
   }
 
-  async detail(id: string): Promise<ContestDetailRecord> {
+  private async candidates(tx: TTransaction, contestId: string): Promise<ICandidateRecord[]> {
+    const candidates: ICandidateRecord[] = [];
+    const plan = this.buildCandidatesQuery(contestId);
+    for await (const row of tx.query(plan)) candidates.push(row);
+    return candidates;
+  }
+
+  async detail(id: string): Promise<IContestDetailRecord> {
     return this.database.client.transaction(async tx => {
       const contest = await tx.orm.public.PhotoContest.where({ id }).first();
       if (!contest) throw new NotFoundException('Concours introuvable.');
@@ -44,7 +85,7 @@ export class PhotoContestRepository {
     });
   }
 
-  async withContest<T>(id: string, operation: (context: ContestTransaction) => Promise<T>): Promise<T> {
+  async withContest<T>(id: string, operation: (context: IContestTransaction) => Promise<T>): Promise<T> {
     return this.database.client.transaction(async tx => {
       // Serialize submissions, vote changes and closure on the same contest.
       const lock = this.database.client.raw.sql`SELECT id FROM public."photoContest" WHERE id = ${id} FOR UPDATE`
@@ -85,12 +126,29 @@ export class PhotoContestRepository {
     const orm = this.database.client.orm.public;
     const vote = await orm.PhotoContestVote.where({ contestId, userId }).first();
     const submission = await orm.PhotoContestSubmission.where({ contestId, userId }).first();
-    const trips = await orm.Trip.where({ userId, visibility: 'public' }).all();
-    const eligibleTrips = [];
-    for (const trip of trips) {
-      if (trip.coverStoragePath && await orm.TripCountry.where({ tripId: trip.id, countryId }).first()) eligibleTrips.push(trip);
-    }
+    const eligibleTrips = await this.eligibleTrips(userId, countryId);
     return { votedSubmissionId: vote?.submissionId ?? null, ownSubmissionId: submission?.id ?? null, eligibleTrips };
+  }
+
+  private async eligibleTrips(userId: string, countryId: string): Promise<TParticipationTripRow[]> {
+    const plan = this.database.client.raw.sql`
+      SELECT trip.id, trip.title, trip."coverStoragePath"
+      FROM public.trip trip
+      JOIN public."tripCountry" country ON country."tripId" = trip.id
+      WHERE trip."userId" = ${userId}
+        AND trip.visibility = 'public'
+        AND trip."coverStoragePath" IS NOT NULL
+        AND country."countryId" = ${countryId}
+    `
+      .returnsRow({
+        id: 'pg/text@1',
+        title: 'pg/text@1',
+        coverStoragePath: 'pg/text@1',
+      })
+      .build();
+    const trips: TParticipationTripRow[] = [];
+    for await (const row of this.database.client.runtime().query(plan)) trips.push(row);
+    return trips;
   }
 
   async currentOpen(now: string) {
@@ -101,7 +159,7 @@ export class PhotoContestRepository {
       .orderBy(contest => contest.id.desc()).first();
   }
 
-  async opened(limit: number, cursor: CommunityActivityCursor | null, now: string) {
+  async opened(limit: number, cursor: ICommunityActivityCursor | null, now: string) {
     const date = cursor?.createdAt ?? '9999-12-31T23:59:59.999Z';
     const id = cursor?.id ?? '';
     const plan = this.database.client.raw.sql`
@@ -115,7 +173,7 @@ export class PhotoContestRepository {
     return rows;
   }
 
-  async memories(countryCode?: string): Promise<MemoryRecord[]> {
+  async memories(countryCode?: string): Promise<IMemoryRecord[]> {
     const orm = this.database.client.orm.public;
     const country = countryCode ? await orm.Country.where({ iso3: countryCode }).first() : null;
     if (countryCode && !country) return [];
@@ -127,7 +185,7 @@ export class PhotoContestRepository {
       const winner = currentWinnerContest(history.filter(contest => contest.countryId === countryId));
       if (winner) ids.push(winner.id);
     }
-    const memories: MemoryRecord[] = [];
+    const memories: IMemoryRecord[] = [];
     for (const id of ids) {
       const record = await this.detail(id);
       const winner = record.submissions.find(s => s.id === record.contest.winnerSubmissionId);

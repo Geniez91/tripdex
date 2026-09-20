@@ -2,24 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../prisma/database.service.js';
 import { PhotoContestRepository } from './photo-contest.repository.js';
 import type {
-  ContestRecord,
-  PhotoContestCreation,
+  IContestRecord,
+  IPhotoContestCreation,
+  IWeeklyCandidate,
+  IWeeklyPeriod,
+  IWeeklySelectionContext,
 } from './photo-contest.types.js';
-import type { WeeklyCandidate } from './weekly-photo-contest.rules.js';
-
-export interface WeeklySelectionContext {
-  existing: ContestRecord | null;
-  active: ContestRecord | null;
-  previous: ContestRecord | null;
-  candidates(): Promise<WeeklyCandidate[]>;
-  creation: PhotoContestCreation;
-}
-
-interface WeeklyPeriod {
-  key: string;
-  start: string;
-  end: string;
-}
 
 @Injectable()
 export class WeeklyPhotoContestRepository {
@@ -28,7 +16,7 @@ export class WeeklyPhotoContestRepository {
     private readonly contests: PhotoContestRepository,
   ) {}
 
-  async expired(now: string): Promise<ContestRecord[]> {
+  async expired(now: string): Promise<IContestRecord[]> {
     return this.database.client.orm.public.PhotoContest
       .where({ status: 'OPEN' })
       .where(contest => contest.endsAt.lte(now))
@@ -58,7 +46,6 @@ export class WeeklyPhotoContestRepository {
         t."coverStoragePath",
         t."createdAt"
       FROM public.trip t
-      JOIN public."user" u ON u.id = t."userId"
       JOIN public."tripCountry" tc ON tc."tripId" = t.id
       JOIN public.country c ON c.id = tc."countryId"
       WHERE t.visibility = 'public'
@@ -84,9 +71,9 @@ export class WeeklyPhotoContestRepository {
   }
 
   async withPeriod<T>(
-    period: WeeklyPeriod,
+    period: IWeeklyPeriod,
     now: string,
-    operation: (context: WeeklySelectionContext) => Promise<T>,
+    operation: (context: IWeeklySelectionContext) => Promise<T>,
   ): Promise<T> {
     return this.database.client.transaction(async tx => {
       const lock = this.buildSelectionLockQuery();
@@ -121,7 +108,7 @@ export class WeeklyPhotoContestRepository {
         .orderBy(contest => contest.id.desc())
         .first();
 
-      const creation: PhotoContestCreation = {
+      const creation: IPhotoContestCreation = {
         eligibleCountry: countryId =>
           this.contests.eligibleCountry(countryId, tx),
 
@@ -135,9 +122,9 @@ export class WeeklyPhotoContestRepository {
           ),
       };
 
-      const candidates = async (): Promise<WeeklyCandidate[]> => {
+      const candidates = async (): Promise<IWeeklyCandidate[]> => {
         const plan = this.buildCandidatesQuery(now);
-        const results: WeeklyCandidate[] = [];
+        const results: IWeeklyCandidate[] = [];
 
         for await (const row of tx.query(plan)) {
           results.push(row);

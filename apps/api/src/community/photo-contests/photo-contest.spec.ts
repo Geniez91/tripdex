@@ -6,19 +6,19 @@ import { TripCoversService } from '../../trips/trip-covers.service.js';
 import { assertPeriod, assertOpen, assertSubmission, selectWinner, currentWinnerContest } from './photo-contest.rules.js';
 import { PhotoContestMapper } from './photo-contest.mapper.js';
 import { SubmissionPipe, VotePipe } from './photo-contest-input.pipe.js';
-import type { CandidateRecord, ContestRecord, ContestTransaction, EligibleTripRecord } from './photo-contest.types.js';
+import type { ICandidateRecord, IContestRecord, IContestTransaction, IEligibleTripRecord } from './photo-contest.types.js';
 
-const contest: ContestRecord = { id: 'contest', countryId: 'jp', startsAt: '2042-01-01T00:00:00.000Z',
+const contest: IContestRecord = { id: 'contest', countryId: 'jp', startsAt: '2042-01-01T00:00:00.000Z',
   endsAt: '2042-01-08T00:00:00.000Z', status: 'OPEN', winnerSubmissionId: null, createdAt: '2041-12-31T00:00:00.000Z' };
 const now = new Date('2042-01-04T00:00:00.000Z');
-const trip: EligibleTripRecord = { id: 'trip', userId: 'owner', visibility: 'public', coverStoragePath: 'internal', countryIds: ['jp'] };
-const candidate: CandidateRecord = { id: 'a', contestId: 'contest', userId: 'owner', tripId: 'trip', coverStoragePath: 'internal',
+const trip: IEligibleTripRecord = { id: 'trip', userId: 'owner', visibility: 'public', coverStoragePath: 'internal', countryIds: ['jp'] };
+const candidate: ICandidateRecord = { id: 'a', contestId: 'contest', userId: 'owner', tripId: 'trip', coverStoragePath: 'internal',
   createdAt: '2042-01-02T00:00:00.000Z', username: 'traveler', avatarUrl: null, tripTitle: 'Japan', votes: 0 };
 
 describe('Photo contest rules', () => {
-  const previous: ContestRecord = { ...contest, status: 'CLOSED', id: 'old', winnerSubmissionId: 'old-winner' };
-  const next: ContestRecord = { ...contest, id: 'new', startsAt: '2042-01-08T00:00:00.000Z', endsAt: '2042-01-15T00:00:00.000Z' };
-  it.each<{ name: string; history: ContestRecord[]; winner: string | null }>([
+  const previous: IContestRecord = { ...contest, status: 'CLOSED', id: 'old', winnerSubmissionId: 'old-winner' };
+  const next: IContestRecord = { ...contest, id: 'new', startsAt: '2042-01-08T00:00:00.000Z', endsAt: '2042-01-15T00:00:00.000Z' };
+  it.each<{ name: string; history: IContestRecord[]; winner: string | null }>([
     { name: 'no history', history: [], winner: null },
     { name: 'OPEN without past winner', history: [contest], winner: null },
     { name: 'previous winner plus OPEN', history: [previous, next], winner: 'old-winner' },
@@ -53,7 +53,7 @@ describe('Photo contest rules', () => {
   });
   it('OPEN accepts during its period; CLOSED rejects even during it', () => {
     // Arrange
-    const closed: ContestRecord = { ...contest, status: 'CLOSED' };
+    const closed: IContestRecord = { ...contest, status: 'CLOSED' };
     // Act / Assert
     expect(() => assertOpen(contest, now)).not.toThrow();
     expect(() => assertOpen(closed, now)).toThrow();
@@ -91,7 +91,7 @@ describe('Photo contest rules', () => {
   });
   it('no submission gives no winner', () => {
     // Arrange
-    const candidates: CandidateRecord[] = [];
+    const candidates: ICandidateRecord[] = [];
     // Act / Assert
     expect(selectWinner(candidates)).toBeNull();
   });
@@ -129,10 +129,10 @@ describe('Photo contest rules', () => {
 
 describe('Photo contest service orchestration', () => {
   let service: PhotoContestService;
-  let tx: ContestTransaction;
-  const submit = jest.fn<ContestTransaction['submit']>();
-  const vote = jest.fn<ContestTransaction['vote']>();
-  const close = jest.fn<ContestTransaction['close']>();
+  let tx: IContestTransaction;
+  const submit = jest.fn<IContestTransaction['submit']>();
+  const vote = jest.fn<IContestTransaction['vote']>();
+  const close = jest.fn<IContestTransaction['close']>();
   const eligibleCountry = jest.fn<PhotoContestRepository['eligibleCountry']>();
   const create = jest.fn<PhotoContestRepository['create']>();
   beforeEach(async () => {
@@ -143,7 +143,7 @@ describe('Photo contest service orchestration', () => {
       { provide: PhotoContestClock, useValue: { now: () => now } },
       { provide: TripCoversService, useValue: {} },
       { provide: PhotoContestRepository, useValue: { eligibleCountry, create,
-        withContest: (_id: string, operation: (context: ContestTransaction) => Promise<void>) => operation(tx) } },
+        withContest: (_id: string, operation: (context: IContestTransaction) => Promise<void>) => operation(tx) } },
     ] }).compile();
     service = module.get(PhotoContestService);
   });
