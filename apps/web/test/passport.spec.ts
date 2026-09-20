@@ -189,16 +189,24 @@ test("shared stamp remains coherent in journal and trip detail; revisits stay se
     title: "Souvenir de validation",
     startDate: "2026-04-01",
     endDate: null,
-    countries: countries.slice(0, 1),
+    countries: [{ country: countries[0], position: 0, isRevisit: false }],
     cities: [],
     rating: null,
     review: null,
     coverUrl: null,
-    isRevisit: false,
+    containsRevisit: false,
   };
   await page.route("**/me/trips", (route) =>
     route.fulfill({
-      json: [trip, { ...trip, id: "revisit-trip", isRevisit: true }],
+      json: [
+        trip,
+        {
+          ...trip,
+          id: "revisit-trip",
+          countries: [{ ...trip.countries[0], isRevisit: true }],
+          containsRevisit: true,
+        },
+      ],
     }),
   );
   await page.route("**/test-api/me/trips/passport-trip", (route) =>

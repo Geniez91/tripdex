@@ -20,10 +20,13 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
         const france = await tx.orm.public.Country.where({
           iso3: 'FRA',
         }).first();
+        const italy = await tx.orm.public.Country.where({
+          iso3: 'ITA',
+        }).first();
         const spain = await tx.orm.public.Country.where({
           iso3: 'ESP',
         }).first();
-        assert.ok(japan && france && spain, 'Run npm run db:seed first');
+        assert.ok(japan && france && italy && spain, 'Run npm run db:seed first');
         temporaryUserId = randomUUID();
         const otherId = randomUUID();
         await tx.orm.public.User.create({
@@ -67,7 +70,14 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
           review: null,
           countryIds: [japan.id],
         });
-        assert.equal(trip.isRevisit, false);
+        assert.equal(trip.containsRevisit, false);
+        assert.deepEqual(trip.countries, [
+          {
+            country: { id: japan.id, iso2: japan.iso2, iso3: japan.iso3, name: japan.name, slug: japan.slug, continentCode: japan.continentCode },
+            position: 0,
+            isRevisit: false,
+          },
+        ]);
         assert.equal(trip.coverStoragePath, null);
         assert.equal(trip.coverUrl, null);
         const image = Buffer.from('89504e470d0a1a0a00000000', 'hex');
@@ -105,28 +115,64 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
           (await service.detail(temporaryUserId, trip.id)).coverStoragePath,
           null,
         );
-        assert.deepEqual(trip.revisitedCountryIds, []);
         assert.equal(
           (await tx.orm.public.TripCountry.where({ tripId: trip.id }).all())
             .length,
           1,
         );
+        const ordered = await service.create(otherId, {
+          title: 'Italy France Japan order',
+          startDate: '2026-04-10T00:00:00.000Z',
+          endDate: null,
+          cityIds: [],
+          rating: null,
+          review: null,
+          countryIds: [italy.id, france.id, japan.id],
+        });
+        assert.deepEqual(
+          ordered.countries.map(({ country, position }) => ({ id: country.id, position })),
+          [
+            { id: italy.id, position: 0 },
+            { id: france.id, position: 1 },
+            { id: japan.id, position: 2 },
+          ],
+        );
+        await service.create(temporaryUserId, {
+          title: 'Private Italy visit',
+          startDate: '2026-04-15T00:00:00.000Z',
+          endDate: null,
+          cityIds: [],
+          rating: null,
+          review: null,
+          visibility: 'private',
+          countryIds: [italy.id],
+        });
         const revisit = await service.create(temporaryUserId, {
-          title: 'Japan and Spain again',
+          title: 'France and Italy again',
           startDate: '2026-05-01T00:00:00.000Z',
           endDate: null,
           cityIds: [],
           rating: null,
           review: null,
-          countryIds: [japan.id, spain.id],
+          countryIds: [france.id, italy.id],
         });
-        assert.equal(revisit.isRevisit, true);
-        assert.deepEqual(revisit.revisitedCountryIds, [japan.id]);
+        assert.equal(revisit.containsRevisit, true);
+        assert.deepEqual(
+          revisit.countries.map(({ country, isRevisit, position }) => ({
+            id: country.id,
+            isRevisit,
+            position,
+          })),
+          [
+            { id: france.id, isRevisit: false, position: 0 },
+            { id: italy.id, isRevisit: true, position: 1 },
+          ],
+        );
         assert.deepEqual(
           (await service.visitedCountries(temporaryUserId))
             .map((country) => country.iso3)
             .sort(),
-          ['ESP', 'JPN'],
+          ['FRA', 'ITA', 'JPN'],
         );
         assert.deepEqual(
           (await service.visitedCountries(otherId)).map(
@@ -158,8 +204,10 @@ test('Prisma 8: multi-country trips, unique visits, user isolation and rollback'
           review: null,
           countryIds: [france.id],
         });
-        assert.equal(sameDateFirst.isRevisit, false);
-        assert.equal(sameDateSecond.isRevisit, false);
+        assert.equal(sameDateFirst.containsRevisit, false);
+        assert.equal(sameDateSecond.containsRevisit, false);
+        assert.equal(sameDateFirst.countries[0].isRevisit, false);
+        assert.equal(sameDateSecond.countries[0].isRevisit, false);
         const count = await tx.orm.public.Trip.where({
           userId: temporaryUserId,
         }).aggregate((aggregate) => ({ total: aggregate.count() }));

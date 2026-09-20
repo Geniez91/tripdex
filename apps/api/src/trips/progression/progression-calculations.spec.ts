@@ -148,6 +148,25 @@ describe('calculateProgression', () => {
     ]);
   });
 
+  it('does not treat equal trip start dates as revisits', () => {
+    // Arrange
+    const input = snapshot([
+      record('fr-1', '2024-05-01T00:00:00.000Z', null, 'fr'),
+      record('fr-2', '2024-05-01T00:00:00.000Z', null, 'fr'),
+    ]);
+
+    // Act
+    const result = calculateProgression(input, 2024);
+
+    // Assert
+    expect(result.summary.revisitedCountries).toBe(0);
+    expect(result.summary.totalRevisits).toBe(0);
+    expect(result.revisits).toEqual([]);
+    expect(result.timeline.yearlyVisits).toEqual([
+      { year: 2024, newCountries: 1, revisits: 0 },
+    ]);
+  });
+
   it('sums multiple revisits across countries deterministically', () => {
     // Arrange
     const input = snapshot([

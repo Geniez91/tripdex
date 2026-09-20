@@ -86,6 +86,7 @@ test('community counts distinct travelers, year overlaps, current visits and res
           await tx.orm.public.TripCountry.create({
             tripId: record.id,
             countryId: destination.id,
+            position: 0,
           });
         };
         await trip(userId, '2041-12-31', '2042-01-01');

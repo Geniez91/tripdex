@@ -23,10 +23,10 @@ test("Japan 2026 is saved through NestJS and stays visited after reloading", asy
   const trip = (await response.json()) as {
     id: string;
     title: string;
-    countries: { iso3: string }[];
+    countries: { country: { iso3: string }; position: number; isRevisit: boolean }[];
   };
   expect(trip.title).toBe("Japan 2026");
-  expect(trip.countries.map((country) => country.iso3)).toEqual(["JPN"]);
+  expect(trip.countries.map((tripCountry) => tripCountry.country.iso3)).toEqual(["JPN"]);
   await expect(page.getByText("« Japan 2026 » est enregistré.")).toBeVisible();
   const japan = page.locator('path.map-country[data-iso3="JPN"]');
   await expect(japan).toHaveClass(/visited/);

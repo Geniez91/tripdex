@@ -39,7 +39,7 @@ test('country explorer aggregates unique travelers and public ratings, ordered p
           visibility: fixture.visibility,
           coverStoragePath: null,
         });
-        await tx.orm.public.TripCountry.create({ tripId: trip.id, countryId: country.id });
+        await tx.orm.public.TripCountry.create({ tripId: trip.id, countryId: country.id, position: 0 });
         const createdAt = db.raw.sql`UPDATE public.trip SET "createdAt" = ${fixture.createdAt}::timestamptz WHERE id = ${trip.id} RETURNING id`
           .returnsRow({ id: 'pg/text@1' }).build();
         for await (const row of tx.query(createdAt)) { void row; }

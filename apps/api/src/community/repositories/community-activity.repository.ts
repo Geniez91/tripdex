@@ -38,7 +38,7 @@ export class CommunityActivityRepository {
       JOIN public.country c ON c.id = tc."countryId"
       LEFT JOIN public."tripCity" tcity ON tcity."tripId" = page.id
       LEFT JOIN public.city city ON city.id = tcity."cityId"
-      ORDER BY page."createdAt" DESC, page.id DESC, c.iso3, city.name
+      ORDER BY page."createdAt" DESC, page.id DESC, tc.position ASC, city.name
     `
       .returnsRow({
         tripId: 'pg/text@1',

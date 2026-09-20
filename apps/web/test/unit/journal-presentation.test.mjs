@@ -32,13 +32,14 @@ test("JournalEntry uses backend revisit state and links to the trip", () => {
   // Arrange
   const source = entry;
   // Act
-  const hasBackendFlag = source.includes('v-if="trip.isRevisit"');
+  const hasBackendFlag = source.includes('v-if="singleCountry?.isRevisit"');
   const hasTripLink = source.includes(':to="`/trips/${trip.id}`"');
   // Assert
   assert.equal(hasBackendFlag, true);
   assert.equal(hasTripLink, true);
   assert.equal(source.includes("formatTripPeriod"), true);
   assert.equal(source.includes("revisitedCountryIds"), false);
+  assert.equal(source.includes("trip.containsRevisit"), false);
 });
 
 test("Journal and entry provide clear fallbacks for missing covers and empty data", () => {

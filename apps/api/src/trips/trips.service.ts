@@ -71,6 +71,9 @@ export class TripsService {
     const countryLinks = await this.trips.findCountryLinks(trip.id);
     const countryIds = countryLinks.map((link) => link.countryId);
     const countries = await this.trips.findCountries(countryIds);
+    const countriesById = new Map(
+      countries.map((country) => [country.id, country]),
+    );
     const revisitedCountryIds = new Set(
       await this.trips.findRevisitedCountryIds(
         userId,
@@ -78,6 +81,17 @@ export class TripsService {
         countryIds,
       ),
     );
+    const tripCountries = countryLinks.map((link) => {
+      const country = countriesById.get(link.countryId);
+      if (!country) {
+        throw new Error('Trip country relation refers to a missing country.');
+      }
+      return {
+        country,
+        position: link.position,
+        isRevisit: revisitedCountryIds.has(link.countryId),
+      };
+    });
     const cityIds = includeCities ? await this.trips.findCityIds(trip.id) : [];
     const cities = includeCities
       ? await this.trips.findCities(cityIds)
@@ -85,15 +99,14 @@ export class TripsService {
 
     return TripMapper.toResponse({
       trip,
-      countries,
+      countries: tripCountries,
       cities,
       coverUrl: await this.covers.readUrl(
         userId,
         trip.id,
         trip.coverStoragePath,
       ),
-      isRevisit: revisitedCountryIds.size > 0,
-      revisitedCountryIds: [...revisitedCountryIds],
+      containsRevisit: tripCountries.some((country) => country.isRevisit),
     });
   }
 }

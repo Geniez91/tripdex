@@ -7,18 +7,24 @@ export interface Country {
   continentCode: string;
 }
 
+export interface ITripCountry {
+  country: Pick<Country, "id" | "iso2" | "iso3" | "name">;
+  position: number;
+  isRevisit: boolean;
+}
+
 export interface CreatedTrip {
   id: string;
   title: string;
   startDate: string;
   endDate: string | null;
-  countries: Pick<Country, "id" | "iso2" | "iso3" | "name">[];
+  countries: ITripCountry[];
   cities?: City[];
   rating?: number | null;
   review?: string | null;
   coverStoragePath?: string | null;
   coverUrl?: string | null;
-  isRevisit?: boolean;
+  containsRevisit: boolean;
   visibility?: "public" | "private";
 }
 
@@ -31,6 +37,4 @@ export interface City {
   longitude?: number;
 }
 
-export interface JournalTrip extends CreatedTrip {
-  revisitedCountryIds?: string[];
-}
+export interface JournalTrip extends CreatedTrip {}

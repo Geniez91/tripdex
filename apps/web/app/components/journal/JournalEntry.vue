@@ -1,22 +1,25 @@
 <script setup lang="ts">
 import { formatDate, formatTripPeriod } from "~/utils/dates";
-import type { Country, JournalTrip } from "~/types/tripdex";
+import type { JournalTrip } from "~/types/tripdex";
 import TravelStamp from "~/components/journal/TravelStamp.vue";
 import RevisitStamp from "~/components/journal/RevisitStamp.vue";
 
 const props = defineProps<{ trip: JournalTrip }>();
-const firstCountry = computed<
-  Pick<Country, "id" | "iso2" | "iso3" | "name"> | undefined
->(() => props.trip.countries[0]);
+const singleCountry = computed(() =>
+  props.trip.countries.length === 1 ? props.trip.countries[0] : undefined,
+);
 const countries = computed<string>(() =>
-  props.trip.countries.map((country) => country.name).join(" · "),
+  props.trip.countries.map(({ country }) => country.name).join(" · "),
 );
 const cities = computed<string>(
   () => props.trip.cities?.map((city) => city.name).join(" · ") ?? "",
 );
 const photoCaption = computed<string>(() => {
   const date = formatDate(props.trip.startDate, "caption");
-  return `${firstCountry.value?.name ?? "VOYAGE"} · ${date}`.toUpperCase();
+  const destination = singleCountry.value
+    ? singleCountry.value.country.name
+    : "VOYAGE MULTI-PAYS";
+  return `${destination} · ${date}`.toUpperCase();
 });
 const dateLabel = computed<string>(() =>
   formatTripPeriod(props.trip.startDate, props.trip.endDate),
@@ -46,16 +49,16 @@ const dateLabel = computed<string>(() =>
         <div class="journal-entry-topline">
           <span class="journal-kicker">CARNET DE VOYAGE</span>
           <RevisitStamp
-            v-if="trip.isRevisit"
-            :destination="firstCountry?.name ?? 'VOYAGE'"
-            :country="firstCountry?.iso2"
+            v-if="singleCountry?.isRevisit"
+            :destination="singleCountry.country.name"
+            :country="singleCountry.country.iso2"
             :date="trip.startDate"
             :seed="trip.id"
           />
           <TravelStamp
-            v-else
-            :destination="firstCountry?.name ?? 'VOYAGE'"
-            :country="firstCountry?.iso2"
+            v-else-if="singleCountry"
+            :destination="singleCountry.country.name"
+            :country="singleCountry.country.iso2"
             :date="trip.startDate"
             :seed="trip.id"
           />

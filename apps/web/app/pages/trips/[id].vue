@@ -162,8 +162,8 @@ async function changeCover(remove = false): Promise<void> {
               <p>
                 {{
                   trip.countries.find(
-                    (country) => country.id === city.countryId,
-                  )?.name
+                    (tripCountry) => tripCountry.country.id === city.countryId,
+                  )?.country.name
                 }}
               </p>
             </div>
@@ -178,8 +178,8 @@ async function changeCover(remove = false): Promise<void> {
         <h2 id="memory-title">
           <CountryFlag
             v-if="trip.countries.length === 1"
-            :iso2="trip.countries[0]?.iso2"
-            :name="trip.countries[0]?.name"
+            :iso2="trip.countries[0]?.country.iso2"
+            :name="trip.countries[0]?.country.name"
           />
           <VIcon v-else icon="mdi-earth" aria-hidden="true" /> Mon souvenir
         </h2>

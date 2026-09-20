@@ -40,9 +40,12 @@ export class TripMapper {
       coverStoragePath: parts.trip.coverStoragePath,
       coverUrl: parts.coverUrl,
       visibility: parts.trip.visibility,
-      countries: parts.countries.map((country) => this.toCountryDto(country)),
-      isRevisit: parts.isRevisit,
-      revisitedCountryIds: parts.revisitedCountryIds,
+      countries: parts.countries.map((country) => ({
+        country: this.toCountryDto(country.country),
+        position: country.position,
+        isRevisit: country.isRevisit,
+      })),
+      containsRevisit: parts.containsRevisit,
     };
     if (parts.cities) {
       response.cities = parts.cities.map((city) => this.toCityDto(city));

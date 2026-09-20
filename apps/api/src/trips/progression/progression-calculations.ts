@@ -28,6 +28,7 @@ interface ITripPeriod {
 
 interface ICountryTrip {
   tripId: string;
+  tripStartDate: ICivilDate;
   visitDate: ICivilDate;
 }
 
@@ -161,9 +162,10 @@ function countryTripsById(
     seen.add(uniqueKey);
 
     const visitDate = countryEntryDateFromArrivalOrTripStart(row);
-    if (!visitDate) continue;
+    const tripStartDate = civilDate(row.startDate);
+    if (!visitDate || !tripStartDate) continue;
     const countryTrips = trips.get(row.countryId) ?? [];
-    countryTrips.push({ tripId: row.tripId, visitDate });
+    countryTrips.push({ tripId: row.tripId, tripStartDate, visitDate });
     trips.set(row.countryId, countryTrips);
   }
 
@@ -178,6 +180,15 @@ function countryTripsById(
   return trips;
 }
 
+function isRevisitTrip(
+  trip: ICountryTrip,
+  countryTrips: ICountryTrip[],
+): boolean {
+  return countryTrips.some(
+    (candidate) => candidate.tripStartDate.day < trip.tripStartDate.day,
+  );
+}
+
 function yearlyVisitCounts(
   countryTrips: Map<string, ICountryTrip[]>,
   firstYear: number | null,
@@ -187,15 +198,26 @@ function yearlyVisitCounts(
   const counts = new Map<number, { newCountries: number; revisits: number }>();
 
   for (const trips of countryTrips.values()) {
-    trips.forEach((trip, index) => {
+    const firstTripStartDay = Math.min(
+      ...trips.map((trip) => trip.tripStartDate.day),
+    );
+    let countedFirstVisit = false;
+    for (const trip of trips) {
       const current = counts.get(trip.visitDate.year) ?? {
         newCountries: 0,
         revisits: 0,
       };
-      if (index === 0) current.newCountries += 1;
-      else current.revisits += 1;
+      if (isRevisitTrip(trip, trips)) {
+        current.revisits += 1;
+      } else if (
+        trip.tripStartDate.day === firstTripStartDay &&
+        !countedFirstVisit
+      ) {
+        current.newCountries += 1;
+        countedFirstVisit = true;
+      }
       counts.set(trip.visitDate.year, current);
-    });
+    }
   }
 
   const result: IProgressionYearlyVisitsDto[] = [];
@@ -277,7 +299,10 @@ function revisitProgress(
   const revisits: IProgressionRevisitDto[] = [];
   for (const [countryId, trips] of countryTrips.entries()) {
     const country = countriesByCountryId.get(countryId);
-    if (country && trips.length >= 2) {
+    const revisitCount = trips.filter((trip) =>
+      isRevisitTrip(trip, trips),
+    ).length;
+    if (country && revisitCount > 0) {
       revisits.push({
         country: TripMapper.toCountryDto(country),
         tripCount: trips.length,
@@ -292,8 +317,9 @@ function revisitProgress(
 
   return {
     revisits,
-    totalRevisits: revisits.reduce(
-      (total, revisit) => total + revisit.tripCount - 1,
+    totalRevisits: [...countryTrips.values()].reduce(
+      (total, trips) =>
+        total + trips.filter((trip) => isRevisitTrip(trip, trips)).length,
       0,
     ),
   };

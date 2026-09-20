@@ -62,7 +62,7 @@ test('Photo contests: real PostgreSQL and HTTP contracts (fixtures roll back)', 
         const trip = await tx.orm.public.Trip.create({ id, userId, visibility, title: `Souvenir ${id}`,
           startDate: '2041-12-01T00:00:00.000Z', createdAt: '2042-01-01T00:00:00.000Z',
           coverStoragePath: cover ? `users/${userId}/trips/${id}/cover/${randomUUID()}.png` : null });
-        await tx.orm.public.TripCountry.create({ tripId: id, countryId });
+        await tx.orm.public.TripCountry.create({ tripId: id, countryId, position: 0 });
         return trip;
       };
       const privateTrip = await createTrip(users[0], 'private');

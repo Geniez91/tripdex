@@ -16,6 +16,12 @@ export interface ICityResponseDto {
   longitude: number;
 }
 
+export interface ITripCountryResponseDto {
+  country: ICountryResponseDto;
+  position: number;
+  isRevisit: boolean;
+}
+
 export interface ITripResponseDto {
   id: string;
   title: string;
@@ -26,8 +32,7 @@ export interface ITripResponseDto {
   coverStoragePath: string | null;
   coverUrl: string | null;
   visibility: 'public' | 'private';
-  countries: ICountryResponseDto[];
+  countries: ITripCountryResponseDto[];
   cities?: ICityResponseDto[];
-  isRevisit: boolean;
-  revisitedCountryIds: string[];
+  containsRevisit: boolean;
 }

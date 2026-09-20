@@ -15,7 +15,13 @@ const trip = {
   title: "Voyage test",
   startDate: "2026-03-12",
   endDate: "2026-03-28",
-  countries: [{ id: "jp", name: "Japon", iso2: "JP" }],
+  countries: [
+    {
+      country: { id: "jp", name: "Japon", iso2: "JP" },
+      position: 0,
+      isRevisit: false,
+    },
+  ],
   cities: [
     { id: "tokyo", name: "Tokyo", countryId: "jp" },
     { id: "kyoto", name: "Kyoto", countryId: "jp" },
@@ -24,7 +30,7 @@ const trip = {
   review: "Un souvenir réel",
   coverUrl: "https://example.test/cover.jpg",
   coverStoragePath: "cover",
-  isRevisit: false,
+  containsRevisit: false,
 };
 function load(path, data = trip) {
   const filename = new URL("../../app/" + path, import.meta.url);
@@ -115,7 +121,12 @@ test("Hero renders real cover, title, cities, dates and ordinary passport stamp"
 });
 test("Hero fallback and revisit stamp depend on the supplied backend flag", async () => {
   // Arrange
-  const data = { ...trip, coverUrl: null, isRevisit: true };
+  const data = {
+    ...trip,
+    coverUrl: null,
+    countries: [{ ...trip.countries[0], isRevisit: true }],
+    containsRevisit: true,
+  };
   // Act
   const html = await render("components/trips/TripHero.vue", data);
   // Assert
@@ -158,7 +169,13 @@ test("blank memory is absent and missing ISO2 uses generic destination icon", as
   const blank = { ...trip, review: "  ", coverUrl: null };
   const unknown = {
     ...trip,
-    countries: [{ id: "jp", name: "Destination", iso2: "?" }],
+    countries: [
+      {
+        country: { id: "jp", name: "Destination", iso2: "?" },
+        position: 0,
+        isRevisit: false,
+      },
+    ],
   };
   // Act
   const emptyHtml = await render("pages/trips/[id].vue", blank);
@@ -174,7 +191,11 @@ test("multi-country metadata shows each flag while memory uses the globe", async
     ...trip,
     countries: [
       ...trip.countries,
-      { id: "us", name: "United States", iso2: "us" },
+      {
+        country: { id: "us", name: "United States", iso2: "us" },
+        position: 1,
+        isRevisit: false,
+      },
     ],
   };
   // Act
@@ -188,6 +209,8 @@ test("multi-country metadata shows each flag while memory uses the globe", async
   assert.ok(html.includes("Japon") && html.includes("United States"));
   assert.ok(memory.includes('data-icon="mdi-earth"'));
   assert.ok(!memory.includes("/country-flags/"));
+  assert.ok(!html.includes('class="travel-stamp"'));
+  assert.ok(!html.includes('class="revisit-stamp"'));
 });
 
 test("CountryFlag renders local SVGs for JP, US, FR and lowercase codes with accessible names", async () => {

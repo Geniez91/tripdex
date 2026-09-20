@@ -28,9 +28,11 @@ defineProps<{ activity: TripCommunityActivity }>();
     <div class="activity-destination">
       <div class="destination-title">
         <CountryFlag
+          v-if="activity.trip.countries.length === 1"
           :iso2="activity.trip.countries[0]?.iso2"
           :name="activity.trip.countries[0]?.name"
         />
+        <VIcon v-else icon="mdi-earth" aria-hidden="true" />
         <h3>{{ activity.trip.title }}</h3>
       </div>
       <p>

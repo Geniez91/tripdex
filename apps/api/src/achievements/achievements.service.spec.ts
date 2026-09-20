@@ -18,6 +18,22 @@ describe('AchievementsService', () => {
       .toMatchObject({ current: 1, target: 3, unlocked: false });
   });
 
+  it('does not unlock a revisit achievement for equal trip start dates', async () => {
+    const repository = {
+      snapshot: jest.fn(async () => createAchievementTestSnapshot([
+        { tripId: 'one', startDate: '2026-01-01T00:00:00.000Z', endDate: null, countryId: 'fr', arrivalDate: null },
+        { tripId: 'two', startDate: '2026-01-01T00:00:00.000Z', endDate: null, countryId: 'fr', arrivalDate: null },
+      ])),
+      communityCounts: jest.fn(async () => ({ voteCount: 0, winCount: 0 })),
+      communityStats: jest.fn(async () => ({ eligibleUserCount: 0, holderCounts: {} })),
+    } as Pick<AchievementsRepository, 'snapshot' | 'communityCounts'>;
+
+    const result = await new AchievementsService(repository as AchievementsRepository).forUser('traveler');
+
+    expect(result.achievements.find((item) => item.code === 'DEJA_VU'))
+      .toMatchObject({ current: 0, target: 1, unlocked: false });
+  });
+
   it('reuses M5.1 facts for private multi-country trips and overlapping travel periods', async () => {
     const repository = {
       snapshot: jest.fn(async () => createAchievementTestSnapshot([

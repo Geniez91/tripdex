@@ -949,6 +949,13 @@
                   "kind": "scalar"
                 }
               },
+              "position": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "tripId": {
                 "nullable": false,
                 "type": {
@@ -999,6 +1006,9 @@
                 },
                 "departureDate": {
                   "column": "departureDate"
+                },
+                "position": {
+                  "column": "position"
                 },
                 "tripId": {
                   "column": "tripId"
@@ -1962,6 +1972,11 @@
                   "nativeType": "timestamptz",
                   "nullable": true
                 },
+                "position": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
                 "tripId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -2026,7 +2041,14 @@
                   "countryId"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "tripId",
+                    "position"
+                  ]
+                }
+              ]
             },
             "user": {
               "columns": {
@@ -2154,7 +2176,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "972b17073e6c58a686ad786480387e9b3d3afeeca3e70f25a23d764628110535"
+    "storageHash": "1273dac3f4a52ea218b71d2d1995c8b4e8d9ed6df2297b8252ec6e2413da52a9"
   },
   "execution": {
     "executionHash": "d9ff98cce359aad076e301f881f9ba3a7bcc7901118d022d7447ffb82c1f7f94",

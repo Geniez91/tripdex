@@ -23,9 +23,12 @@ const duration = computed<string | null>(() => {
     <div class="metadata-block metadata-countries">
       <div>
         <span>Pays</span>
-        <strong v-for="country in trip.countries" :key="country.id">
-          <CountryFlag :iso2="country.iso2" :name="country.name" />
-          {{ country.name }}
+        <strong v-for="tripCountry in trip.countries" :key="tripCountry.country.id">
+          <CountryFlag
+            :iso2="tripCountry.country.iso2"
+            :name="tripCountry.country.name"
+          />
+          {{ tripCountry.country.name }}
         </strong>
         <VIcon
           v-if="!trip.countries.length"

@@ -39,10 +39,11 @@ export class TripRepository {
         visibility: input.visibility,
         coverStoragePath: null,
       });
-      for (const countryId of input.countryIds) {
+      for (const [position, countryId] of input.countryIds.entries()) {
         await tx.orm.public.TripCountry.create({
           tripId: trip.id,
           countryId,
+          position,
         });
       }
       for (const cityId of input.cityIds) {
@@ -97,7 +98,8 @@ export class TripRepository {
 
   async findCountryLinks(tripId: string): Promise<ITripCountryLink[]> {
     return this.database.client.orm.public.TripCountry.where({ tripId })
-      .select('countryId', 'tripId')
+      .select('countryId', 'tripId', 'position')
+      .orderBy((link) => link.position.asc())
       .all();
   }
 

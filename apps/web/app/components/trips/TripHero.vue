@@ -18,6 +18,9 @@ const duration = computed<string | null>(() => {
   );
   return `${Math.max(1, days)} ${days > 1 ? "jours" : "jour"}`;
 });
+const singleCountry = computed(() =>
+  props.trip.countries.length === 1 ? props.trip.countries[0] : undefined,
+);
 </script>
 
 <template>
@@ -41,11 +44,11 @@ const duration = computed<string | null>(() => {
     <div class="trip-hero-overlay">
       <div class="trip-hero-copy">
         <span class="trip-hero-kicker">{{
-          trip.isRevisit ? "VOYAGE RETROUVÉ" : "CARNET DE VOYAGE"
+          singleCountry?.isRevisit ? "VOYAGE RETROUVÉ" : "CARNET DE VOYAGE"
         }}</span>
         <h1 id="trip-title">{{ trip.title }}</h1>
         <p class="trip-hero-destination">
-          {{ trip.countries.map((country) => country.name).join(" · ") }}
+          {{ trip.countries.map(({ country }) => country.name).join(" · ") }}
         </p>
         <p v-if="trip.cities?.length" class="trip-hero-cities">
           {{ trip.cities.map((city) => city.name).join(" · ") }}
@@ -64,16 +67,16 @@ const duration = computed<string | null>(() => {
         </p>
       </div>
       <RevisitStamp
-        v-if="trip.isRevisit"
-        :destination="trip.countries[0]?.name ?? 'VOYAGE'"
-        :country="trip.countries[0]?.iso2"
+        v-if="singleCountry?.isRevisit"
+        :destination="singleCountry.country.name"
+        :country="singleCountry.country.iso2"
         :date="trip.startDate"
         :seed="trip.id"
       />
       <TravelStamp
-        v-else
-        :destination="trip.countries[0]?.name ?? 'VOYAGE'"
-        :country="trip.countries[0]?.iso2"
+        v-else-if="singleCountry"
+        :destination="singleCountry.country.name"
+        :country="singleCountry.country.iso2"
         :date="trip.startDate"
         :seed="trip.id"
       />

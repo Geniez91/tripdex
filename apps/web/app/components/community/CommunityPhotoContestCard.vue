@@ -16,7 +16,7 @@ const days = computed(() => Math.max(0, Math.ceil((Date.parse(props.contest.ends
 const open = computed(() => props.contest.status === "OPEN" && days.value > 0);
 const hero = computed(() => props.contest.submissions.find(s => s.imageUrl)?.imageUrl);
 const eligible = computed(() => auth.status.value === "authenticated" && trips.trips.value.some(trip =>
-  trip.visibility === "public" && trip.coverUrl && trip.countries.some(c => c.id === props.contest.country.id)));
+  trip.visibility === "public" && trip.coverUrl && trip.countries.some(c => c.country.id === props.contest.country.id)));
 </script>
 <template>
   <article class="contest-card">

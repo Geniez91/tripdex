@@ -85,6 +85,7 @@ model Trip {
 model TripCountry {
   tripId    String
   countryId String
+  position  Int
 
   arrivalDate   TimestamptzString?
   departureDate TimestamptzString?
@@ -93,6 +94,7 @@ model TripCountry {
   country Country @relation(fields: [countryId], references: [id])
 
   @@id([tripId, countryId])
+  @@unique([tripId, position])
   @@index([countryId])
 }
 

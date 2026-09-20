@@ -18,10 +18,11 @@ const trip = {
   title: "Japan cover",
   startDate: "2026-04-01T00:00:00.000Z",
   endDate: null,
-  countries: [country],
+  countries: [{ country, position: 0, isRevisit: false }],
   cities: [],
   coverStoragePath: null,
   coverUrl: null,
+  containsRevisit: false,
 };
 
 async function setup(page: Page) {

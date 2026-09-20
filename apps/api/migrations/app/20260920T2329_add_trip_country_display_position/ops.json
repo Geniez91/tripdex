@@ -1,0 +1,163 @@
+[
+  {
+    "id": "column.public.tripCountry.position",
+    "label": "Add column \"position\" to \"tripCountry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "position",
+        "table": "tripCountry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"position\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "tripCountry",
+          "position"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"position\"",
+        "sql": "ALTER TABLE \"public\".\"tripCountry\" ADD COLUMN \"position\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"position\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "tripCountry",
+          "position"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.backfill-tripCountry-position",
+    "label": "Data transform: backfill-tripCountry-position",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check backfill-tripCountry-position has work to do",
+        "sql": "SELECT EXISTS (\n            SELECT \"tripId\"\n            FROM \"public\".\"tripCountry\"\n            WHERE \"position\" IS NULL\n            LIMIT 1\n          ) AS ok",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run backfill-tripCountry-position",
+        "sql": "\n            WITH ranked_countries AS (\n              SELECT\n                \"tripCountry\".\"tripId\",\n                \"tripCountry\".\"countryId\",\n                ROW_NUMBER() OVER (\n                  PARTITION BY \"tripCountry\".\"tripId\"\n                  ORDER BY \"country\".\"iso3\" ASC\n                ) - 1 AS \"position\"\n              FROM \"public\".\"tripCountry\"\n              INNER JOIN \"public\".\"country\"\n                ON \"country\".\"id\" = \"tripCountry\".\"countryId\"\n            )\n            UPDATE \"public\".\"tripCountry\"\n            SET \"position\" = ranked_countries.\"position\"\n            FROM ranked_countries\n            WHERE \"tripCountry\".\"tripId\" = ranked_countries.\"tripId\"\n              AND \"tripCountry\".\"countryId\" = ranked_countries.\"countryId\"\n              AND \"tripCountry\".\"position\" IS NULL\n          ",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify backfill-tripCountry-position resolved all violations",
+        "sql": "SELECT NOT EXISTS (\n            SELECT \"tripId\"\n            FROM \"public\".\"tripCountry\"\n            WHERE \"position\" IS NULL\n            LIMIT 1\n          ) AS ok",
+        "params": []
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.tripCountry.position",
+    "label": "Set NOT NULL on \"tripCountry\".\"position\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "position",
+        "table": "tripCountry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"position\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "tripCountry",
+          "position"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"position\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"tripCountry\" WHERE \"position\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"position\"",
+        "sql": "ALTER TABLE \"public\".\"tripCountry\" ALTER COLUMN \"position\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"position\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "tripCountry",
+          "position",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.tripCountry.tripCountry_tripId_position_key",
+    "label": "Add unique constraint on \"tripCountry\" (tripId, position)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "tripCountry_tripId_position_key",
+        "table": "tripCountry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"tripCountry_tripId_position_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCountry_tripId_position_key",
+          "public",
+          "\"public\".\"tripCountry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"tripCountry_tripId_position_key\"",
+        "sql": "ALTER TABLE \"public\".\"tripCountry\" ADD CONSTRAINT \"tripCountry_tripId_position_key\" UNIQUE (\"tripId\", \"position\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"tripCountry_tripId_position_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tripCountry_tripId_position_key",
+          "public",
+          "\"public\".\"tripCountry\""
+        ]
+      }
+    ]
+  }
+]

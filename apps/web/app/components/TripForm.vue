@@ -41,7 +41,10 @@ const filteredCountries = computed<Country[]>(() => {
   );
 });
 const selectedCountries = computed<Country[]>(() =>
-  props.countries.filter((country) => countryIds.value.includes(country.id)),
+  countryIds.value.flatMap((countryId) => {
+    const country = props.countries.find((item) => item.id === countryId);
+    return country ? [country] : [];
+  }),
 );
 const availableCities = computed<City[]>(() =>
   (cities.value ?? []).filter((city) =>

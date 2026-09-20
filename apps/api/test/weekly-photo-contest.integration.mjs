@@ -43,7 +43,7 @@ test('Weekly contest PostgreSQL schema and scheduler (fixtures roll back)', asyn
         const path = `users/${id}/trips/${tripId}/cover/${randomUUID()}.png`;
         await tx.orm.public.Trip.create({ id: tripId, userId: id, title: 'Weekly fixture', visibility: 'public',
           startDate: now.toISOString(), createdAt: now.toISOString(), coverStoragePath: path });
-        await tx.orm.public.TripCountry.create({ tripId, countryId: country.id });
+        await tx.orm.public.TripCountry.create({ tripId, countryId: country.id, position: 0 });
         const covers = { readUrl: async (_user, _trip, storagePath) => storagePath === path ? 'https://photos.test/fixture.png' : null };
         const repository = new PhotoContestRepository(database);
         const service = new PhotoContestService(repository, covers, { now: () => now });

@@ -34,7 +34,7 @@ test('a user can see their own PUBLIC trip and another user PUBLIC trip, but not
       const create = async (userId, visibility, createdAt) => {
         const trip = await tx.orm.public.Trip.create({ userId, visibility, createdAt,
           title: 'Self activity regression', startDate: '2026-09-01T00:00:00.000Z' });
-        await tx.orm.public.TripCountry.create({ tripId: trip.id, countryId: country.id });
+        await tx.orm.public.TripCountry.create({ tripId: trip.id, countryId: country.id, position: 0 });
         return trip;
       };
       const own = await create(currentUserId, 'public', '2099-01-03T00:00:00.000Z');
@@ -51,6 +51,9 @@ test('a user can see their own PUBLIC trip and another user PUBLIC trip, but not
       assert.equal(activity.userId, currentUserId);
       assert.equal(activity.item.type, 'TRIP_LOGGED');
       assert.equal(activity.item.trip.countries[0].iso3, 'JPN');
+      assert.equal('containsRevisit' in activity.item.trip, false);
+      assert.equal('isRevisit' in activity.item.trip, false);
+      assert.equal('revisitedCountryIds' in activity.item.trip, false);
       assert.equal(activity.item.activityDate, '2099-01-03T00:00:00.000Z');
       throw rollback;
     }), error => error === rollback);

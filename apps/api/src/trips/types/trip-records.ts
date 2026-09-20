@@ -30,6 +30,7 @@ export interface ICityRecord {
 export interface ITripCountryLink {
   countryId: string;
   tripId: string;
+  position: number;
 }
 
 export interface ITripOwnershipRecord {
