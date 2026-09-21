@@ -1,17 +1,2482 @@
 [
-  { "id": "city-jp-tokyo", "iso2": "JP", "name": "Tokyo", "slug": "tokyo", "latitude": 35.6762, "longitude": 139.6503 },
-  { "id": "city-jp-kyoto", "iso2": "JP", "name": "Kyoto", "slug": "kyoto", "latitude": 35.0116, "longitude": 135.7681 },
-  { "id": "city-fr-paris", "iso2": "FR", "name": "Paris", "slug": "paris", "latitude": 48.8566, "longitude": 2.3522 },
-  { "id": "city-fr-lyon", "iso2": "FR", "name": "Lyon", "slug": "lyon", "latitude": 45.764, "longitude": 4.8357 },
-  { "id": "city-gb-london", "iso2": "GB", "name": "London", "slug": "london", "latitude": 51.5072, "longitude": -0.1276 },
-  { "id": "city-it-rome", "iso2": "IT", "name": "Rome", "slug": "rome", "latitude": 41.9028, "longitude": 12.4964 },
-  { "id": "city-es-barcelona", "iso2": "ES", "name": "Barcelona", "slug": "barcelona", "latitude": 41.3874, "longitude": 2.1686 },
-  { "id": "city-us-new-york", "iso2": "US", "name": "New York", "slug": "new-york", "latitude": 40.7128, "longitude": -74.006 },
-  { "id": "city-us-san-francisco", "iso2": "US", "name": "San Francisco", "slug": "san-francisco", "latitude": 37.7749, "longitude": -122.4194 },
-  { "id": "city-ca-montreal", "iso2": "CA", "name": "Montreal", "slug": "montreal", "latitude": 45.5019, "longitude": -73.5674 },
-  { "id": "city-au-sydney", "iso2": "AU", "name": "Sydney", "slug": "sydney", "latitude": -33.8688, "longitude": 151.2093 },
-  { "id": "city-th-bangkok", "iso2": "TH", "name": "Bangkok", "slug": "bangkok", "latitude": 13.7563, "longitude": 100.5018 },
-  { "id": "city-pt-lisbon", "iso2": "PT", "name": "Lisbon", "slug": "lisbon", "latitude": 38.7223, "longitude": -9.1393 },
-  { "id": "city-mx-mexico-city", "iso2": "MX", "name": "Mexico City", "slug": "mexico-city", "latitude": 19.4326, "longitude": -99.1332 },
-  { "id": "city-ma-marrakesh", "iso2": "MA", "name": "Marrakesh", "slug": "marrakesh", "latitude": 31.6295, "longitude": -7.9811 }
+  {
+    "id": "a5649e5d-6edb-4fc4-8d03-af1e38cc7524",
+    "iso2": "AD",
+    "name": "Andorra la Vella",
+    "slug": "andorra-la-vella",
+    "latitude": 42.50779,
+    "longitude": 1.52109,
+    "geonamesId": 3041563,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "c02f87f0-c264-4237-885c-23c2aa0cc26f",
+    "iso2": "AE",
+    "name": "Abu Dhabi",
+    "slug": "abu-dhabi",
+    "latitude": 24.45118,
+    "longitude": 54.39696,
+    "geonamesId": 292968,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3fec620c-03cf-45e5-8cce-ea2826fe4b07",
+    "iso2": "AF",
+    "name": "Kabul",
+    "slug": "kabul",
+    "latitude": 34.52813,
+    "longitude": 69.17233,
+    "geonamesId": 1138958,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "6e33de59-afec-44a3-8e43-561f052b304d",
+    "iso2": "AG",
+    "name": "Saint John’s",
+    "slug": "saint-john-s",
+    "latitude": 17.12096,
+    "longitude": -61.84329,
+    "geonamesId": 3576022,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "2d213f41-501c-4319-af07-85278f5ba069",
+    "iso2": "AI",
+    "name": "The Valley",
+    "slug": "the-valley",
+    "latitude": 18.21704,
+    "longitude": -63.05783,
+    "geonamesId": 3573374,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "62605447-8f23-4834-9445-50fc83ed5599",
+    "iso2": "AL",
+    "name": "Tirana",
+    "slug": "tirana",
+    "latitude": 41.32744,
+    "longitude": 19.81866,
+    "geonamesId": 3183875,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "62495094-d1b1-4c98-b33d-1175027cf755",
+    "iso2": "AM",
+    "name": "Yerevan",
+    "slug": "yerevan",
+    "latitude": 40.17765,
+    "longitude": 44.5126,
+    "geonamesId": 616052,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "e454862f-7230-4973-970e-a7a95aea3b8c",
+    "iso2": "AO",
+    "name": "Luanda",
+    "slug": "luanda",
+    "latitude": -8.83682,
+    "longitude": 13.23432,
+    "geonamesId": 2240449,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ecb4be65-4430-48e0-94dd-6bdd13b94835",
+    "iso2": "AR",
+    "name": "Buenos Aires",
+    "slug": "buenos-aires",
+    "latitude": -34.61315,
+    "longitude": -58.37723,
+    "geonamesId": 3435910,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "812477d5-7949-4133-8a21-598547e790fa",
+    "iso2": "AS",
+    "name": "Pago Pago",
+    "slug": "pago-pago",
+    "latitude": -14.27806,
+    "longitude": -170.7025,
+    "geonamesId": 5881576,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5b65219e-1142-4f6c-a917-9e6579d04c68",
+    "iso2": "AT",
+    "name": "Vienna",
+    "slug": "vienna",
+    "latitude": 48.20849,
+    "longitude": 16.37208,
+    "geonamesId": 2761369,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "d0b193a0-ea5b-4922-9d82-5b8b2547bf14",
+    "iso2": "AU",
+    "name": "Canberra",
+    "slug": "canberra",
+    "latitude": -35.28346,
+    "longitude": 149.12807,
+    "geonamesId": 2172517,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-au-sydney",
+    "iso2": "AU",
+    "name": "Sydney",
+    "slug": "sydney",
+    "latitude": -33.8688,
+    "longitude": 151.2093,
+    "geonamesId": 2147714,
+    "catalogReason": "legacy-non-capital"
+  },
+  {
+    "id": "ff75728b-7012-46d9-83bc-b8d6bbdf8ab5",
+    "iso2": "AW",
+    "name": "Oranjestad",
+    "slug": "oranjestad",
+    "latitude": 12.52398,
+    "longitude": -70.02703,
+    "geonamesId": 3577154,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "4334ff7a-7600-4d96-9ad6-9e4531d47930",
+    "iso2": "AX",
+    "name": "Mariehamn",
+    "slug": "mariehamn",
+    "latitude": 60.09726,
+    "longitude": 19.93481,
+    "geonamesId": 3041732,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "dbbd33af-6db8-4b84-8c08-cd964d34b07f",
+    "iso2": "AZ",
+    "name": "Baku",
+    "slug": "baku",
+    "latitude": 40.37767,
+    "longitude": 49.89201,
+    "geonamesId": 587084,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "1f020220-30ed-4dca-b5eb-a3121ec394ad",
+    "iso2": "BA",
+    "name": "Sarajevo",
+    "slug": "sarajevo",
+    "latitude": 43.84864,
+    "longitude": 18.35644,
+    "geonamesId": 3191281,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "b66c1baf-9620-49d8-8c89-08bd6b591a84",
+    "iso2": "BB",
+    "name": "Bridgetown",
+    "slug": "bridgetown",
+    "latitude": 13.10732,
+    "longitude": -59.62021,
+    "geonamesId": 3374036,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5df94ce9-5d48-4dfe-ab8c-96185a0ec5df",
+    "iso2": "BD",
+    "name": "Dhaka",
+    "slug": "dhaka",
+    "latitude": 23.7104,
+    "longitude": 90.40744,
+    "geonamesId": 1185241,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "befdefb1-7d42-4318-828f-b1db0d60357f",
+    "iso2": "BE",
+    "name": "Brussels",
+    "slug": "brussels",
+    "latitude": 50.85045,
+    "longitude": 4.34878,
+    "geonamesId": 2800866,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "1af02d93-f78c-4e9d-8fa1-6e1c23db75f9",
+    "iso2": "BF",
+    "name": "Ouagadougou",
+    "slug": "ouagadougou",
+    "latitude": 12.36566,
+    "longitude": -1.53388,
+    "geonamesId": 2357048,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ce2f24af-ae6a-4786-903a-648473c35edb",
+    "iso2": "BG",
+    "name": "Sofia",
+    "slug": "sofia",
+    "latitude": 42.69751,
+    "longitude": 23.32415,
+    "geonamesId": 727011,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "8b89747c-7222-4ee5-aad6-46e44365f6da",
+    "iso2": "BH",
+    "name": "Manama",
+    "slug": "manama",
+    "latitude": 26.22787,
+    "longitude": 50.58565,
+    "geonamesId": 290340,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "1ec5b83d-0f56-4e25-a61b-80615f6cc489",
+    "iso2": "BI",
+    "name": "Gitega",
+    "slug": "gitega",
+    "latitude": -3.42708,
+    "longitude": 29.92463,
+    "geonamesId": 426272,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "f5186d67-3fdd-42ab-a2cf-ad9e3176562b",
+    "iso2": "BJ",
+    "name": "Porto-Novo",
+    "slug": "porto-novo",
+    "latitude": 6.49646,
+    "longitude": 2.60359,
+    "geonamesId": 2392087,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a8715a82-8d46-4a77-84de-958710025b58",
+    "iso2": "BL",
+    "name": "Gustavia",
+    "slug": "gustavia",
+    "latitude": 17.89618,
+    "longitude": -62.84978,
+    "geonamesId": 3579132,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "618d73d0-c99b-4f2e-9b47-dc261eecafca",
+    "iso2": "BM",
+    "name": "Hamilton",
+    "slug": "hamilton",
+    "latitude": 32.2949,
+    "longitude": -64.78303,
+    "geonamesId": 3573197,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "323e0deb-013e-437c-9ee4-b132e1d1266a",
+    "iso2": "BN",
+    "name": "Bandar Seri Begawan",
+    "slug": "bandar-seri-begawan",
+    "latitude": 4.89035,
+    "longitude": 114.94006,
+    "geonamesId": 1820906,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "d4eb8352-bab7-47fd-8e62-20b4a28958f4",
+    "iso2": "BO",
+    "name": "Sucre",
+    "slug": "sucre",
+    "latitude": -19.03332,
+    "longitude": -65.26274,
+    "geonamesId": 3903987,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "88efb5bd-01cf-447c-979a-ff2805288e82",
+    "iso2": "BQ",
+    "name": "Kralendijk",
+    "slug": "kralendijk",
+    "latitude": 12.15,
+    "longitude": -68.26667,
+    "geonamesId": 3513563,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "eb008635-6a43-4e75-9281-47c05001b326",
+    "iso2": "BR",
+    "name": "Brasília",
+    "slug": "brasilia",
+    "latitude": -15.77972,
+    "longitude": -47.92972,
+    "geonamesId": 3469058,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7c158b2b-5ca2-48a4-b9a5-a3bc13437a30",
+    "iso2": "BS",
+    "name": "Nassau",
+    "slug": "nassau",
+    "latitude": 25.05823,
+    "longitude": -77.34306,
+    "geonamesId": 3571824,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "b262cdcf-591f-4f2f-aa96-43f0d8e5b9b9",
+    "iso2": "BT",
+    "name": "Thimphu",
+    "slug": "thimphu",
+    "latitude": 27.46609,
+    "longitude": 89.64191,
+    "geonamesId": 1252416,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "840a1e9f-ea8b-47f2-9ff1-20c7db5a4861",
+    "iso2": "BW",
+    "name": "Gaborone",
+    "slug": "gaborone",
+    "latitude": -24.65451,
+    "longitude": 25.90859,
+    "geonamesId": 933773,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "689f1b6b-31e2-4ffd-b8a5-b433abf01415",
+    "iso2": "BY",
+    "name": "Minsk",
+    "slug": "minsk",
+    "latitude": 53.90019,
+    "longitude": 27.56653,
+    "geonamesId": 625144,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a1d39b90-348e-4d37-b603-9490061f2328",
+    "iso2": "BZ",
+    "name": "Belmopan",
+    "slug": "belmopan",
+    "latitude": 17.25376,
+    "longitude": -88.76401,
+    "geonamesId": 3582672,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-ca-montreal",
+    "iso2": "CA",
+    "name": "Montreal",
+    "slug": "montreal",
+    "latitude": 45.5019,
+    "longitude": -73.5674,
+    "geonamesId": 6077243,
+    "catalogReason": "legacy-non-capital"
+  },
+  {
+    "id": "ee9dae70-9ef2-470f-8e57-6b214a022544",
+    "iso2": "CA",
+    "name": "Ottawa",
+    "slug": "ottawa",
+    "latitude": 45.41117,
+    "longitude": -75.69812,
+    "geonamesId": 6094817,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "b578e6e7-b967-457c-83fe-fbfa187a1b95",
+    "iso2": "CC",
+    "name": "West Island",
+    "slug": "west-island",
+    "latitude": -12.15681,
+    "longitude": 96.82251,
+    "geonamesId": 7304591,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "bb86bfb3-8413-4933-b524-42e4b2b82cce",
+    "iso2": "CD",
+    "name": "Kinshasa",
+    "slug": "kinshasa",
+    "latitude": -4.32758,
+    "longitude": 15.31357,
+    "geonamesId": 2314302,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "2d7a5e3b-206a-4097-96b2-706514440adf",
+    "iso2": "CF",
+    "name": "Bangui",
+    "slug": "bangui",
+    "latitude": 4.36122,
+    "longitude": 18.55496,
+    "geonamesId": 2389853,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3af21874-8654-4a0b-a703-cce606750563",
+    "iso2": "CG",
+    "name": "Brazzaville",
+    "slug": "brazzaville",
+    "latitude": -4.26613,
+    "longitude": 15.28318,
+    "geonamesId": 2260535,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "166bf65f-6e94-427e-9a79-858ff105a157",
+    "iso2": "CH",
+    "name": "Bern",
+    "slug": "bern",
+    "latitude": 46.94809,
+    "longitude": 7.44744,
+    "geonamesId": 2661552,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "64668ba6-d940-4946-9521-5774ccb12c4e",
+    "iso2": "CI",
+    "name": "Yamoussoukro",
+    "slug": "yamoussoukro",
+    "latitude": 6.82055,
+    "longitude": -5.27674,
+    "geonamesId": 2279755,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "c78000a4-27a8-4656-827f-fadc658419d6",
+    "iso2": "CK",
+    "name": "Avarua",
+    "slug": "avarua",
+    "latitude": -21.2075,
+    "longitude": -159.77546,
+    "geonamesId": 4035715,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ef272cb3-6a6f-463c-8431-34a6e0a2af02",
+    "iso2": "CL",
+    "name": "Santiago",
+    "slug": "santiago",
+    "latitude": -33.45694,
+    "longitude": -70.64827,
+    "geonamesId": 3871336,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "986f367d-fef0-4d09-9c17-bdbb0855aa67",
+    "iso2": "CM",
+    "name": "Yaoundé",
+    "slug": "yaounde",
+    "latitude": 3.86667,
+    "longitude": 11.51667,
+    "geonamesId": 2220957,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "fe342566-1721-4c75-9403-a65c168a25dc",
+    "iso2": "CN",
+    "name": "Beijing",
+    "slug": "beijing",
+    "latitude": 39.9075,
+    "longitude": 116.39723,
+    "geonamesId": 1816670,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "37c6fedd-b37b-4997-bd53-cafe991306fc",
+    "iso2": "CO",
+    "name": "Bogotá",
+    "slug": "bogota",
+    "latitude": 4.60971,
+    "longitude": -74.08175,
+    "geonamesId": 3688689,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "981d5bf4-07d8-4b40-b374-8e5857ccfc6e",
+    "iso2": "CR",
+    "name": "San José",
+    "slug": "san-jose",
+    "latitude": 9.93388,
+    "longitude": -84.08489,
+    "geonamesId": 3621849,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "abf153d6-7605-4222-b11e-24bf4dc95412",
+    "iso2": "CU",
+    "name": "Havana",
+    "slug": "havana",
+    "latitude": 23.13302,
+    "longitude": -82.38304,
+    "geonamesId": 3553478,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "38904b41-7d8c-43b0-9895-054abf2fbae5",
+    "iso2": "CV",
+    "name": "Praia",
+    "slug": "praia",
+    "latitude": 14.93152,
+    "longitude": -23.51254,
+    "geonamesId": 3374333,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a0543c6b-5d8a-4a6c-8945-b6df2ea19e51",
+    "iso2": "CW",
+    "name": "Willemstad",
+    "slug": "willemstad",
+    "latitude": 12.12246,
+    "longitude": -68.88641,
+    "geonamesId": 3513090,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a7713a21-047b-4995-aa4e-de398f0329c9",
+    "iso2": "CX",
+    "name": "Flying Fish Cove",
+    "slug": "flying-fish-cove",
+    "latitude": -10.42172,
+    "longitude": 105.67912,
+    "geonamesId": 2078127,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9a8b4a31-ee4f-4bb9-a8c7-def0ab0cecc3",
+    "iso2": "CY",
+    "name": "Nicosia",
+    "slug": "nicosia",
+    "latitude": 35.17284,
+    "longitude": 33.35397,
+    "geonamesId": 146268,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "08e8b499-0f3e-4cdc-92dd-b73fc48a1a8d",
+    "iso2": "CZ",
+    "name": "Prague",
+    "slug": "prague",
+    "latitude": 50.08804,
+    "longitude": 14.42076,
+    "geonamesId": 3067696,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "f9f039bc-f94f-4f0b-b373-b1ca945b7e10",
+    "iso2": "DE",
+    "name": "Berlin",
+    "slug": "berlin",
+    "latitude": 52.52437,
+    "longitude": 13.41053,
+    "geonamesId": 2950159,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "54be3a2b-3042-4b47-bd01-4136c58da262",
+    "iso2": "DJ",
+    "name": "Djibouti",
+    "slug": "djibouti",
+    "latitude": 11.58901,
+    "longitude": 43.14503,
+    "geonamesId": 223817,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7e0d46d2-6c27-461c-ab48-82be1efb7eb7",
+    "iso2": "DK",
+    "name": "Copenhagen",
+    "slug": "copenhagen",
+    "latitude": 55.67594,
+    "longitude": 12.56553,
+    "geonamesId": 2618425,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9263d649-906d-4c57-a7c6-f4618feb233f",
+    "iso2": "DM",
+    "name": "Roseau",
+    "slug": "roseau",
+    "latitude": 15.30174,
+    "longitude": -61.38808,
+    "geonamesId": 3575635,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "dc2468a6-2c3a-4252-af4e-0f10290b3b40",
+    "iso2": "DO",
+    "name": "Santo Domingo",
+    "slug": "santo-domingo",
+    "latitude": 18.47186,
+    "longitude": -69.89232,
+    "geonamesId": 3492908,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "aebed54f-24ae-4268-854e-1006e57da0e8",
+    "iso2": "DZ",
+    "name": "Algiers",
+    "slug": "algiers",
+    "latitude": 36.73225,
+    "longitude": 3.08746,
+    "geonamesId": 2507480,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "c52e282b-f436-4d68-b250-2a161f66a39a",
+    "iso2": "EC",
+    "name": "Quito",
+    "slug": "quito",
+    "latitude": -0.22985,
+    "longitude": -78.52495,
+    "geonamesId": 3652462,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "fc77300c-ab9c-422b-a586-8a707a595796",
+    "iso2": "EE",
+    "name": "Tallinn",
+    "slug": "tallinn",
+    "latitude": 59.43696,
+    "longitude": 24.75353,
+    "geonamesId": 588409,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "800f9188-7717-4507-802e-a8bf2d2a94d6",
+    "iso2": "EG",
+    "name": "Cairo",
+    "slug": "cairo",
+    "latitude": 30.06263,
+    "longitude": 31.24967,
+    "geonamesId": 360630,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "6744ff06-211f-4253-b3e2-b06e2c173646",
+    "iso2": "ER",
+    "name": "Asmara",
+    "slug": "asmara",
+    "latitude": 15.33805,
+    "longitude": 38.93184,
+    "geonamesId": 343300,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-es-barcelona",
+    "iso2": "ES",
+    "name": "Barcelona",
+    "slug": "barcelona",
+    "latitude": 41.3874,
+    "longitude": 2.1686,
+    "geonamesId": 3128760,
+    "catalogReason": "legacy-non-capital"
+  },
+  {
+    "id": "05bea9b7-74c1-4c64-a6e1-ecfcc76657fb",
+    "iso2": "ES",
+    "name": "Madrid",
+    "slug": "madrid",
+    "latitude": 40.4165,
+    "longitude": -3.70256,
+    "geonamesId": 3117735,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "6fcc793a-e9b5-4e8c-b0b5-937e703d8634",
+    "iso2": "ET",
+    "name": "Addis Ababa",
+    "slug": "addis-ababa",
+    "latitude": 9.02497,
+    "longitude": 38.74689,
+    "geonamesId": 344979,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "32e59fb8-9b16-465a-9209-6ad9d309e88e",
+    "iso2": "FI",
+    "name": "Helsinki",
+    "slug": "helsinki",
+    "latitude": 60.16952,
+    "longitude": 24.93545,
+    "geonamesId": 658225,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7b7d0f6b-ef01-48b9-ad77-4e25a32536fa",
+    "iso2": "FJ",
+    "name": "Suva",
+    "slug": "suva",
+    "latitude": -18.13683,
+    "longitude": 178.42531,
+    "geonamesId": 2198148,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3189abb4-6a23-46d0-93b9-5519ba04ba31",
+    "iso2": "FK",
+    "name": "Stanley",
+    "slug": "stanley",
+    "latitude": -51.69382,
+    "longitude": -57.85701,
+    "geonamesId": 3426691,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "fa6de3be-da98-4fa3-a13a-d4843e5ac497",
+    "iso2": "FM",
+    "name": "Palikir",
+    "slug": "palikir",
+    "latitude": 6.92477,
+    "longitude": 158.16109,
+    "geonamesId": 2081986,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "90b0af81-fd2b-4604-8fd7-47abea18e292",
+    "iso2": "FO",
+    "name": "Tórshavn",
+    "slug": "torshavn",
+    "latitude": 62.00973,
+    "longitude": -6.77164,
+    "geonamesId": 2611396,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-fr-lyon",
+    "iso2": "FR",
+    "name": "Lyon",
+    "slug": "lyon",
+    "latitude": 45.764,
+    "longitude": 4.8357,
+    "geonamesId": 2996944,
+    "catalogReason": "legacy-non-capital"
+  },
+  {
+    "id": "city-fr-paris",
+    "iso2": "FR",
+    "name": "Paris",
+    "slug": "paris",
+    "latitude": 48.8566,
+    "longitude": 2.3522,
+    "geonamesId": 2988507,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "b4b6bdcf-f4cc-4ada-aa5e-b32cd82f7896",
+    "iso2": "GA",
+    "name": "Libreville",
+    "slug": "libreville",
+    "latitude": 0.39241,
+    "longitude": 9.45356,
+    "geonamesId": 2399697,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-gb-london",
+    "iso2": "GB",
+    "name": "London",
+    "slug": "london",
+    "latitude": 51.5072,
+    "longitude": -0.1276,
+    "geonamesId": 2643743,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "1f072d05-a747-4a2e-9166-003e3e9c25a9",
+    "iso2": "GD",
+    "name": "Saint George's",
+    "slug": "saint-george-s",
+    "latitude": 12.05288,
+    "longitude": -61.75226,
+    "geonamesId": 3579925,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "26ea2016-ed60-4b3a-bf47-03d934b46763",
+    "iso2": "GE",
+    "name": "Tbilisi",
+    "slug": "tbilisi",
+    "latitude": 41.69143,
+    "longitude": 44.83412,
+    "geonamesId": 611717,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "f1f1ce7f-371e-4281-812a-a20425752620",
+    "iso2": "GF",
+    "name": "Cayenne",
+    "slug": "cayenne",
+    "latitude": 4.9381,
+    "longitude": -52.33455,
+    "geonamesId": 3382160,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "b67f53e0-400e-4dd2-8371-ad076c556e23",
+    "iso2": "GG",
+    "name": "Saint Peter Port",
+    "slug": "saint-peter-port",
+    "latitude": 49.45981,
+    "longitude": -2.53527,
+    "geonamesId": 3042287,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "e46f1825-8730-4006-a137-53147752add4",
+    "iso2": "GH",
+    "name": "Accra",
+    "slug": "accra",
+    "latitude": 5.55602,
+    "longitude": -0.1969,
+    "geonamesId": 2306104,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "b3519e89-c62c-4685-9399-7e678fa0d9fe",
+    "iso2": "GI",
+    "name": "Gibraltar",
+    "slug": "gibraltar",
+    "latitude": 36.14474,
+    "longitude": -5.35257,
+    "geonamesId": 2411585,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "38b9255e-a158-4a65-9aa8-1b7a96573ea9",
+    "iso2": "GL",
+    "name": "Nuuk",
+    "slug": "nuuk",
+    "latitude": 64.18347,
+    "longitude": -51.72157,
+    "geonamesId": 3421319,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "54ecf9e8-8e8f-4a62-af11-0a105a8460ba",
+    "iso2": "GM",
+    "name": "Banjul",
+    "slug": "banjul",
+    "latitude": 13.45274,
+    "longitude": -16.57803,
+    "geonamesId": 2413876,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5ef9ef4a-d842-4e4e-b542-c7a0e02e94da",
+    "iso2": "GN",
+    "name": "Conakry",
+    "slug": "conakry",
+    "latitude": 9.53795,
+    "longitude": -13.67729,
+    "geonamesId": 2422465,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9860f6a8-bcee-4a44-ae1a-868bb2747721",
+    "iso2": "GP",
+    "name": "Basse-Terre",
+    "slug": "basse-terre",
+    "latitude": 15.99714,
+    "longitude": -61.73214,
+    "geonamesId": 3579732,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5fea96b1-9c6e-49a1-b272-970640c074d5",
+    "iso2": "GQ",
+    "name": "Ciudad de la Paz",
+    "slug": "ciudad-de-la-paz",
+    "latitude": 1.5925,
+    "longitude": 10.82361,
+    "geonamesId": 12226438,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "dc68e295-1d63-400b-88ca-bbe52fb25837",
+    "iso2": "GR",
+    "name": "Athens",
+    "slug": "athens",
+    "latitude": 37.98376,
+    "longitude": 23.72784,
+    "geonamesId": 264371,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7544cff4-9ee2-467e-970d-bbd8e26d5f2e",
+    "iso2": "GS",
+    "name": "Grytviken",
+    "slug": "grytviken",
+    "latitude": -54.28111,
+    "longitude": -36.5092,
+    "geonamesId": 3426466,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "2754a0bb-5839-4cac-b199-ef38846be013",
+    "iso2": "GT",
+    "name": "Guatemala City",
+    "slug": "guatemala-city",
+    "latitude": 14.64072,
+    "longitude": -90.51327,
+    "geonamesId": 3598132,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "1116d7dd-9c3d-43e3-829d-3cc3d069829e",
+    "iso2": "GU",
+    "name": "Hagåtña",
+    "slug": "hagatna",
+    "latitude": 13.47567,
+    "longitude": 144.74886,
+    "geonamesId": 4044012,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "90d381ba-4e08-44c0-aacd-8c0fdba1ab5d",
+    "iso2": "GW",
+    "name": "Bissau",
+    "slug": "bissau",
+    "latitude": 11.86357,
+    "longitude": -15.59767,
+    "geonamesId": 2374775,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "4d05de62-b71a-4271-9b9d-4ef34be1aafe",
+    "iso2": "GY",
+    "name": "Georgetown",
+    "slug": "georgetown",
+    "latitude": 6.80448,
+    "longitude": -58.15527,
+    "geonamesId": 3378644,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a52dc148-ae21-4ef9-b5c0-0c8605380036",
+    "iso2": "HK",
+    "name": "Hong Kong",
+    "slug": "hong-kong",
+    "latitude": 22.27832,
+    "longitude": 114.17469,
+    "geonamesId": 1819729,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "b9b91a30-abfc-411e-b6d5-889fb2ef2708",
+    "iso2": "HN",
+    "name": "Tegucigalpa",
+    "slug": "tegucigalpa",
+    "latitude": 14.0818,
+    "longitude": -87.20681,
+    "geonamesId": 3600949,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "d76f6deb-d230-4cd3-af5b-2907392a5c81",
+    "iso2": "HR",
+    "name": "Zagreb",
+    "slug": "zagreb",
+    "latitude": 45.81444,
+    "longitude": 15.97798,
+    "geonamesId": 3186886,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ce2b0cf0-bad1-4239-92ab-fb519594d3ca",
+    "iso2": "HT",
+    "name": "Port-au-Prince",
+    "slug": "port-au-prince",
+    "latitude": 18.54349,
+    "longitude": -72.33881,
+    "geonamesId": 3718426,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "25baa7e4-665d-403e-9e3c-57d96660937b",
+    "iso2": "HU",
+    "name": "Budapest",
+    "slug": "budapest",
+    "latitude": 47.49835,
+    "longitude": 19.04045,
+    "geonamesId": 3054643,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "8d194ffd-f933-450b-9ab3-cc5bf22d6bcb",
+    "iso2": "ID",
+    "name": "Jakarta",
+    "slug": "jakarta",
+    "latitude": -6.21462,
+    "longitude": 106.84513,
+    "geonamesId": 1642911,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "69c1a93a-ad32-4a9a-b1bd-ac7aee809e93",
+    "iso2": "IE",
+    "name": "Dublin",
+    "slug": "dublin",
+    "latitude": 53.33306,
+    "longitude": -6.24889,
+    "geonamesId": 2964574,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "84cdf18b-5e72-4c69-bf90-846be8d23cba",
+    "iso2": "IM",
+    "name": "Douglas",
+    "slug": "douglas",
+    "latitude": 54.15,
+    "longitude": -4.48333,
+    "geonamesId": 3042237,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "916851c0-4524-423c-9a9e-148b617f445c",
+    "iso2": "IN",
+    "name": "New Delhi",
+    "slug": "new-delhi",
+    "latitude": 28.62137,
+    "longitude": 77.2148,
+    "geonamesId": 1261481,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "f47201e2-c1f7-43b6-8a3f-83e95987d4cf",
+    "iso2": "IQ",
+    "name": "Baghdad",
+    "slug": "baghdad",
+    "latitude": 33.34058,
+    "longitude": 44.40088,
+    "geonamesId": 98182,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "09c2285f-9a70-4b41-ab6c-fb02d6256264",
+    "iso2": "IR",
+    "name": "Tehran",
+    "slug": "tehran",
+    "latitude": 35.69439,
+    "longitude": 51.42151,
+    "geonamesId": 112931,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "b8785a93-54b0-49d5-a5a5-a3de60de5470",
+    "iso2": "IS",
+    "name": "Reykjavík",
+    "slug": "reykjavik",
+    "latitude": 64.13548,
+    "longitude": -21.89541,
+    "geonamesId": 3413829,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-it-rome",
+    "iso2": "IT",
+    "name": "Rome",
+    "slug": "rome",
+    "latitude": 41.9028,
+    "longitude": 12.4964,
+    "geonamesId": 3169070,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a24059e3-371c-4d54-a1f2-2cd3af094dbd",
+    "iso2": "JE",
+    "name": "Saint Helier",
+    "slug": "saint-helier",
+    "latitude": 49.18804,
+    "longitude": -2.10491,
+    "geonamesId": 3042091,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9fa1e571-6640-44f4-920b-6fbd699379ed",
+    "iso2": "JM",
+    "name": "Kingston",
+    "slug": "kingston",
+    "latitude": 17.99702,
+    "longitude": -76.79358,
+    "geonamesId": 3489854,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "e738b9a1-35ce-438d-8189-9a0014307bcc",
+    "iso2": "JO",
+    "name": "Amman",
+    "slug": "amman",
+    "latitude": 31.95522,
+    "longitude": 35.94503,
+    "geonamesId": 250441,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-jp-kyoto",
+    "iso2": "JP",
+    "name": "Kyoto",
+    "slug": "kyoto",
+    "latitude": 35.0116,
+    "longitude": 135.7681,
+    "geonamesId": 1857910,
+    "catalogReason": "legacy-non-capital"
+  },
+  {
+    "id": "city-jp-tokyo",
+    "iso2": "JP",
+    "name": "Tokyo",
+    "slug": "tokyo",
+    "latitude": 35.6762,
+    "longitude": 139.6503,
+    "geonamesId": 1850147,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "77cf1030-3e12-4f1f-9a63-2808a253d622",
+    "iso2": "KE",
+    "name": "Nairobi",
+    "slug": "nairobi",
+    "latitude": -1.28333,
+    "longitude": 36.81667,
+    "geonamesId": 184745,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "fc20134f-74ef-473e-a29b-c3a6f6db014f",
+    "iso2": "KG",
+    "name": "Bishkek",
+    "slug": "bishkek",
+    "latitude": 42.87,
+    "longitude": 74.59,
+    "geonamesId": 1528675,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3b286b8e-fc6b-4037-bcfd-61443fc72760",
+    "iso2": "KH",
+    "name": "Phnom Penh",
+    "slug": "phnom-penh",
+    "latitude": 11.56245,
+    "longitude": 104.91601,
+    "geonamesId": 1821306,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5bfe6714-89a0-45ef-b91f-d1f56c44c1ca",
+    "iso2": "KI",
+    "name": "Tarawa",
+    "slug": "tarawa",
+    "latitude": 1.3278,
+    "longitude": 172.97696,
+    "geonamesId": 2110257,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "8ad24e64-fc52-4c32-8ad2-3128982533de",
+    "iso2": "KM",
+    "name": "Moroni",
+    "slug": "moroni",
+    "latitude": -11.70216,
+    "longitude": 43.25506,
+    "geonamesId": 921772,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "150031fa-926a-444d-b480-cae2d188ab6f",
+    "iso2": "KN",
+    "name": "Basseterre",
+    "slug": "basseterre",
+    "latitude": 17.2955,
+    "longitude": -62.72499,
+    "geonamesId": 3575551,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9587fe7f-59e4-4498-aaf3-5b407a4ca9da",
+    "iso2": "KP",
+    "name": "Pyongyang",
+    "slug": "pyongyang",
+    "latitude": 39.03385,
+    "longitude": 125.75432,
+    "geonamesId": 1871859,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "57586574-39b0-4501-9b78-d916aae96bc0",
+    "iso2": "KR",
+    "name": "Seoul",
+    "slug": "seoul",
+    "latitude": 37.566,
+    "longitude": 126.9784,
+    "geonamesId": 1835848,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "d98e17d2-be31-49ae-8a0a-e6c8f4dfa69e",
+    "iso2": "KW",
+    "name": "Kuwait City",
+    "slug": "kuwait-city",
+    "latitude": 29.367,
+    "longitude": 47.97429,
+    "geonamesId": 285787,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "27b6a867-d2c8-4200-a07c-550fc7159bbc",
+    "iso2": "KY",
+    "name": "George Town",
+    "slug": "george-town",
+    "latitude": 19.2866,
+    "longitude": -81.37436,
+    "geonamesId": 3580661,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "caf3d1df-8594-4666-a30c-173f246db58c",
+    "iso2": "KZ",
+    "name": "Astana",
+    "slug": "astana",
+    "latitude": 51.1801,
+    "longitude": 71.44598,
+    "geonamesId": 1526273,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "768d61bf-a207-43ab-abbb-bf74351c42c9",
+    "iso2": "LA",
+    "name": "Vientiane",
+    "slug": "vientiane",
+    "latitude": 17.96667,
+    "longitude": 102.6,
+    "geonamesId": 1651944,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "959ef7b9-f919-450d-9a69-26f746b68eb2",
+    "iso2": "LB",
+    "name": "Beirut",
+    "slug": "beirut",
+    "latitude": 33.89332,
+    "longitude": 35.50157,
+    "geonamesId": 276781,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "0a903679-d9c8-4a04-9b96-d83cd6cff6a3",
+    "iso2": "LC",
+    "name": "Castries",
+    "slug": "castries",
+    "latitude": 13.9957,
+    "longitude": -61.00614,
+    "geonamesId": 3576812,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "2a4e5a36-4c8d-4ad6-bfa2-8e448ffd43e8",
+    "iso2": "LI",
+    "name": "Vaduz",
+    "slug": "vaduz",
+    "latitude": 47.14151,
+    "longitude": 9.52154,
+    "geonamesId": 3042030,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "04a495d2-85e5-45ca-ad5f-cfe1f362cb60",
+    "iso2": "LK",
+    "name": "Colombo",
+    "slug": "colombo",
+    "latitude": 6.93548,
+    "longitude": 79.84868,
+    "geonamesId": 1248991,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "bd375b0b-16b4-41a2-8bed-5d079a5ba3ef",
+    "iso2": "LR",
+    "name": "Monrovia",
+    "slug": "monrovia",
+    "latitude": 6.30054,
+    "longitude": -10.7969,
+    "geonamesId": 2274895,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "46e424bc-ee05-4d72-86f8-ffdd33db5eff",
+    "iso2": "LS",
+    "name": "Maseru",
+    "slug": "maseru",
+    "latitude": -29.31667,
+    "longitude": 27.48333,
+    "geonamesId": 932505,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "42da8bf7-000f-44a6-bd94-d32c67b99d01",
+    "iso2": "LT",
+    "name": "Vilnius",
+    "slug": "vilnius",
+    "latitude": 54.68916,
+    "longitude": 25.2798,
+    "geonamesId": 593116,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "45d910ae-8df6-497f-a986-d37ca9b0eeb4",
+    "iso2": "LU",
+    "name": "Luxembourg",
+    "slug": "luxembourg",
+    "latitude": 49.60982,
+    "longitude": 6.13268,
+    "geonamesId": 2960316,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "4218c7fc-92f1-4e64-b1af-e82fa5f6376b",
+    "iso2": "LV",
+    "name": "Riga",
+    "slug": "riga",
+    "latitude": 56.946,
+    "longitude": 24.10589,
+    "geonamesId": 456172,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "39daf620-608a-4dc6-968c-5fe1060d738c",
+    "iso2": "LY",
+    "name": "Tripoli",
+    "slug": "tripoli",
+    "latitude": 32.88743,
+    "longitude": 13.18733,
+    "geonamesId": 2210247,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-ma-marrakesh",
+    "iso2": "MA",
+    "name": "Marrakesh",
+    "slug": "marrakesh",
+    "latitude": 31.6295,
+    "longitude": -7.9811,
+    "geonamesId": 2542997,
+    "catalogReason": "legacy-non-capital"
+  },
+  {
+    "id": "daf7975a-5b86-4812-a77c-af7c85b5f284",
+    "iso2": "MA",
+    "name": "Rabat",
+    "slug": "rabat",
+    "latitude": 34.01325,
+    "longitude": -6.83255,
+    "geonamesId": 2538475,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "d3549a3c-fb5a-4d14-bbc4-eeb35e205ea3",
+    "iso2": "MC",
+    "name": "Monaco",
+    "slug": "monaco",
+    "latitude": 43.73718,
+    "longitude": 7.42145,
+    "geonamesId": 2993458,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a89840c9-e84f-4f8d-ac5d-d66200124844",
+    "iso2": "MD",
+    "name": "Chisinau",
+    "slug": "chisinau",
+    "latitude": 47.00902,
+    "longitude": 28.85938,
+    "geonamesId": 618426,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "c3e1e42f-5b9b-46ab-aae0-c6a5f1d65322",
+    "iso2": "ME",
+    "name": "Podgorica",
+    "slug": "podgorica",
+    "latitude": 42.44124,
+    "longitude": 19.26309,
+    "geonamesId": 3193044,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "391ca591-0954-415e-9db6-a0d9dfcaa141",
+    "iso2": "MF",
+    "name": "Marigot",
+    "slug": "marigot",
+    "latitude": 18.06819,
+    "longitude": -63.08302,
+    "geonamesId": 3578851,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3268cfd0-3947-4fd7-8033-29945b981117",
+    "iso2": "MG",
+    "name": "Antananarivo",
+    "slug": "antananarivo",
+    "latitude": -18.91368,
+    "longitude": 47.53613,
+    "geonamesId": 1070940,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ad6a1d0b-760d-402a-8aa4-305f9b782126",
+    "iso2": "MH",
+    "name": "Majuro",
+    "slug": "majuro",
+    "latitude": 7.08971,
+    "longitude": 171.38027,
+    "geonamesId": 2113779,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "007674ac-ff02-46b7-b1dc-9e295e6b14bf",
+    "iso2": "MK",
+    "name": "Skopje",
+    "slug": "skopje",
+    "latitude": 41.99646,
+    "longitude": 21.43141,
+    "geonamesId": 785842,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3ee4a0bb-e5ea-4f7f-9702-011e9b06bf32",
+    "iso2": "ML",
+    "name": "Bamako",
+    "slug": "bamako",
+    "latitude": 12.60915,
+    "longitude": -7.97522,
+    "geonamesId": 2460596,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "fb4ba01a-0a53-4b03-aadf-95579c85ef60",
+    "iso2": "MM",
+    "name": "Nay Pyi Taw",
+    "slug": "nay-pyi-taw",
+    "latitude": 19.745,
+    "longitude": 96.12972,
+    "geonamesId": 6611854,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "15fbcb77-00a3-47b6-a490-b5364af59c52",
+    "iso2": "MN",
+    "name": "Ulan Bator",
+    "slug": "ulan-bator",
+    "latitude": 47.90771,
+    "longitude": 106.88324,
+    "geonamesId": 2028462,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "dbcc7d46-3db9-4076-a380-bb717180cb0f",
+    "iso2": "MO",
+    "name": "Macau",
+    "slug": "macau",
+    "latitude": 22.20056,
+    "longitude": 113.54611,
+    "geonamesId": 1821274,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "54a7d98d-1da4-49e9-b32c-73594d3b7bb1",
+    "iso2": "MP",
+    "name": "Saipan",
+    "slug": "saipan",
+    "latitude": 15.21233,
+    "longitude": 145.7545,
+    "geonamesId": 7828758,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "78077fea-6b59-49dd-94dd-36a9c1b258ef",
+    "iso2": "MQ",
+    "name": "Fort-de-France",
+    "slug": "fort-de-france",
+    "latitude": 14.60365,
+    "longitude": -61.07418,
+    "geonamesId": 3570675,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7190c0ba-9926-4546-96d6-23b6b0042049",
+    "iso2": "MR",
+    "name": "Nouakchott",
+    "slug": "nouakchott",
+    "latitude": 18.08581,
+    "longitude": -15.9785,
+    "geonamesId": 2377450,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "71b312ad-61d5-41d1-b546-7b97c65a0f58",
+    "iso2": "MS",
+    "name": "Plymouth",
+    "slug": "plymouth",
+    "latitude": 16.70555,
+    "longitude": -62.21292,
+    "geonamesId": 3578069,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "c786f03c-1901-4555-be4f-f317fadd4e94",
+    "iso2": "MT",
+    "name": "Valletta",
+    "slug": "valletta",
+    "latitude": 35.89968,
+    "longitude": 14.5148,
+    "geonamesId": 2562305,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a6ef2d69-7f8d-4c97-b344-ce3d967946dd",
+    "iso2": "MU",
+    "name": "Port Louis",
+    "slug": "port-louis",
+    "latitude": -20.16194,
+    "longitude": 57.49889,
+    "geonamesId": 934154,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "f5eaf97b-a95c-4b3f-9881-d6c0028f5937",
+    "iso2": "MV",
+    "name": "Male",
+    "slug": "male",
+    "latitude": 4.17521,
+    "longitude": 73.50916,
+    "geonamesId": 1282027,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "d4fcd4f1-98e2-4e56-aebc-7bc3e8f3d5fd",
+    "iso2": "MW",
+    "name": "Lilongwe",
+    "slug": "lilongwe",
+    "latitude": -13.96692,
+    "longitude": 33.78725,
+    "geonamesId": 927967,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-mx-mexico-city",
+    "iso2": "MX",
+    "name": "Mexico City",
+    "slug": "mexico-city",
+    "latitude": 19.4326,
+    "longitude": -99.1332,
+    "geonamesId": 3530597,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "0a1d26c1-de2f-442f-9a5b-f43fe1f28417",
+    "iso2": "MY",
+    "name": "Kuala Lumpur",
+    "slug": "kuala-lumpur",
+    "latitude": 3.1412,
+    "longitude": 101.68653,
+    "geonamesId": 1735161,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "917875fe-9e2a-43a8-80b6-d14409ac6121",
+    "iso2": "MZ",
+    "name": "Maputo",
+    "slug": "maputo",
+    "latitude": -25.96553,
+    "longitude": 32.58322,
+    "geonamesId": 1040652,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "346cfcf4-a8e9-40ea-b166-59d4f31f1310",
+    "iso2": "NA",
+    "name": "Windhoek",
+    "slug": "windhoek",
+    "latitude": -22.55941,
+    "longitude": 17.08323,
+    "geonamesId": 3352136,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "463eb825-fdfe-4c4d-994e-079e556cf6ac",
+    "iso2": "NC",
+    "name": "Nouméa",
+    "slug": "noumea",
+    "latitude": -22.27407,
+    "longitude": 166.44884,
+    "geonamesId": 2139521,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7cd159c1-b85a-4e91-9601-cbe3cdd3e6fd",
+    "iso2": "NE",
+    "name": "Niamey",
+    "slug": "niamey",
+    "latitude": 13.51366,
+    "longitude": 2.1098,
+    "geonamesId": 2440485,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5551b073-aca3-43d0-9f82-a3a40d223591",
+    "iso2": "NF",
+    "name": "Kingston",
+    "slug": "kingston",
+    "latitude": -29.05459,
+    "longitude": 167.96628,
+    "geonamesId": 2161314,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5e214137-1904-442e-a850-9aa738b11e59",
+    "iso2": "NG",
+    "name": "Abuja",
+    "slug": "abuja",
+    "latitude": 9.05785,
+    "longitude": 7.49508,
+    "geonamesId": 2352778,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "dcba944e-2d95-4e45-8d71-44269547e076",
+    "iso2": "NI",
+    "name": "Managua",
+    "slug": "managua",
+    "latitude": 12.13282,
+    "longitude": -86.2504,
+    "geonamesId": 3617763,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7aa408b5-06f2-43fd-9cab-559bc136ba28",
+    "iso2": "NL",
+    "name": "Amsterdam",
+    "slug": "amsterdam",
+    "latitude": 52.37403,
+    "longitude": 4.88969,
+    "geonamesId": 2759794,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "64ccf0ef-5e3a-4059-bf32-145e6f72a975",
+    "iso2": "NO",
+    "name": "Oslo",
+    "slug": "oslo",
+    "latitude": 59.91273,
+    "longitude": 10.74609,
+    "geonamesId": 3143244,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "24e93011-05dd-459f-8e92-ff4f0797dd1b",
+    "iso2": "NP",
+    "name": "Kathmandu",
+    "slug": "kathmandu",
+    "latitude": 27.70169,
+    "longitude": 85.3206,
+    "geonamesId": 1283240,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "0511b8b7-334e-40a9-bb5a-eb191f2fba12",
+    "iso2": "NR",
+    "name": "Yaren",
+    "slug": "yaren",
+    "latitude": -0.55085,
+    "longitude": 166.9252,
+    "geonamesId": 7626461,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "396dd00e-dfce-4c80-bee8-b7f37e36357c",
+    "iso2": "NU",
+    "name": "Alofi",
+    "slug": "alofi",
+    "latitude": -19.05294,
+    "longitude": -169.91957,
+    "geonamesId": 4036284,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "6b0be224-6847-4bf4-ac37-3fc06dc3c70b",
+    "iso2": "NZ",
+    "name": "Wellington",
+    "slug": "wellington",
+    "latitude": -41.28664,
+    "longitude": 174.77557,
+    "geonamesId": 2179537,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a3d8213d-e559-4c6d-b469-37bfef1d8304",
+    "iso2": "OM",
+    "name": "Muscat",
+    "slug": "muscat",
+    "latitude": 23.58413,
+    "longitude": 58.40778,
+    "geonamesId": 287286,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5f9ed9bd-3410-4841-840c-3b1eab5f5490",
+    "iso2": "PA",
+    "name": "Panama City",
+    "slug": "panama-city",
+    "latitude": 8.9936,
+    "longitude": -79.51973,
+    "geonamesId": 3703443,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "6f63e2dc-22c0-4239-9779-6cc7f028ae50",
+    "iso2": "PE",
+    "name": "Lima",
+    "slug": "lima",
+    "latitude": -12.04318,
+    "longitude": -77.02824,
+    "geonamesId": 3936456,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "eaad4c53-7849-4355-9d78-2c1ab73d61d3",
+    "iso2": "PF",
+    "name": "Papeete",
+    "slug": "papeete",
+    "latitude": -17.5347,
+    "longitude": -149.56843,
+    "geonamesId": 4033936,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "963fe563-2e1b-4405-a55f-a582c388e2de",
+    "iso2": "PG",
+    "name": "Port Moresby",
+    "slug": "port-moresby",
+    "latitude": -9.47723,
+    "longitude": 147.15089,
+    "geonamesId": 2088122,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "cffbc025-4c8a-40a3-a71e-8d73ff40a37b",
+    "iso2": "PH",
+    "name": "Manila",
+    "slug": "manila",
+    "latitude": 14.6042,
+    "longitude": 120.9822,
+    "geonamesId": 1701668,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9414b430-54d8-4150-a22a-5217bd1c1450",
+    "iso2": "PK",
+    "name": "Islamabad",
+    "slug": "islamabad",
+    "latitude": 33.72148,
+    "longitude": 73.04329,
+    "geonamesId": 1176615,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9bb9a446-0f74-4408-80ee-6a07c1a8bace",
+    "iso2": "PL",
+    "name": "Warsaw",
+    "slug": "warsaw",
+    "latitude": 52.22977,
+    "longitude": 21.01178,
+    "geonamesId": 756135,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "44e51554-e56a-424c-9bdb-bf71f40fe7da",
+    "iso2": "PM",
+    "name": "Saint-Pierre",
+    "slug": "saint-pierre",
+    "latitude": 46.77914,
+    "longitude": -56.1773,
+    "geonamesId": 3424934,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "58cad444-281b-4101-ac0e-923ef0cf3161",
+    "iso2": "PN",
+    "name": "Adamstown",
+    "slug": "adamstown",
+    "latitude": -25.06597,
+    "longitude": -130.10147,
+    "geonamesId": 4030723,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "f59ede64-43d8-44dc-bfb3-6c06e02557b6",
+    "iso2": "PR",
+    "name": "San Juan",
+    "slug": "san-juan",
+    "latitude": 18.46633,
+    "longitude": -66.10572,
+    "geonamesId": 4568127,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-pt-lisbon",
+    "iso2": "PT",
+    "name": "Lisbon",
+    "slug": "lisbon",
+    "latitude": 38.7223,
+    "longitude": -9.1393,
+    "geonamesId": 2267057,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9a53eb02-4996-4f05-a5a2-9302e901ddc0",
+    "iso2": "PW",
+    "name": "Ngerulmud",
+    "slug": "ngerulmud",
+    "latitude": 7.50077,
+    "longitude": 134.6238,
+    "geonamesId": 8063361,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "032accb5-5741-44bd-97ef-d223151b3a9a",
+    "iso2": "PY",
+    "name": "Asunción",
+    "slug": "asuncion",
+    "latitude": -25.28646,
+    "longitude": -57.647,
+    "geonamesId": 3439389,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "d7e7aac8-3db4-4ea0-934c-4a82a4f15f08",
+    "iso2": "QA",
+    "name": "Doha",
+    "slug": "doha",
+    "latitude": 25.28545,
+    "longitude": 51.53096,
+    "geonamesId": 290030,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "dc03e7ae-95ec-4ade-bd99-c0ba04df50b4",
+    "iso2": "RE",
+    "name": "Saint-Denis",
+    "slug": "saint-denis",
+    "latitude": -20.88231,
+    "longitude": 55.4504,
+    "geonamesId": 935264,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "540d0d66-f96b-409f-8f8d-63ff5b9a10f1",
+    "iso2": "RO",
+    "name": "Bucharest",
+    "slug": "bucharest",
+    "latitude": 44.43225,
+    "longitude": 26.10626,
+    "geonamesId": 683506,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5d16e549-0413-47ee-9022-0ff609539596",
+    "iso2": "RS",
+    "name": "Belgrade",
+    "slug": "belgrade",
+    "latitude": 44.80401,
+    "longitude": 20.46513,
+    "geonamesId": 792680,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "54b048c0-3b65-4013-8101-72a7a84b91f5",
+    "iso2": "RU",
+    "name": "Moscow",
+    "slug": "moscow",
+    "latitude": 55.75204,
+    "longitude": 37.61781,
+    "geonamesId": 524901,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "31a0b2e9-2b8f-4393-9bc3-a29aa9ac6e28",
+    "iso2": "RW",
+    "name": "Kigali",
+    "slug": "kigali",
+    "latitude": -1.94995,
+    "longitude": 30.05885,
+    "geonamesId": 202061,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "49415009-3c81-4181-8d62-85c8a3e3ab58",
+    "iso2": "SA",
+    "name": "Riyadh",
+    "slug": "riyadh",
+    "latitude": 24.68773,
+    "longitude": 46.72185,
+    "geonamesId": 108410,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "58dae597-469e-4251-84f4-d79004bdff23",
+    "iso2": "SB",
+    "name": "Honiara",
+    "slug": "honiara",
+    "latitude": -9.43333,
+    "longitude": 159.95,
+    "geonamesId": 2108502,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "114b06ed-3471-4368-a166-a94e4372e56e",
+    "iso2": "SC",
+    "name": "Victoria",
+    "slug": "victoria",
+    "latitude": -4.62001,
+    "longitude": 55.45501,
+    "geonamesId": 241131,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ef1f1a06-838c-4aef-956a-3e184f908ffb",
+    "iso2": "SD",
+    "name": "Khartoum",
+    "slug": "khartoum",
+    "latitude": 15.55177,
+    "longitude": 32.53241,
+    "geonamesId": 379252,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "40010a25-7a4f-4773-af62-3dced6d8adb9",
+    "iso2": "SE",
+    "name": "Stockholm",
+    "slug": "stockholm",
+    "latitude": 59.32938,
+    "longitude": 18.06871,
+    "geonamesId": 2673730,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ddaff9a5-28b8-4f81-a723-0ee4707ebfe7",
+    "iso2": "SG",
+    "name": "Singapore",
+    "slug": "singapore",
+    "latitude": 1.28967,
+    "longitude": 103.85007,
+    "geonamesId": 1880252,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "20b267fa-9fd3-4046-b800-4d06515c5c1f",
+    "iso2": "SH",
+    "name": "Jamestown",
+    "slug": "jamestown",
+    "latitude": -15.92488,
+    "longitude": -5.71816,
+    "geonamesId": 3370903,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "15a1ec57-33a5-4cb7-8020-0315de71c2f1",
+    "iso2": "SI",
+    "name": "Ljubljana",
+    "slug": "ljubljana",
+    "latitude": 46.05108,
+    "longitude": 14.50513,
+    "geonamesId": 3196359,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "6135c669-b0ae-412b-995e-df6c89395b0c",
+    "iso2": "SJ",
+    "name": "Longyearbyen",
+    "slug": "longyearbyen",
+    "latitude": 78.22334,
+    "longitude": 15.64689,
+    "geonamesId": 2729907,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "d007cc24-038f-438f-bb4d-d20614644f68",
+    "iso2": "SK",
+    "name": "Bratislava",
+    "slug": "bratislava",
+    "latitude": 48.14816,
+    "longitude": 17.10674,
+    "geonamesId": 3060972,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "5b7a375b-09ff-4620-996d-679c3d5268c1",
+    "iso2": "SL",
+    "name": "Freetown",
+    "slug": "freetown",
+    "latitude": 8.48714,
+    "longitude": -13.2356,
+    "geonamesId": 2409306,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "6f37876e-c942-4e2a-81a4-93888e08f1db",
+    "iso2": "SM",
+    "name": "San Marino",
+    "slug": "san-marino",
+    "latitude": 43.93667,
+    "longitude": 12.44639,
+    "geonamesId": 3168070,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "71b1e2ac-6a2a-4ed4-8946-343e5e0ffcae",
+    "iso2": "SN",
+    "name": "Dakar",
+    "slug": "dakar",
+    "latitude": 14.6937,
+    "longitude": -17.44406,
+    "geonamesId": 2253354,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "60cc3e8e-4dce-4953-9c91-0e0bb5f49de8",
+    "iso2": "SO",
+    "name": "Mogadishu",
+    "slug": "mogadishu",
+    "latitude": 2.03711,
+    "longitude": 45.34375,
+    "geonamesId": 53654,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3d116bf1-2de7-4f5b-a290-074279ede024",
+    "iso2": "SR",
+    "name": "Paramaribo",
+    "slug": "paramaribo",
+    "latitude": 5.86638,
+    "longitude": -55.16682,
+    "geonamesId": 3383330,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7e9b097c-4b4c-41b6-9255-22d74d1ee19d",
+    "iso2": "SS",
+    "name": "Juba",
+    "slug": "juba",
+    "latitude": 4.85165,
+    "longitude": 31.58247,
+    "geonamesId": 373303,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "2aac444c-8d19-4f65-97b8-f002888759ab",
+    "iso2": "ST",
+    "name": "São Tomé",
+    "slug": "sao-tome",
+    "latitude": 0.33756,
+    "longitude": 6.7299,
+    "geonamesId": 2410763,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "75f7062a-b0f2-4318-a7dc-b3d78ef4f38e",
+    "iso2": "SV",
+    "name": "San Salvador",
+    "slug": "san-salvador",
+    "latitude": 13.68935,
+    "longitude": -89.18718,
+    "geonamesId": 3583361,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "27f55fed-90a3-4df7-be8e-a7afab694058",
+    "iso2": "SX",
+    "name": "Philipsburg",
+    "slug": "philipsburg",
+    "latitude": 18.026,
+    "longitude": -63.04582,
+    "geonamesId": 3513392,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "0e0607e7-1e28-40b3-b874-7097f7540e78",
+    "iso2": "SY",
+    "name": "Damascus",
+    "slug": "damascus",
+    "latitude": 33.5102,
+    "longitude": 36.29128,
+    "geonamesId": 170654,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "c39d3a58-8394-4c1b-8b89-9db5464c83b6",
+    "iso2": "SZ",
+    "name": "Mbabane",
+    "slug": "mbabane",
+    "latitude": -26.31667,
+    "longitude": 31.13333,
+    "geonamesId": 934985,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "bca2685c-7f6e-45ca-afdd-75394b8d297f",
+    "iso2": "TC",
+    "name": "Cockburn Town",
+    "slug": "cockburn-town",
+    "latitude": 21.46122,
+    "longitude": -71.14188,
+    "geonamesId": 3576994,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "16bc3b47-7660-4e85-93e2-d3cbfafdd933",
+    "iso2": "TD",
+    "name": "N'Djamena",
+    "slug": "n-djamena",
+    "latitude": 12.10672,
+    "longitude": 15.0444,
+    "geonamesId": 2427123,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "4106192d-f86f-4508-954b-c979d2f73c04",
+    "iso2": "TF",
+    "name": "Port-aux-Français",
+    "slug": "port-aux-francais",
+    "latitude": -49.34916,
+    "longitude": 70.21937,
+    "geonamesId": 1546102,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3e6658d2-2818-45b8-85a1-ee8e4755996d",
+    "iso2": "TG",
+    "name": "Lomé",
+    "slug": "lome",
+    "latitude": 6.12874,
+    "longitude": 1.22154,
+    "geonamesId": 2365267,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-th-bangkok",
+    "iso2": "TH",
+    "name": "Bangkok",
+    "slug": "bangkok",
+    "latitude": 13.7563,
+    "longitude": 100.5018,
+    "geonamesId": 1609350,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "befa22f7-69a5-45cb-ada0-0fe67e473361",
+    "iso2": "TJ",
+    "name": "Dushanbe",
+    "slug": "dushanbe",
+    "latitude": 38.53575,
+    "longitude": 68.77905,
+    "geonamesId": 1221874,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "228f540d-25a4-4e0c-8ad6-015dac5151aa",
+    "iso2": "TL",
+    "name": "Dili",
+    "slug": "dili",
+    "latitude": -8.55861,
+    "longitude": 125.57361,
+    "geonamesId": 1645457,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ac418cb3-9a58-4f65-9075-750800ab061d",
+    "iso2": "TM",
+    "name": "Ashgabat",
+    "slug": "ashgabat",
+    "latitude": 37.95,
+    "longitude": 58.38333,
+    "geonamesId": 162183,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "e5351a4f-3d54-4e1f-9134-19888cea8dc5",
+    "iso2": "TN",
+    "name": "Tunis",
+    "slug": "tunis",
+    "latitude": 36.81897,
+    "longitude": 10.16579,
+    "geonamesId": 2464470,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "ec86166b-bc5a-4a59-b724-275bf21b068f",
+    "iso2": "TO",
+    "name": "Nuku‘alofa",
+    "slug": "nuku-alofa",
+    "latitude": -21.13683,
+    "longitude": -175.20114,
+    "geonamesId": 4032402,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "cb8952dd-c4df-4b06-8048-9114effb3324",
+    "iso2": "TR",
+    "name": "Ankara",
+    "slug": "ankara",
+    "latitude": 39.91987,
+    "longitude": 32.85427,
+    "geonamesId": 323786,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a2e6befd-09d3-4736-a94c-2682e0801d3b",
+    "iso2": "TT",
+    "name": "Port of Spain",
+    "slug": "port-of-spain",
+    "latitude": 10.66668,
+    "longitude": -61.51889,
+    "geonamesId": 3573890,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9bc1de84-d779-4696-adc7-3088163af2ef",
+    "iso2": "TV",
+    "name": "Funafuti",
+    "slug": "funafuti",
+    "latitude": -8.52425,
+    "longitude": 179.19417,
+    "geonamesId": 2110394,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "17193340-1302-4855-a5eb-f777666affac",
+    "iso2": "TW",
+    "name": "Taipei",
+    "slug": "taipei",
+    "latitude": 25.05306,
+    "longitude": 121.52639,
+    "geonamesId": 1668341,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "664504f7-e804-44f7-9ae1-dc1955451fff",
+    "iso2": "TZ",
+    "name": "Dodoma",
+    "slug": "dodoma",
+    "latitude": -6.17221,
+    "longitude": 35.73947,
+    "geonamesId": 160196,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "17a650d1-0679-4664-b653-585f217a67ab",
+    "iso2": "UA",
+    "name": "Kyiv",
+    "slug": "kyiv",
+    "latitude": 50.45466,
+    "longitude": 30.5238,
+    "geonamesId": 703448,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "7fae651b-947a-4d93-b732-ab53789d8791",
+    "iso2": "UG",
+    "name": "Kampala",
+    "slug": "kampala",
+    "latitude": 0.31628,
+    "longitude": 32.58219,
+    "geonamesId": 232422,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "city-us-new-york",
+    "iso2": "US",
+    "name": "New York",
+    "slug": "new-york",
+    "latitude": 40.7128,
+    "longitude": -74.006,
+    "geonamesId": 5128581,
+    "catalogReason": "legacy-non-capital"
+  },
+  {
+    "id": "city-us-san-francisco",
+    "iso2": "US",
+    "name": "San Francisco",
+    "slug": "san-francisco",
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "geonamesId": 5391959,
+    "catalogReason": "legacy-non-capital"
+  },
+  {
+    "id": "9d54b669-f257-4c5b-9747-e5affaec54c9",
+    "iso2": "US",
+    "name": "Washington",
+    "slug": "washington",
+    "latitude": 38.89511,
+    "longitude": -77.03637,
+    "geonamesId": 4140963,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9aad26ee-631d-4140-a6f8-efcbbd3ea78b",
+    "iso2": "UY",
+    "name": "Montevideo",
+    "slug": "montevideo",
+    "latitude": -34.90328,
+    "longitude": -56.18816,
+    "geonamesId": 3441575,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a9801666-0f42-435f-8454-6b843545923f",
+    "iso2": "UZ",
+    "name": "Tashkent",
+    "slug": "tashkent",
+    "latitude": 41.26465,
+    "longitude": 69.21627,
+    "geonamesId": 1512569,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "025f15b8-9d34-4a50-9801-2bdb07b2ccf5",
+    "iso2": "VA",
+    "name": "Vatican City",
+    "slug": "vatican-city",
+    "latitude": 41.90268,
+    "longitude": 12.45414,
+    "geonamesId": 6691831,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "1961ecea-25ac-46ec-a507-7f8890ca1c57",
+    "iso2": "VC",
+    "name": "Kingstown",
+    "slug": "kingstown",
+    "latitude": 13.15527,
+    "longitude": -61.22742,
+    "geonamesId": 3577887,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "6da4aa41-0cfc-4395-b8d6-30e172d92dfe",
+    "iso2": "VE",
+    "name": "Caracas",
+    "slug": "caracas",
+    "latitude": 10.48801,
+    "longitude": -66.87919,
+    "geonamesId": 3646738,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3f32b27b-b71f-4a5d-8615-face7cf501c4",
+    "iso2": "VG",
+    "name": "Road Town",
+    "slug": "road-town",
+    "latitude": 18.42693,
+    "longitude": -64.62079,
+    "geonamesId": 3577430,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "fd00bbc3-f6c4-4f16-af6d-a0bb55bd4194",
+    "iso2": "VI",
+    "name": "Charlotte Amalie",
+    "slug": "charlotte-amalie",
+    "latitude": 18.3419,
+    "longitude": -64.9307,
+    "geonamesId": 4795467,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "4ee7b7c1-6ab8-4b6c-a6bc-901455306123",
+    "iso2": "VN",
+    "name": "Hanoi",
+    "slug": "hanoi",
+    "latitude": 21.0245,
+    "longitude": 105.84117,
+    "geonamesId": 1581130,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "3c5e244a-161b-4464-ac68-5be6981eee87",
+    "iso2": "VU",
+    "name": "Port-Vila",
+    "slug": "port-vila",
+    "latitude": -17.73648,
+    "longitude": 168.31366,
+    "geonamesId": 2135171,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "9ee0c3be-e43e-487d-a561-210d11b19020",
+    "iso2": "WF",
+    "name": "Mata-Utu",
+    "slug": "mata-utu",
+    "latitude": -13.28163,
+    "longitude": -176.17453,
+    "geonamesId": 4034821,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "8f7373b5-5705-4e74-94b3-847cc4a78a89",
+    "iso2": "WS",
+    "name": "Apia",
+    "slug": "apia",
+    "latitude": -13.83333,
+    "longitude": -171.76666,
+    "geonamesId": 4035413,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "e4929273-9fb1-48ce-b86e-a30c5a5f8acf",
+    "iso2": "YE",
+    "name": "Sanaa",
+    "slug": "sanaa",
+    "latitude": 15.35452,
+    "longitude": 44.20646,
+    "geonamesId": 71137,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "abc167a2-bc04-4f1f-8918-4b1044c2d7ba",
+    "iso2": "YT",
+    "name": "Mamoudzou",
+    "slug": "mamoudzou",
+    "latitude": -12.78234,
+    "longitude": 45.22878,
+    "geonamesId": 921815,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "a323b8c3-b342-4edd-9cd4-42693587e264",
+    "iso2": "ZA",
+    "name": "Pretoria",
+    "slug": "pretoria",
+    "latitude": -25.74486,
+    "longitude": 28.18783,
+    "geonamesId": 964137,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "0039456d-41e2-46b3-9a1e-d63876f22777",
+    "iso2": "ZM",
+    "name": "Lusaka",
+    "slug": "lusaka",
+    "latitude": -15.40669,
+    "longitude": 28.28713,
+    "geonamesId": 909137,
+    "catalogReason": "national-capital"
+  },
+  {
+    "id": "2eb63033-c65d-484e-b886-4893f7f76a46",
+    "iso2": "ZW",
+    "name": "Harare",
+    "slug": "harare",
+    "latitude": -17.82772,
+    "longitude": 31.05337,
+    "geonamesId": 890299,
+    "catalogReason": "national-capital"
+  }
 ]

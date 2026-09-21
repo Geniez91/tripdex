@@ -5,6 +5,35 @@ Run `npm run data:prepare` from the repository root to reproduce the local data.
 This command downloads the pinned sources; neither the seed nor the web app
 needs an external geography service at runtime.
 
+## Reviewed city catalog
+
+`apps/api/src/prisma/data/cities.json` is a human-reviewed TripDex catalog,
+not a provider import. To prepare a review artifact from an explicitly obtained
+GeoNames `cities15000.txt` snapshot, run:
+
+```sh
+npm run data:prepare:cities -- --input /path/to/cities15000.txt --output data/city-catalog-candidates.json
+npm run data:validate:cities
+```
+
+The command never downloads input, contacts a database, or updates
+`cities.json`. Candidate records are review evidence only; adding a city to
+the TripDex catalog is a separate, deliberate edit. The pinned snapshot hash,
+retrieval date, selector version, and required attribution are in
+`geography-sources.json`. GeoNames data is licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): derived catalog
+metadata must retain the stated GeoNames attribution. Prepared candidates start as
+`unreviewed`; reviewers mark an evidence record `selected` only when it supports
+a published national-capital city, or `rejected` when it does not. Candidates may
+remain unreviewed or rejected and never need to appear in `cities.json`.
+
+When a reviewed exception is absent from `cities15000`, pass a small local
+JSON supplemental file with a `records` array. Each record supplies the same
+review fields used by the output (`geonamesId`, name/asciiname, country ISO-2,
+coordinates, populated-place feature class/code, population, and optional
+aliases/admin codes). Its filename and SHA-256 are recorded in the output;
+it is candidate evidence, not a second catalog or a runtime integration.
+
 - Country names, ISO codes, regional classification and fallback coordinates:
   [mledoze/countries](https://github.com/mledoze/countries), **ODbL 1.0**.
   See `COUNTRIES-LICENSE.txt`. The derived country database and country metadata

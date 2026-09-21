@@ -8,5 +8,14 @@
     "repository": "nvkelso/natural-earth-vector",
     "revision": "ca96624a56bd078437bca8184e78163e5039ad19",
     "license": "Public domain"
+  },
+  "cities": {
+    "dataset": "GeoNames cities15000",
+    "url": "https://download.geonames.org/export/dump/cities15000.zip",
+    "retrievedAt": "2026-09-21",
+    "sha256": "883f220e4f6f3e7de6146c42ff87d38058c88cb19044df7731ec6bb5804caf7d",
+    "license": "CC BY 4.0",
+    "attribution": "Contains modified GeoNames data, licensed under CC BY 4.0.",
+    "selectorVersion": "1"
   }
 }

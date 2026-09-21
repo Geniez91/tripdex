@@ -18,6 +18,8 @@
     "test": "npm run test --workspace=api -- --runInBand",
     "db:seed": "npm run db:seed --workspace=api",
     "db:verify": "npm run db:verify --workspace=api",
-    "data:prepare": "node scripts/prepare-geography.mjs"
+    "data:prepare": "node scripts/prepare-geography.mjs",
+    "data:prepare:cities": "node scripts/prepare-city-candidates.mjs",
+    "data:validate:cities": "node scripts/validate-city-catalog.mjs"
   }
 }
