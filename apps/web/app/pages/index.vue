@@ -155,6 +155,10 @@ async function onCreated(trip: CreatedTrip): Promise<void> {
           <span class="log-rule" aria-hidden="true" />
         </div>
         <div>
+          <SupportedCitiesBrowser
+            :countries="countries"
+            :loading="countriesStatus === 'pending' || countriesStatus === 'idle'"
+          />
           <div v-if="countriesError" class="feedback error" role="alert">
             Impossible de charger les pays.
             <button class="text-button" @click="refreshCountries()">

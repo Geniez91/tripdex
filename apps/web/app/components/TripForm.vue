@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import type { City, Country, CreatedTrip } from "~/types/tripdex";
+import type { Country, CreatedTrip } from "~/types/tripdex";
+import type { TCityIdsByCountryId } from "~/types/interfaces/trip-city-selection";
 import { toCreateTripInput } from "~/services/mappers/tripMapper";
+import {
+  flattenTripCitySelections,
+  reconcileTripCitySelections,
+} from "~/services/tripCitySelection";
 import { createTrip, updateTripCover } from "~/services/api/trips";
-import { getCities } from "~/services/api/cities";
 import { statusCodeFrom } from "~/services/errors";
 
 const props = defineProps<{ countries: Country[]; loading: boolean }>();
@@ -12,7 +16,6 @@ const communityActivity = useCommunityActivity();
 const tripsCache = useTrips();
 const progression = useProgression();
 const achievements = useAchievements();
-const config = useRuntimeConfig();
 const title = ref("");
 const startDate = ref("");
 const endDate = ref("");
@@ -21,17 +24,12 @@ const review = ref("");
 const visibility = ref<"public" | "private">("private");
 const search = ref("");
 const countryIds = ref<string[]>([]);
-const cityIds = ref<string[]>([]);
+const cityIdsByCountryId = ref<TCityIdsByCountryId>({});
 const submitting = ref(false);
 const error = ref("");
 const cover = ref<File | null>(null);
 const uploading = ref(false);
 const savedTrip = ref<CreatedTrip | null>(null);
-const { data: cities } = await useAsyncData<City[]>("trip-form-cities", (_app, { signal }) =>
-  getCities(config.public.apiBase, signal), {
-  server: false,
-  default: () => [],
-});
 const filteredCountries = computed<Country[]>(() => {
   const query = search.value.trim().toLocaleLowerCase();
   return props.countries.filter((country) =>
@@ -46,11 +44,23 @@ const selectedCountries = computed<Country[]>(() =>
     return country ? [country] : [];
   }),
 );
-const availableCities = computed<City[]>(() =>
-  (cities.value ?? []).filter((city) =>
-    countryIds.value.includes(city.countryId),
-  ),
+const cityIds = computed<string[]>(() =>
+  flattenTripCitySelections(cityIdsByCountryId.value),
 );
+watch(countryIds, (selectedCountryIds) => {
+  cityIdsByCountryId.value = reconcileTripCitySelections(
+    selectedCountryIds,
+    cityIdsByCountryId.value,
+  );
+}, { deep: true });
+
+function updateCountryCityIds(countryId: string, selectedCityIds: string[]): void {
+  if (!countryIds.value.includes(countryId)) return;
+  cityIdsByCountryId.value = {
+    ...cityIdsByCountryId.value,
+    [countryId]: selectedCityIds,
+  };
+}
 
 async function submit(): Promise<void> {
   if (submitting.value) return;
@@ -100,7 +110,7 @@ async function submit(): Promise<void> {
     visibility.value = "private";
     search.value = "";
     countryIds.value = [];
-    cityIds.value = [];
+    cityIdsByCountryId.value = {};
     cover.value = null;
     savedTrip.value = null;
     emit("created", trip);
@@ -251,23 +261,22 @@ async function submit(): Promise<void> {
               </button>
             </div>
           </fieldset>
-          <fieldset v-if="availableCities.length" class="country-picker">
+          <fieldset v-if="selectedCountries.length" class="country-picker">
             <legend>Villes <span class="optional">facultatif</span></legend>
-            <div class="country-options">
-              <label
-                v-for="city in availableCities"
-                :key="city.id"
-                class="country-option"
-              >
-                <input
-                  v-model="cityIds"
-                  type="checkbox"
-                  :value="city.id"
-                  :aria-label="city.name"
-                />
-                <span>{{ city.name }}</span>
-              </label>
-            </div>
+            <section
+              v-for="country in selectedCountries"
+              :key="country.id"
+              class="trip-country-cities"
+              :aria-label="`Villes prises en charge pour ${country.name}`"
+            >
+              <h3>{{ country.name }}</h3>
+              <CountrySupportedCities
+                selectable
+                :country="country"
+                :model-value="cityIdsByCountryId[country.id] ?? []"
+                @update:model-value="updateCountryCityIds(country.id, $event)"
+              />
+            </section>
           </fieldset>
         </fieldset>
         <CoverPicker id="trip-cover" v-model="cover" :disabled="submitting" />
@@ -297,3 +306,15 @@ async function submit(): Promise<void> {
     </form>
   </section>
 </template>
+
+<style scoped>
+.trip-country-cities + .trip-country-cities {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(var(--v-theme-outline));
+}
+.trip-country-cities h3 {
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+</style>

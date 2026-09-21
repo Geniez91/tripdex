@@ -36,6 +36,6 @@ test("public endpoint services never pass relative API paths to Nuxt fetch", () 
     assert.doesNotMatch(source, /\$fetch[^\n]*\(\s*["']\/(countries|cities|community)/);
   }
   const tripForm = readApp("components/TripForm.vue");
-  assert.match(tripForm, /getCities\(config\.public\.apiBase, signal\)/);
-  assert.doesNotMatch(tripForm, /useFetch<City\[]>\("\/cities"/);
+  assert.doesNotMatch(tripForm, /getCities\(config\.public\.apiBase, signal\)/);
+  assert.match(tripForm, /<CountrySupportedCities/);
 });
